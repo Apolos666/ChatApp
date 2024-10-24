@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{13594C17-DC72-47B9-B75F-2BDD4EC33592}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Message", "Message", "{ECEFCFD6-5B70-4C96-B151-76DD5DA6FF13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatApp.Message", "Services\Message\ChatApp.Message\ChatApp.Message.csproj", "{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CE940CEB-0428-4CDE-9294-0352537DDEE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE940CEB-0428-4CDE-9294-0352537DDEE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE940CEB-0428-4CDE-9294-0352537DDEE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE940CEB-0428-4CDE-9294-0352537DDEE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE940CEB-0428-4CDE-9294-0352537DDEE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ECEFCFD6-5B70-4C96-B151-76DD5DA6FF13} = {13594C17-DC72-47B9-B75F-2BDD4EC33592}
+		{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89} = {ECEFCFD6-5B70-4C96-B151-76DD5DA6FF13}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40744FEC-D2C1-49E6-BF65-525BC2549B48}
+	EndGlobalSection
+EndGlobal

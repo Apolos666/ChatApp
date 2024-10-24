@@ -1,0 +1,6 @@
+services:
+  chatapp.message:
+    image: ${DOCKER_REGISTRY-}chatappmessage
+    build:
+      context: .
+      dockerfile: Services/Message/ChatApp.Message/Dockerfile
