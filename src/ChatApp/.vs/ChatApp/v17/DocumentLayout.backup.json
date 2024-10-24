@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Projects\\ChatApp\\src\\ChatApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|c:\\projects\\chatapp\\src\\chatapp\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|c:\\projects\\chatapp\\src\\chatapp\\docker-compose.dcproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|solutionrelative:docker-compose.dcproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
@@ -23,6 +27,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "docker-compose.yml",
+              "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\docker-compose.yml",
+              "RelativeDocumentMoniker": "docker-compose.yml",
+              "ToolTip": "C:\\Projects\\ChatApp\\src\\ChatApp\\docker-compose.yml",
+              "RelativeToolTip": "docker-compose.yml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
+              "WhenOpened": "2024-10-24T13:17:57.051Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "docker-compose",
               "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\docker-compose.dcproj",
               "RelativeDocumentMoniker": "docker-compose.dcproj",
@@ -43,7 +60,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\Services\\Message\\ChatApp.Message\\Dockerfile",
               "RelativeDocumentMoniker": "Services\\Message\\ChatApp.Message\\Dockerfile",
