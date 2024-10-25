@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chat_app?currentSchema=public
+    username: postgres
+    password: phamtantudn3
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
