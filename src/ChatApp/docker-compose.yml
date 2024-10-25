@@ -10,3 +10,10 @@ services:
     ports:
       - 8080:8080
     restart: on-failure
+  admin-crud-user:
+    build:
+      context: ./Services/admin-crud-user
+      dockerfile: admin.crud.user.Dockerfile  
+    ports:
+      - "8085:8085"
+    restart: on-failure
