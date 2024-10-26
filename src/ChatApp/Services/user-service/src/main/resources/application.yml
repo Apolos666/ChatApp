@@ -12,4 +12,5 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
-
+  banner:
+    location: classpath:sharingan-banner.txt

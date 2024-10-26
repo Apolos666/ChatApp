@@ -76,4 +76,5 @@ alter table files add constraint fk_room_id foreign key (room_id) references roo
 alter table refresh_tokens add constraint fk_user_id foreign key (user_id) references users(id);
 alter table messages add constraint fk_sender_id foreign key (sender_id) references users(id);
 alter table messages add constraint fk_room_id foreign key (room_id) references rooms(id);
-
+alter table message_status add constraint fk_message_id foreign key (message_id) references messages(id);
+alter table message_status add constraint fk_user_id foreign key (user_id) references users(id);

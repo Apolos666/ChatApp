@@ -13,8 +13,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageStatusId {
     @Column(name = "message_id")
-    Long messageId;
+    int messageId;
 
     @Column(name = "user_id")
-    Long userId;
+    int userId;
 }
