@@ -78,3 +78,11 @@ alter table messages add constraint fk_sender_id foreign key (sender_id) referen
 alter table messages add constraint fk_room_id foreign key (room_id) references rooms(id);
 alter table message_status add constraint fk_message_id foreign key (message_id) references messages(id);
 alter table message_status add constraint fk_user_id foreign key (user_id) references users(id);
+
+
+insert into roles(name) values ('ADMIN'), ('MODERATE USER'), ('NORMAL USER');
+
+INSERT INTO users(address, dob, email, is_active, name, password, phone_number, role_id)
+VALUES
+('Da nang', '1997-07-17','a0934805315@gmail.com',true, 'Admin1','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1),
+('TP HCM', '1990-07-17','phamtantudn1142003@gmail.com',true, 'Admin2','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1);

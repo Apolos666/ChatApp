@@ -3,6 +3,7 @@ package com.chatapp.userservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
@@ -25,6 +26,7 @@ public class Room {
     String name;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @CurrentTimestamp
     Timestamp createdAt;
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
