@@ -4,12 +4,15 @@ import {
   Users,
   Video,
   ImagePlus,
-  PlusCircle,
   ChevronDown,
   LogOut,
   Send,
-  Menu,
   Users2,
+  CircleUserRound,
+  UserRoundPlus,
+  MessageCircleMore,
+  FileVideo,
+  Pin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +41,6 @@ import {
   CardHeader,
   CardFooter,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const conversations = [
@@ -122,6 +124,18 @@ const conversations = [
     lastMessage: "Phạm Văn: Cập nhật mới",
     unread: false,
   },
+  {
+    id: 5,
+    name: "Nhóm DevOps",
+    lastMessage: "Phạm Văn: Cập nhật mới",
+    unread: false,
+  },
+  {
+    id: 5,
+    name: "Nhóm DevOps",
+    lastMessage: "Phạm Văn: Cập nhật mới",
+    unread: false,
+  },
 ];
 
 const messages = [
@@ -137,7 +151,7 @@ const messages = [
 
 export default function ChatInterface() {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <LeftSidebar />
       <MainChatArea />
       <RightSidebar />
@@ -147,18 +161,26 @@ export default function ChatInterface() {
 
 function LeftSidebar() {
   return (
-    <div className="sticky top-0 h-svh border-r">
-      <div className="p-4 border-b">
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-3 text-muted-foreground"
-            size={24}
-          />
-          <Input placeholder="Tìm kiếm" className="pl-12 h-12 text-lg" />
+    <div className="sticky top-0 h-svh border-r-3">
+      <div className="p-4">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search
+              className="text-gray-600 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={24}
+            />
+            <Input
+              placeholder="Tìm kiếm"
+              className="pl-12 h-12 text-lg !bg-gray-300 "
+            />
+          </div>
+          <Button variant="ghost" size="icon" className="h-12 w-12">
+            <UserRoundPlus className="!h-7 !w-7" />
+          </Button>
         </div>
       </div>
 
-      <div className="px-4 py-2">
+      <div className="px-4 pb-4 border-b-3">
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="w-full grid grid-cols-2 gap-2">
             <TabsTrigger
@@ -213,26 +235,51 @@ function LeftSidebar() {
 function MainChatArea() {
   return (
     <SidebarInset>
-      <div className="flex flex-col">
-        <div className="bg-background p-4 flex justify-between items-center border-b sticky top-0">
-          <div>
-            <h2 className="font-semibold text-lg">The family is to Love</h2>
-            <p className="text-sm text-muted-foreground">21 thành viên</p>
+      <div className="flex flex-col h-svh">
+        <div className="flex-none bg-background p-4 flex justify-between items-center border-b-3">
+          <div className="space-y-1">
+            <h2 className="font-semibold text-xl">The family is to Love</h2>
+            <span className="flex gap-2 items-center">
+              <CircleUserRound size={20} />
+              <p className="text-muted-foreground">21 thành viên</p>
+            </span>
           </div>
-          <div className="flex space-x-4 items-center">
-            <Button variant="ghost" size="icon">
-              <Users size={28} />
+          <div className="flex space-x-5 items-center">
+            <Button variant="ghost">
+              <UserRoundPlus className="!h-7 !w-7" size={28} />
             </Button>
-            <Button variant="ghost" size="icon">
-              <Search size={28} />
+            <Button variant="ghost">
+              <Search className="!h-7 !w-7" size={28} />
             </Button>
-            <Button variant="ghost" size="icon">
-              <Video size={28} />
+            <Button variant="ghost">
+              <Video className="!h-7 !w-7" size={28} />
             </Button>
-            <SidebarTrigger className="rotate-180 h-12 w-12" />
+            <SidebarTrigger className="rotate-180" />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+
+        <div className="flex-none bg-muted/30 border-b-3 p-3">
+          <div className="flex items-center gap-3">
+            <MessageCircleMore className="h-7 w-7 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm text-muted-foreground">
+                  Tin nhắn đã ghim
+                </span>
+                <span className="text-xs text-muted-foreground">21:00</span>
+              </div>
+              <p className="text-sm truncate">
+                Jonas: Hello, something something something something something
+                something
+              </p>
+            </div>
+            <Button variant="ghost" size="icon" className="flex-shrink-0">
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 messages-scrollbar bg-slate-300">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -260,13 +307,13 @@ function MainChatArea() {
             </div>
           ))}
         </div>
-        <div className="bg-background border-t sticky bottom-0">
-          <div className="flex space-x-2 mb-2 border-b p-2">
+        <div className="flex-none bg-background border-t-3">
+          <div className="flex space-x-2 mb-2 border-b-3 p-2">
             <Button variant="outline" size="icon" className="h-12 w-12">
-              <ImagePlus size={28} />
+              <ImagePlus className="!w-5 !h-5" size={28} />
             </Button>
             <Button variant="outline" size="icon" className="h-12 w-12">
-              <Video size={28} />
+              <FileVideo className="!w-5 !h-5" size={28} />
             </Button>
           </div>
           <div className="flex items-center space-x-2 p-2">
@@ -287,8 +334,8 @@ function MainChatArea() {
 function RightSidebar() {
   return (
     <Sidebar side="right">
-      <SidebarHeader className="border-b p-4 text-center">
-        <h2 className="font-semibold text-base">Thông tin nhóm</h2>
+      <SidebarHeader className="border-b-4 p-4 text-center">
+        <h2 className="font-semibold text-lg">Thông tin nhóm</h2>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -302,13 +349,13 @@ function RightSidebar() {
                 <span>Thêm thành viên</span>
               </Button>
               <Button variant="outline" className="w-full justify-start h-12">
-                <Video size={24} className="mr-2" />
+                <Pin size={24} className="mr-2" />
                 <span>Ghim hội thoại</span>
               </Button>
             </SidebarGroupContent>
           </div>
         </SidebarGroup>
-        <SidebarSeparator />
+        <SidebarSeparator className="h-1" />
         <SidebarGroup>
           <Collapsible>
             <CollapsibleTrigger className="flex w-full items-center justify-between">
@@ -322,7 +369,7 @@ function RightSidebar() {
             </CollapsibleContent>
           </Collapsible>
         </SidebarGroup>
-        <SidebarSeparator />
+        <SidebarSeparator className="h-1" />
         <SidebarGroup>
           <Collapsible>
             <CollapsibleTrigger className="flex w-full items-center justify-between">
@@ -343,7 +390,7 @@ function RightSidebar() {
             </CollapsibleContent>
           </Collapsible>
         </SidebarGroup>
-        <SidebarSeparator />
+        <SidebarSeparator className="h-1" />
         <SidebarGroup>
           <Collapsible>
             <CollapsibleTrigger className="flex w-full items-center justify-between">
