@@ -1,0 +1,13 @@
+- Get new access token from refresh token
+
+====DONE====
+- Get logged user's profile
+- Change user profile
+- Change password
+- Login (Return access + refresh token)
+- Register (Send email)
+- Active account by code
+- Reset password (Send email)
+- Reset password for user (Send email to user's email)
+
+
