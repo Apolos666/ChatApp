@@ -3,6 +3,7 @@ package com.chatapp.userservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CurrentTimestamp;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -26,6 +27,7 @@ public class Message {
     Timestamp pinnedAt;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @CurrentTimestamp
     Timestamp createdAt;
 
     @ManyToOne()
