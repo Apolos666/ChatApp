@@ -1,4 +1,5 @@
-﻿using File = ChatApp.Message.Models.File;
+﻿using Microsoft.EntityFrameworkCore;
+using File = ChatApp.Message.Models.File;
 
 namespace ChatApp.Message.Data;
 
