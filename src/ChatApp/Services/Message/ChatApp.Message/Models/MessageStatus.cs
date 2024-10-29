@@ -1,14 +1,17 @@
-﻿namespace ChatApp.Message.Models;
+﻿using System;
+using System.Collections.Generic;
 
-public sealed partial class MessageStatus
+namespace ChatApp.Message.Models;
+
+public partial class MessageStatus
 {
-    public int UserId { get; set; }
+    public string? Status { get; set; }
 
     public int MessageId { get; set; }
 
-    public string? Status { get; set; }
+    public int UserId { get; set; }
 
-    public Message Message { get; set; } = null!;
+    public virtual Message Message { get; set; } = null!;
 
-    public User User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

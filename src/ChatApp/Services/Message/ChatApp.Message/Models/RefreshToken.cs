@@ -1,14 +1,17 @@
-﻿namespace ChatApp.Message.Models;
+﻿using System;
+using System.Collections.Generic;
 
-public sealed partial class RefreshToken
+namespace ChatApp.Message.Models;
+
+public partial class RefreshToken
 {
     public int Id { get; set; }
 
-    public int UserId { get; set; }
+    public DateTime ExpiresAt { get; set; }
 
     public string Token { get; set; } = null!;
 
-    public DateTime ExpiresAt { get; set; }
+    public int? UserId { get; set; }
 
-    public User User { get; set; } = null!;
+    public virtual User? User { get; set; }
 }

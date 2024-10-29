@@ -1,20 +1,27 @@
-﻿namespace ChatApp.Message.Models;
+﻿using System;
+using System.Collections.Generic;
 
-public sealed partial class File
+namespace ChatApp.Message.Models;
+
+public partial class File
 {
     public int Id { get; set; }
+
+    public DateTime CreatedAt { get; set; }
 
     public string Name { get; set; } = null!;
 
     public string Url { get; set; } = null!;
 
-    public int OwnerId { get; set; }
+    public int? RoomId { get; set; }
 
-    public int RoomId { get; set; }
+    public int? OwnerId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public int? MessageId { get; set; }
 
-    public User Owner { get; set; } = null!;
+    public virtual Message? Message { get; set; }
 
-    public Room Room { get; set; } = null!;
+    public virtual User? Owner { get; set; }
+
+    public virtual Room? Room { get; set; }
 }
