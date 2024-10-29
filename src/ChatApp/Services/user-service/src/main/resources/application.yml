@@ -17,7 +17,7 @@ spring:
     location: classpath:cr7-banner.txt
   mail:
     username: a0934805315@gmail.com
-    password: gpsfueydblcrziem
+    password: keqtovevwyqkigwe
     host: smtp.gmail.com
     protocol: smtps
     properties:
