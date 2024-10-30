@@ -24,12 +24,22 @@ public class SendMessageCommandHandler(
         if (currentUser == null)
             throw new UnauthorizedAccessException();
 
+        var isUserInRoom = await context.RoomUsers
+            .AnyAsync(ru => ru.RoomId == request.RoomId &&
+                           ru.UserId == currentUser.Id,
+                     cancellationToken);
+
+        if (!isUserInRoom)
+        {
+            throw new ValidationException("User is not a member of this room");
+        }
+
         var message = new Message.Models.Message
         {
             Content = request.Content,
             RoomId = request.RoomId,
             SenderId = currentUser.Id,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow.ToLocalTime()
         };
 
         context.Messages.Add(message);

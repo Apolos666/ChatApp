@@ -1,5 +1,6 @@
 namespace ChatApp.Message.Features.Messages.Hubs;
 
+[Authorize]
 public class ChatHub(
     ILogger<ChatHub> logger,
     ApplicationDbContext dbContext)

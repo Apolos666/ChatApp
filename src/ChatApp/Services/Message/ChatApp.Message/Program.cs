@@ -48,13 +48,35 @@ builder.Services.AddHostedService<MessageSentEventHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithExposedHeaders("Content-Disposition");
+    });
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
 
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseCurrentUser();
 app.UseAuthorization();
+
+app.MapGet("/test", () =>
+{
+    return Results.Ok("Test");
+});
 
 app.MapCarter();
 

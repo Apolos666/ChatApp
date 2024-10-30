@@ -10,7 +10,6 @@ global using MediatR;
 global using Carter;
 global using Microsoft.AspNetCore.SignalR;
 global using ChatApp.Message.Features.Messages.Commands;
-global using ChatApp.Message.Features.Messages.Events;
 global using ChatApp.Message.Features.Messages.Hubs;
 global using ChatApp.Message.Features.Messages.Infrastructure;
 global using ChatApp.Message.Features.Messages.Interfaces;
@@ -20,6 +19,12 @@ global using System.Text.Json;
 global using Confluent.Kafka;
 global using Microsoft.AspNetCore.Diagnostics;
 global using ChatApp.Message.Infrastructure.ExceptionHandlers;
+global using Microsoft.AspNetCore.Authorization;
+global using Confluent.Kafka.Admin;
+global using ChatApp.Message.Features.Messages.Events.MessageSent;
+
+
+
 
 
 
