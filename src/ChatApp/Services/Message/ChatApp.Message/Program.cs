@@ -1,5 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection(JwtOptions.SectionName));
 
@@ -8,11 +11,13 @@ var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<J
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var secret = jwtSettings?.Secret ??
+            throw new InvalidOperationException("JWT Secret is not configured");
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Convert.FromBase64String(jwtSettings?.Secret ?? throw new InvalidOperationException("JWT Secret is not configured"))),
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(secret)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidIssuer = jwtSettings.Issuer,
@@ -20,6 +25,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
+
+        options.MapInboundClaims = false;
+        options.SaveToken = true;
     });
 
 builder.Services.AddAuthorization();
@@ -27,12 +35,22 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseAuthentication();
+app.UseCurrentUser();
 app.UseAuthorization();
 
 app.MapGet("/api/test", (HttpContext context) =>
 {
-    var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    return Results.Ok(new { message = $"Xin chào User {userId}! Bạn đã xác thực thành công." });
+    var currentUser = context.GetCurrentUser();
+    if (currentUser == null)
+    {
+        return Results.Unauthorized();
+    }
+
+    return Results.Ok(new
+    {
+        message = $"Xin chào {currentUser.Name}!",
+        user = currentUser
+    });
 })
 .RequireAuthorization();
 
