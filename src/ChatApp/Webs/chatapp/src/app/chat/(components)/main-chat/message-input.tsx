@@ -1,39 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { ImagePlus, FileVideo, Send } from "lucide-react";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  addMessage,
+  updateTempMessage,
+  setMessageFailed,
+} from "@/store/features/messageSlice";
+import type { MessageDto } from "@/types/message";
 import { Button } from "@/components/ui/button";
+import { FileVideo, ImagePlus, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { MessageDto, MessageStatus } from "@/types/message";
 
 export const MessageInput = () => {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const dispatch = useAppDispatch();
 
   const sendMessage = async () => {
     if (!message.trim() || isSending) return;
 
     const currentUserId = Number(localStorage.getItem("chat_user_id"));
     const content = message.trim();
+    const tempId = Date.now();
 
-    // Tạo message tạm thời để hiển thị ngay
     const tempMessage: MessageDto = {
-      id: Date.now(), // ID tạm thời
+      id: tempId,
       content,
       roomId: 1,
       senderId: currentUserId,
-      senderName: "You", // Có thể lấy từ localStorage nếu có
+      senderName: "You",
       createdAt: new Date().toISOString(),
-      status: "Sending" as MessageStatus,
+      status: "Sending",
     };
 
-    // Dispatch tempMessage để hiển thị ngay
-    window.dispatchEvent(
-      new CustomEvent("new-message", {
-        detail: tempMessage,
-      })
-    );
-
+    dispatch(addMessage(tempMessage));
     setIsSending(true);
     setMessage("");
 
@@ -53,29 +54,13 @@ export const MessageInput = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
+      if (!response.ok) throw new Error("Failed to send message");
 
       const result = await response.json();
-
-      // Update tempMessage với ID thực từ server
-      window.dispatchEvent(
-        new CustomEvent("update-message", {
-          detail: {
-            tempId: tempMessage.id,
-            realId: result.messageId,
-          },
-        })
-      );
+      dispatch(updateTempMessage({ tempId, realId: result.messageId }));
     } catch (error) {
       console.error("Error sending message:", error);
-      // Cập nhật status thành failed
-      window.dispatchEvent(
-        new CustomEvent("message-failed", {
-          detail: tempMessage.id,
-        })
-      );
+      dispatch(setMessageFailed(tempId));
     } finally {
       setIsSending(false);
     }

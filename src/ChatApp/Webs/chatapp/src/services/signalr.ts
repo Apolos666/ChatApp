@@ -38,12 +38,12 @@ export class SignalRService {
       const messageId = event.detail;
       const message = this.messageStore.get(messageId);
       if (message) {
-        const updatedMessage = { ...message, status: "failed" as const };
+        const updatedMessage = { ...message, status: "Failed" as const };
         this.messageStore.set(messageId, updatedMessage);
         this.statusUpdateHandlers.forEach(handler => {
           handler({
             messageId,
-            status: "failed"
+            status: "Failed"
           });
         });
       }
