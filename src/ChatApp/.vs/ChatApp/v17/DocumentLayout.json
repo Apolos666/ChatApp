@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Projects\\ChatApp\\src\\ChatApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}|Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj|c:\\projects\\chatapp\\src\\chatapp\\services\\message\\chatapp.message\\chatapp.message.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F934CD86-F7AF-4761-9DBB-FECFA6C4AA89}|Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj|solutionrelative:services\\message\\chatapp.message\\chatapp.message.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|c:\\projects\\chatapp\\src\\chatapp\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{CE940CEB-0428-4CDE-9294-0352537DDEE1}|docker-compose.dcproj|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
@@ -35,6 +39,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ChatApp.Message.csproj",
+              "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj",
+              "RelativeDocumentMoniker": "Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj",
+              "ToolTip": "C:\\Projects\\ChatApp\\src\\ChatApp\\Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj",
+              "RelativeToolTip": "Services\\Message\\ChatApp.Message\\ChatApp.Message.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-10-30T08:36:27.964Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "docker-compose.yml",
               "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\docker-compose.yml",
               "RelativeDocumentMoniker": "docker-compose.yml",
@@ -47,7 +64,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "docker-compose.dcproj",
               "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\docker-compose.dcproj",
               "RelativeDocumentMoniker": "docker-compose.dcproj",
@@ -55,11 +72,12 @@
               "RelativeToolTip": "docker-compose.dcproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-10-24T13:17:55.701Z"
+              "WhenOpened": "2024-10-24T13:17:55.701Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Projects\\ChatApp\\src\\ChatApp\\Services\\Message\\ChatApp.Message\\Dockerfile",
               "RelativeDocumentMoniker": "Services\\Message\\ChatApp.Message\\Dockerfile",
