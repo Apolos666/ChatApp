@@ -73,11 +73,6 @@ app.UseAuthentication();
 app.UseCurrentUser();
 app.UseAuthorization();
 
-app.MapGet("/test", () =>
-{
-    return Results.Ok("Test");
-});
-
 app.MapCarter();
 
 app.MapHub<ChatHub>("/chatHub");

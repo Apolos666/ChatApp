@@ -32,21 +32,32 @@ export const MessageList = () => {
     const signalR = SignalRService.getInstance();
 
     const messageHandler = (message: MessageDto) => {
+      console.log("Received message:", message);
       setMessages((prev) => {
+        console.log("Previous messages:", prev);
+
         // Kiểm tra xem tin nhắn đã tồn tại chưa
         const existingMessage = prev.find((m) => m.id === message.id);
+        console.log("Existing message:", existingMessage);
+
         if (existingMessage) {
+          console.log(
+            "Message exists, current status:",
+            existingMessage.status
+          );
           // Giữ nguyên status hiện tại nếu nó là "sent" hoặc "delivered" hoặc "seen"
-          return prev.map((m) =>
+          const updatedMessages = prev.map((m) =>
             m.id === message.id
               ? {
                   ...message,
-                  status: ["sent", "delivered", "seen"].includes(m.status)
+                  status: ["Sent", "Delivered", "Seen"].includes(m.status)
                     ? m.status
                     : message.status,
                 }
               : m
           );
+          console.log("Updated messages:", updatedMessages);
+          return updatedMessages;
         }
 
         // Tìm tin nhắn tạm thời (nếu có)
@@ -56,10 +67,11 @@ export const MessageList = () => {
             m.content === message.content &&
             m.senderId === message.senderId
         );
+        console.log("Temp message found:", tempMessage);
 
         if (tempMessage) {
-          // Cập nhật tin nhắn tạm thời với thông tin từ server
-          return prev
+          console.log("Updating temp message with real message");
+          const updatedMessages = prev
             .map((m) =>
               m.id === tempMessage.id
                 ? {
@@ -69,27 +81,34 @@ export const MessageList = () => {
                   }
                 : m
             )
-            .filter((m) => m.id !== message.id); // Loại bỏ tin nhắn trùng lặp
+            .filter((m) => m.id !== message.id);
+          console.log("Messages after temp update:", updatedMessages);
+          return updatedMessages;
         }
 
         // Nếu là tin nhắn mới từ người khác
         if (message.senderId !== currentUserId) {
+          console.log("New message from other user");
           return [...prev, message];
         }
 
+        console.log("No changes made to messages");
         return prev;
       });
     };
 
     const statusUpdateHandler = (update: MessageStatusUpdate) => {
-      console.log("Handling status update:", update);
-      setMessages((prev) =>
-        prev.map((message) =>
+      console.log("Status update received:", update);
+      setMessages((prev) => {
+        console.log("Previous messages before status update:", prev);
+        const updatedMessages = prev.map((message) =>
           message.id === update.messageId
             ? { ...message, status: update.status }
             : message
-        )
-      );
+        );
+        console.log("Messages after status update:", updatedMessages);
+        return updatedMessages;
+      });
     };
 
     const updateMessageHandler = ((
@@ -145,17 +164,18 @@ export const MessageList = () => {
 
   const getStatusIcon = (status: MessageStatus) => {
     switch (status) {
-      case "sending":
+      case "Sending":
         return <Loader2 className="h-3 w-3 animate-spin" />;
-      case "sent":
+      case "Sent":
         return <span className="text-xs">✓</span>;
-      case "delivered":
+      case "Delivered":
         return <span className="text-xs">✓✓</span>;
-      case "seen":
+      case "Seen":
         return <span className="text-xs text-blue-500">✓✓</span>;
-      case "failed":
+      case "Failed":
         return <span className="text-xs text-red-500">!</span>;
       default:
+        console.log("Unknown status:", status);
         return null;
     }
   };

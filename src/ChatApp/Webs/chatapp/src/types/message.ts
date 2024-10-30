@@ -1,4 +1,4 @@
-export type MessageStatus = "sending" | "sent" | "failed" | "delivered" | "seen";
+export type MessageStatus = "Sending" | "Sent" | "Failed" | "Delivered" | "Seen";
 
 export interface MessageDto {
   id: number;

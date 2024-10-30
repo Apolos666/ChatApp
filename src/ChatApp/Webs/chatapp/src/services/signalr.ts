@@ -1,4 +1,4 @@
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
 import type { MessageDto, MessageStatusUpdate } from "@/types/message";
 
 export class SignalRService {

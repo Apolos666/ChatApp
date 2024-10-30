@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ImagePlus, FileVideo, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { MessageDto } from "@/types/message";
+import type { MessageDto, MessageStatus } from "@/types/message";
 
 export const MessageInput = () => {
   const [message, setMessage] = useState("");
@@ -24,7 +24,7 @@ export const MessageInput = () => {
       senderId: currentUserId,
       senderName: "You", // Có thể lấy từ localStorage nếu có
       createdAt: new Date().toISOString(),
-      status: "sending",
+      status: "Sending" as MessageStatus,
     };
 
     // Dispatch tempMessage để hiển thị ngay
