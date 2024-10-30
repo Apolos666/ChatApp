@@ -1,23 +1,24 @@
-# Start with the official Golang image
-FROM golang:1.22-alpine3.19
-
-# Set the Current Working Directory inside the container
+FROM golang:alpine3.19  AS builder
 WORKDIR /app
 
-# Copy go mod and sum files
+# Sao chép tệp go.mod và go.sum để tải xuống các phụ thuộc
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
-COPY ./src/ . 
+# Sao chép mã nguồn vào hình ảnh
+COPY . .
 
-# Build the Go app
-RUN go build -o main .
+# Biên dịch ứng dụng
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./src/main.go
 
-# Expose port 8080 to the outside world
-EXPOSE 8085
+# Bước 2: Tạo hình ảnh nhỏ hơn để chạy ứng dụng
+FROM alpine:latest
 
-# Command to run the executable
+# Cài đặt các gói cần thiết
+RUN apk --no-cache add ca-certificates
+
+# Sao chép tệp nhị phân từ bước builder
+COPY --from=builder /app/main .
+
+# Thiết lập lệnh mặc định để chạy ứng dụng
 CMD ["./main"]
