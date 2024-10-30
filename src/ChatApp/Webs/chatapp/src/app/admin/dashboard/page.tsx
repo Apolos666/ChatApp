@@ -3,7 +3,7 @@ import { Users, Shield, MessageSquare } from "lucide-react";
 
 export default function DashboardPage() {
     return (
-        <div className="mx-auto max-w-7xl space-y-6">
+        <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
                 <StatCard
                     title="Total Users"
