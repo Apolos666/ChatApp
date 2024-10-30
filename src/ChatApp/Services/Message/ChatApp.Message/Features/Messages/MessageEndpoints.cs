@@ -14,23 +14,10 @@ public class MessageEndpoints : ICarterModule
             CancellationToken cancellationToken) =>
         {
             var result = await sender.Send(command, cancellationToken);
-            return Results.Ok(result);
+            return Results.Accepted(value: result);
         })
         .WithName("SendTextMessage")
-        .WithDescription("Send a text message to a room")
+        .WithDescription("Send a text message to a room and return message ID")
         .WithSummary("Send Text Message");
-
-        // messageGroup.MapPost("/send-with-attachments", async (
-        //     SendMessageCommand command,
-        //     IFormFileCollection files,
-        //     ISender sender,
-        //     CancellationToken cancellationToken) =>
-        // {
-        //     var result = await sender.Send(command, cancellationToken);
-        //     return Results.Ok(result);
-        // })
-        // .WithName("SendMessageWithAttachments")
-        // .WithDescription("Send a message with attachments to a room")
-        // .WithSummary("Send Message With Attachments");
     }
 }

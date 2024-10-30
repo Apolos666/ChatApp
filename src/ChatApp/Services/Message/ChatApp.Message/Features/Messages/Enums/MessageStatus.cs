@@ -4,5 +4,7 @@ public enum MessageStatus
 {
     Sending,
     Sent,
-    Failed
+    Failed,
+    Delivered,
+    Seen
 }

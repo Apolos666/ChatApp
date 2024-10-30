@@ -11,4 +11,11 @@ public record MessageDto
     public string Status { get; init; } = null!;
 }
 
-public record MessageResponse(MessageDto Message);
+public record SendMessageResponse(int MessageId);
+
+public record MessageStatusUpdateDto
+{
+    public int MessageId { get; init; }
+    public string Status { get; init; } = null!;
+    public string? Error { get; init; }
+}

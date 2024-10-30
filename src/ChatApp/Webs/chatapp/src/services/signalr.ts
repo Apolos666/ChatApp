@@ -1,10 +1,12 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import type { MessageDto } from "@/types/message";
+import type { MessageDto, MessageStatusUpdate } from "@/types/message";
 
 export class SignalRService {
   private static instance: SignalRService;
   private connection: HubConnection;
   private messageHandlers: ((message: MessageDto) => void)[] = [];
+  private statusUpdateHandlers: ((update: MessageStatusUpdate) => void)[] = [];
+  private messageStore: Map<number, MessageDto> = new Map();
 
   private constructor() {
     this.connection = new HubConnectionBuilder()
@@ -14,6 +16,38 @@ export class SignalRService {
       })
       .withAutomaticReconnect()
       .build();
+
+    // Lắng nghe các custom events từ MessageInput
+    window.addEventListener("new-message", ((event: CustomEvent<MessageDto>) => {
+      const message = event.detail;
+      this.messageStore.set(message.id, message);
+      this.messageHandlers.forEach(handler => handler(message));
+    }) as EventListener);
+
+    window.addEventListener("update-message", ((event: CustomEvent<{tempId: number, realId: number}>) => {
+      const { tempId, realId } = event.detail;
+      const message = this.messageStore.get(tempId);
+      if (message) {
+        const updatedMessage = { ...message, id: realId };
+        this.messageStore.delete(tempId);
+        this.messageStore.set(realId, updatedMessage);
+      }
+    }) as EventListener);
+
+    window.addEventListener("message-failed", ((event: CustomEvent<number>) => {
+      const messageId = event.detail;
+      const message = this.messageStore.get(messageId);
+      if (message) {
+        const updatedMessage = { ...message, status: "failed" as const };
+        this.messageStore.set(messageId, updatedMessage);
+        this.statusUpdateHandlers.forEach(handler => {
+          handler({
+            messageId,
+            status: "failed"
+          });
+        });
+      }
+    }) as EventListener);
   }
 
   public static getInstance(): SignalRService {
@@ -56,7 +90,6 @@ export class SignalRService {
   }
 
   public async leaveRoom(roomId: number): Promise<void> {
-    console.log("called leave room")
     try {
       await this.connection.invoke("LeaveRoom", roomId);
       console.log(`Left room ${roomId}`);
@@ -66,15 +99,39 @@ export class SignalRService {
     }
   }
 
+  public onReceiveMessage(handler: (message: MessageDto) => void): void {
+    if (!this.messageHandlers.includes(handler)) {
+      this.messageHandlers.push(handler);
+      this.connection.on("ReceiveMessage", (message: MessageDto) => {
+        const existingMessage = this.messageStore.get(message.id);
+        if (!existingMessage) {
+          this.messageStore.set(message.id, message);
+          handler(message);
+        } else if (existingMessage.status !== message.status) {
+          this.messageStore.set(message.id, message);
+          handler(message);
+        }
+      });
+    }
+  }
+
+  public onMessageStatusUpdated(handler: (update: MessageStatusUpdate) => void): void {
+    if (!this.statusUpdateHandlers.includes(handler)) {
+      this.statusUpdateHandlers.push(handler);
+      this.connection.on("MessageStatusUpdated", (update: MessageStatusUpdate) => {
+        console.log("Received status update:", update);
+        handler(update);
+      });
+    }
+  }
+
   public removeMessageHandler(handler: (message: MessageDto) => void): void {
     this.messageHandlers = this.messageHandlers.filter(h => h !== handler);
     this.connection.off("ReceiveMessage", handler);
   }
 
-  public onReceiveMessage(handler: (message: MessageDto) => void): void {
-    if (!this.messageHandlers.includes(handler)) {
-      this.messageHandlers.push(handler);
-      this.connection.on("ReceiveMessage", handler);
-    }
+  public removeStatusUpdateHandler(handler: (update: MessageStatusUpdate) => void): void {
+    this.statusUpdateHandlers = this.statusUpdateHandlers.filter(h => h !== handler);
+    this.connection.off("MessageStatusUpdated", handler);
   }
 } 

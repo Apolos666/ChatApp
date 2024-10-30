@@ -1,3 +1,5 @@
+export type MessageStatus = "sending" | "sent" | "failed" | "delivered" | "seen";
+
 export interface MessageDto {
   id: number;
   content: string;
@@ -5,5 +7,11 @@ export interface MessageDto {
   senderId: number;
   senderName: string;
   createdAt: string;
-  status: string;
+  status: MessageStatus;
+}
+
+export interface MessageStatusUpdate {
+  messageId: number;
+  status: MessageStatus;
+  error?: string;
 } 

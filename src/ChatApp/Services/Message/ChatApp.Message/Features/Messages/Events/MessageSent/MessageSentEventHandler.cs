@@ -1,4 +1,3 @@
-using MessageStatusModel = ChatApp.Message.Models.MessageStatus;
 using MessageStatusEnum = ChatApp.Message.Features.Messages.Enums.MessageStatus;
 
 namespace ChatApp.Message.Features.Messages.Events.MessageSent;
@@ -91,15 +90,29 @@ public class MessageSentEventHandler : BackgroundService
                     var existingMessage = await dbContext.MessageStatuses.FirstOrDefaultAsync(ms =>
                         ms.MessageId == message.Id && ms.UserId == message.SenderId, stoppingToken);
 
-                    if (existingMessage == null) throw new NotFoundException("Message not found");
+                    if (existingMessage == null)
+                    {
+                        await NotifyMessageStatus(message.Id, message.RoomId, "Failed", "Message not found");
+                        continue;
+                    }
 
-                    existingMessage.Status = MessageStatusEnum.Sent.ToString();
-                    await dbContext.SaveChangesAsync(stoppingToken);
-                    
-                    await _hubContext.Clients.Group(message.RoomId.ToString())
-                        .ReceiveMessage(message);
+                    try
+                    {
+                        existingMessage.Status = MessageStatusEnum.Sent.ToString();
+                        await dbContext.SaveChangesAsync(stoppingToken);
 
-                    _logger.LogInformation("Processed message: {MessageId}", message.Id);
+                        await _hubContext.Clients.Group(message.RoomId.ToString())
+                            .ReceiveMessage(message);
+
+                        await NotifyMessageStatus(message.Id, message.RoomId, MessageStatusEnum.Sent.ToString(), null);
+
+                        _logger.LogInformation("Processed message: {MessageId}", message.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error processing message {MessageId}", message.Id);
+                        await NotifyMessageStatus(message.Id, message.RoomId, MessageStatusEnum.Failed.ToString(), ex.Message);
+                    }
                 }
                 catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
                 {
@@ -128,5 +141,18 @@ public class MessageSentEventHandler : BackgroundService
                 _logger.LogError(ex, "Error closing consumer");
             }
         }
+    }
+
+    private async Task NotifyMessageStatus(int messageId, int roomId, string status, string? error)
+    {
+        var statusUpdate = new MessageStatusUpdateDto
+        {
+            MessageId = messageId,
+            Status = status,
+            Error = error
+        };
+
+        await _hubContext.Clients.Group(roomId.ToString())
+            .MessageStatusUpdated(statusUpdate);
     }
 }

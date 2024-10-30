@@ -3,7 +3,7 @@ using MessageStatusModel = ChatApp.Message.Models.MessageStatus;
 
 namespace ChatApp.Message.Features.Messages.Commands;
 
-public record SendMessageCommand : IRequest<MessageResponse>
+public record SendMessageCommand : IRequest<SendMessageResponse>
 {
     public required string Content { get; init; }
     public required int RoomId { get; init; }
@@ -14,9 +14,9 @@ public class SendMessageCommandHandler(
     IMessageProducer producer,
     IHttpContextAccessor httpContextAccessor,
     IOptions<KafkaOptions> kafkaOptions)
-    : IRequestHandler<SendMessageCommand, MessageResponse>
+    : IRequestHandler<SendMessageCommand, SendMessageResponse>
 {
-    public async Task<MessageResponse> Handle(
+    public async Task<SendMessageResponse> Handle(
         SendMessageCommand request,
         CancellationToken cancellationToken)
     {
@@ -67,6 +67,6 @@ public class SendMessageCommandHandler(
 
         await producer.ProduceAsync(kafkaOptions.Value.MessageTopic, messageDto, cancellationToken);
 
-        return new MessageResponse(messageDto);
+        return new SendMessageResponse(message.Id);
     }
 }
