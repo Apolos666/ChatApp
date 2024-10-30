@@ -26,6 +26,7 @@ public class MessageStatus {
     @JoinColumn(name = "message_id")
     Message message;
 
+
     @Column(name = "status", columnDefinition = "VARCHAR(255)")
     String status;
 }

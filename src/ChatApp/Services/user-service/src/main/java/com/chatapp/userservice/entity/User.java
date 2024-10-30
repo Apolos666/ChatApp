@@ -1,5 +1,6 @@
 package com.chatapp.userservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -58,6 +59,7 @@ public class User {
     Role role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Room> rooms = new ArrayList<>();
 
     @PreRemove

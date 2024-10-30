@@ -5,11 +5,16 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/chat_app?currentSchema=public
-    username: postgres
-    password: phamtantudn3
+    url: jdbc:mysql://localhost:3306/chat_app
+    username: root
+    password: dat03122003
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
 
