@@ -21,7 +21,7 @@ export function Header() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto border-b mb-8">
+        <div className="border-b mb-8">
             <div className="flex h-16 items-center px-4 justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">{getPageTitle(pathname)}</h1>
