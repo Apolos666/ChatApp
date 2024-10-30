@@ -32,28 +32,32 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+builder.Services.AddCarter();
+
+builder.Services.AddSignalR();
+
+builder.Services.Configure<KafkaOptions>(
+    builder.Configuration.GetSection(KafkaOptions.SectionName));
+
+builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
+builder.Services.AddHostedService<MessageSentEventHandler>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseCurrentUser();
 app.UseAuthorization();
 
-app.MapGet("/api/test", (HttpContext context) =>
-{
-    var currentUser = context.GetCurrentUser();
-    if (currentUser == null)
-    {
-        return Results.Unauthorized();
-    }
+app.MapCarter();
 
-    return Results.Ok(new
-    {
-        message = $"Xin chào {currentUser.Name}!",
-        user = currentUser
-    });
-})
-.RequireAuthorization();
-
-app.MapGet("/", () => "Hello World!");
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
