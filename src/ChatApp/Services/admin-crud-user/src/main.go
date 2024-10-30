@@ -1,18 +1,36 @@
 package main
 
 import (
-	"net/http"
+	"context"
+	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/Apolos666/ChatApp/src/api"
+	db "github.com/Apolos666/ChatApp/src/db/sqlc"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
-	router := gin.Default()
+	// LoadEnv()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// Route 1: Home
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the Home Page!"})
-	})
+	connPool, err := pgxpool.New(ctx, "postgresql://root:secret@db:5432/chatapp")
+	if err != nil {
+		log.Fatalf("cannot connect to db: %v", err)
+	}
+	defer connPool.Close()
+	if err := connPool.Ping(ctx); err != nil {
+		log.Fatalf("cannot ping db: %v", err)
+	}
 
-	router.Run(":8085")
+	server := api.NewServer(db.New(connPool))
+
+	server.Start(":8085")
 }
+
+// func LoadEnv() {
+// 	err := godotenv.Load("admincrud.env")
+// 	if err != nil {
+// 		log.Fatalf("Failed to load .env file: %v", err)
+// 	}
+// }
