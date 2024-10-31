@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByEmailWithoutActivation(String email);
 
     boolean existsByEmail(String email);
+
 }

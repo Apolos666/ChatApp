@@ -17,7 +17,7 @@ spring:
     location: classpath:cr7-banner.txt
   mail:
     username: a0934805315@gmail.com
-    password: gpsfueydblcrziem
+    password: keqtovevwyqkigwe
     host: smtp.gmail.com
     protocol: smtps
     properties:
@@ -45,6 +45,5 @@ yml:
   jwt-secrete-key: ZGZhNjcxNzAzN2Q2ZDJhZTM2MWQyY2E0NzEwMGM1NjNhYWNjN2FjOGVkYzU0MDFhNDJlMTk5NmE0OGM4OTVkZA==
   jwt-expiration-time: 172800000 # 48 hours
   refresh-tokenExpiration-time: 86400000 # 24 hours
-
 
 

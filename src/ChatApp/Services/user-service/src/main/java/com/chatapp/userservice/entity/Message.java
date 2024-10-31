@@ -7,6 +7,8 @@ import org.hibernate.annotations.CurrentTimestamp;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,4 +39,7 @@ public class Message {
     @ManyToOne()
     @JoinColumn(name = "sender_id")
     User user;
+
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
+    List<File> files = new ArrayList<>();
 }
