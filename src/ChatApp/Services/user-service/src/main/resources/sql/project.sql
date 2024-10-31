@@ -1,70 +1,70 @@
 create database chat_app;
 
 create table roles (
-    id serial primary key,
-    name varchar(255) not null
+                       id serial primary key,
+                       name varchar(255) not null
 );
 
 create table users (
-    id serial primary key,
-    name varchar(255) not null,
-    phone_number varchar(255) not null,
-    dob date not null,
-    address varchar(255),
-    email varchar(255) not null unique,
-    password varchar(255) not null,
-    activation_code varchar(255),
-    is_active boolean default false,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp,
-    role_id int
+                       id serial primary key,
+                       name varchar(255) not null,
+                       phone_number varchar(255) not null,
+                       dob date not null,
+                       address varchar(255),
+                       email varchar(255) not null unique,
+                       password varchar(255) not null,
+                       activation_code varchar(255),
+                       is_active boolean default false,
+                       created_at timestamp default current_timestamp,
+                       updated_at timestamp,
+                       role_id int
 );
 
 create table rooms(
-    id serial primary key,
-    name varchar(255) not null,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp,
-    creator_id int
+                      id serial primary key,
+                      name varchar(255) not null,
+                      created_at timestamp default current_timestamp,
+                      updated_at timestamp,
+                      creator_id int
 );
 
 create table room_users(
-    room_id int,
-    user_id int,
-    primary key (room_id, user_id)
+                           room_id int,
+                           user_id int,
+                           primary key (room_id, user_id)
 );
 
 create table files(
-    id serial primary key,
-    name varchar(255) not null,
-    url varchar(255) not null,
-    owner_id int,
-    room_id int,
-    message_id int,
-    created_at timestamp default current_timestamp
+                      id serial primary key,
+                      name varchar(255) not null,
+                      url varchar(255) not null,
+                      owner_id int,
+                      room_id int,
+                      message_id int,
+                      created_at timestamp default current_timestamp
 );
 
 create table refresh_tokens(
-    id serial primary key,
-    user_id int,
-    token varchar(255) not null,
-    expires_at timestamp not null
+                               id serial primary key,
+                               user_id int,
+                               token varchar(255) not null,
+                               expires_at timestamp not null
 );
 
 create table messages(
-    id serial primary key,
-    content text not null,
-    sender_id int,
-    room_id int,
-    pinned_at timestamp default current_timestamp,
-    created_at timestamp default current_timestamp
+                         id serial primary key,
+                         content text not null,
+                         sender_id int,
+                         room_id int,
+                         pinned_at timestamp default current_timestamp,
+                         created_at timestamp default current_timestamp
 );
 
 create table message_status(
-    user_id int,
-    message_id int,
-    status varchar(255),
-    primary key(user_id, message_id)
+                               user_id int,
+                               message_id int,
+                               status varchar(255),
+                               primary key(user_id, message_id)
 );
 
 alter table users add constraint fk_role_id foreign key (role_id) references roles(id);
@@ -85,5 +85,5 @@ insert into roles(name) values ('ADMIN'), ('MODERATE USER'), ('NORMAL USER');
 
 INSERT INTO users(address, dob, email, is_active, name, password, phone_number, role_id)
 VALUES
-('Da nang', '1997-07-17','a0934805315@gmail.com',true, 'Admin1','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1),
-('TP HCM', '1990-07-17','phamtantudn1142003@gmail.com',true, 'Admin2','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1);
+    ('Da nang', '1997-07-17','a0934805315@gmail.com',true, 'Admin1','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1),
+    ('TP HCM', '1990-07-17','phamtantudn1142003@gmail.com',true, 'Admin2','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1);
