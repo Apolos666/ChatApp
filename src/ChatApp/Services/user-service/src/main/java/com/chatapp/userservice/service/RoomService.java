@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface RoomService {
 
+    List<RoomDto> getAllRooms();
     List<RoomDto> getAllCreatedRoomByCreatorId(int userId);
     List<RoomDto> getAllRoomsByUserId(int userId);
     RoomDto createRoom(RoomCreationRequest request);

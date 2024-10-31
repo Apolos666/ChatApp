@@ -21,7 +21,16 @@ public class RoomController {
     private final RoomService roomService;
     private final UserService userService;
 
-    // Get all created room by creator id
+    // get all rooms (ADMIN)
+    @GetMapping("")
+    public ResponseEntity<List<RoomDto>> getAllRooms() {
+
+        List<RoomDto> rooms = roomService.getAllRooms();
+
+        return ResponseEntity.status(HttpStatus.OK).body(rooms);
+    }
+
+    // Get all created room by creator id (MODERATE USER)
     @GetMapping("/creator/{userId}")
     public ResponseEntity<List<RoomDto>> getAllCreatedRoomsByCreatorId(@PathVariable("userId") int userId) {
 
@@ -30,7 +39,7 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.OK).body(rooms);
     }
 
-    // Get all joined room by user id
+    // Get all joined room by user id (USER)
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<RoomDto>> getAllJoinedRoomsByUserId(@PathVariable("userId") int userId) {
 
@@ -52,16 +61,10 @@ public class RoomController {
     public ResponseEntity<RoomDto> addUserToRoom(
             @PathVariable("roomId") int roomId,
             @PathVariable("userId") int userId) {
-        try {
 
-            RoomDto updatedRoom = roomService.addUserToRoom(roomId, userId);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedRoom);
+        RoomDto updatedRoom = roomService.addUserToRoom(roomId, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedRoom);
 
-        } catch (RuntimeException e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-
-        }
     }
 
     @DeleteMapping("/{roomId}")

@@ -27,6 +27,15 @@ public class RoomServiceImpl implements RoomService {
     private final UserRepository userRepository;
 
     @Override
+    public List<RoomDto> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+
+        return rooms.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<RoomDto> getAllCreatedRoomByCreatorId(int userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException("User not found with given id: "+userId, HttpStatus.BAD_REQUEST));
@@ -81,7 +90,7 @@ public class RoomServiceImpl implements RoomService {
 
         // Check whether user is in room
         if (room.getUsers().contains(user)) {
-            throw new RuntimeException("User with given id: "+userId+" was in the room");
+            throw new ApiException("User with given id: "+userId+" was in the room", HttpStatus.BAD_REQUEST);
         }
 
         room.getUsers().add(user);
@@ -93,7 +102,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public String deleteRoom(int roomId) {
         roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new ApiException("Room not found", HttpStatus.BAD_REQUEST));
 
         roomRepository.deleteById(roomId);
 
