@@ -71,6 +71,7 @@ public class RoomServiceImpl implements RoomService {
         room.setName(roomName);
         room.setUser(creator);
         room.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        room.setUsers(List.of(creator));
 
         roomRepository.save(room);
 

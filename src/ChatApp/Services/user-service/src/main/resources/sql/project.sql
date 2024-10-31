@@ -85,5 +85,5 @@ insert into roles(name) values ('ADMIN'), ('MODERATE USER'), ('NORMAL USER');
 
 INSERT INTO users(address, dob, email, is_active, name, password, phone_number, role_id)
 VALUES
-    ('Da nang', '1997-07-17','a0934805315@gmail.com',true, 'Admin1','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1),
-    ('TP HCM', '1990-07-17','phamtantudn1142003@gmail.com',true, 'Admin2','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1);
+('Da nang', '1997-07-17','a0934805315@gmail.com',true, 'Admin1','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1),
+('TP HCM', '1990-07-17','phamtantudn1142003@gmail.com',true, 'Admin2','$2a$12$LAOGHbUz4nVJ2urboCvdjeg42ptHnj33wQIznyZ6sKh8il4z0jQJK','0901966430',1);

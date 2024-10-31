@@ -2,12 +2,14 @@ package com.chatapp.userservice.controller.moderate;
 
 import com.chatapp.userservice.dto.room.RoomDto;
 import com.chatapp.userservice.dto.room.request.RoomCreationRequest;
+import com.chatapp.userservice.security.CustomizedUserDetails;
 import com.chatapp.userservice.service.RoomService;
 import com.chatapp.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
@@ -21,35 +23,29 @@ public class RoomController {
     // get all rooms (ADMIN)
     @GetMapping("")
     public ResponseEntity<List<RoomDto>> getAllRooms() {
-
         List<RoomDto> rooms = roomService.getAllRooms();
-
         return ResponseEntity.status(HttpStatus.OK).body(rooms);
     }
 
     // Get all created room by creator id (MODERATE USER)
-    @GetMapping("/creator/{userId}")
-    public ResponseEntity<List<RoomDto>> getAllCreatedRoomsByCreatorId(@PathVariable("userId") int userId) {
-
-        List<RoomDto> rooms = roomService.getAllCreatedRoomByCreatorId(userId);
-
+    @GetMapping("/creator")
+    public ResponseEntity<List<RoomDto>> getAllCreatedRoomsByCreatorId(@AuthenticationPrincipal CustomizedUserDetails userDetails) {
+        List<RoomDto> rooms = roomService.getAllCreatedRoomByCreatorId(userDetails.getId());
         return ResponseEntity.status(HttpStatus.OK).body(rooms);
     }
 
     // Get all joined room by user id (USER)
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<RoomDto>> getAllJoinedRoomsByUserId(@PathVariable("userId") int userId) {
-
-        List<RoomDto> rooms = roomService.getAllRoomsByUserId(userId);
-
+    @GetMapping("/user")
+    public ResponseEntity<List<RoomDto>> getAllJoinedRoomsByUserId(@AuthenticationPrincipal CustomizedUserDetails userDetails) {
+        List<RoomDto> rooms = roomService.getAllRoomsByUserId(userDetails.getId());
         return ResponseEntity.status(HttpStatus.OK).body(rooms);
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<RoomDto> createRoom(@RequestBody RoomCreationRequest request) {
-//        // Get authenticated User
-//        String email = authentication.getName();
-
+    public ResponseEntity<RoomDto> createRoom(
+            @AuthenticationPrincipal CustomizedUserDetails userDetails,
+            @RequestBody RoomCreationRequest request) {
+        request.setCreatorId(userDetails.getId());
         RoomDto roomDto = roomService.createRoom(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(roomDto);
     }
@@ -58,18 +54,14 @@ public class RoomController {
     public ResponseEntity<RoomDto> addUserToRoom(
             @PathVariable("roomId") int roomId,
             @PathVariable("userId") int userId) {
-
         RoomDto updatedRoom = roomService.addUserToRoom(roomId, userId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedRoom);
-
     }
 
     @DeleteMapping("/{roomId}")
     public ResponseEntity<?> deleteRoom(
             @PathVariable("roomId") int roomId) {
-
         String result = roomService.deleteRoom(roomId);
-
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
     
@@ -77,10 +69,7 @@ public class RoomController {
     public ResponseEntity<?> removeUserFromRoom(
             @PathVariable("roomId") int roomId,
             @PathVariable("userId") int userId) {
-
         String result = roomService.removeUserFromRoom(roomId, userId);
-
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
 }
