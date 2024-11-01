@@ -1,3 +1,5 @@
+"use client";
+
 import { UsersTable } from "@/components/admin/users/users-table";
 import { UsersToolbar } from "@/components/admin/users/users-toolbar";
 

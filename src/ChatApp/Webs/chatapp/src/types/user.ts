@@ -6,6 +6,8 @@ export interface UserConnectionDto {
 } 
 export interface User {
     id: string;
+    avatar: string | null;
+    gender: "Male" | "Female" | "Other";
     name: string;
     email: string;
     role: "User" | "Moderator" | "Admin";
