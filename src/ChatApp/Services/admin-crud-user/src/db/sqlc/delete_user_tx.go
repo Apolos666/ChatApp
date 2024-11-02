@@ -19,6 +19,24 @@ func (r *Repo) DeleteUserTx(ctx context.Context, userID int32) error {
 		}
 	}()
 	q := r.WithTx(tx)
+	if err := q.SetCreatorIDNullInRoom(ctx, userID); err != nil {
+		return err
+	}
+	if err := q.SetOwnerIDNullInFiles(ctx, userID); err != nil {
+		return err
+	}
+	if err := q.SetSenderIDNullInMess(ctx, userID); err != nil {
+		return err
+	}
+	if err := q.DeleteRoomUserByUserId(ctx, userID); err != nil {
+		return err
+	}
+	if err := q.DeleteMessStatusUser(ctx, userID); err != nil {
+		return err
+	}
+	if err := q.DeleteRefrTokenByUserId(ctx, userID); err != nil {
+		return err
+	}
 	if err := q.DeleteUser(ctx, userID); err != nil {
 		return err
 	}

@@ -19,7 +19,6 @@ type createUserRequest struct {
 	Address     pgtype.Text `json:"address" binding:"required"`
 	Email       string      `json:"email" binding:"required"`
 	Password    string      `json:"password" binding:"required"`
-	IsActive    pgtype.Bool `json:"is_active"`
 	RoleID      int32       `json:"role_id" binding:"required"`
 }
 
@@ -34,6 +33,14 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 
 	}
+	if err := util.VerifyEmail(req.Email); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if err := util.ValidatePassword(req.Password); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 	user, err := server.r.CreateUser(ctx, db.CreateUserParams{
 		Name:           req.Name,
 		PhoneNumber:    req.PhoneNumber,
@@ -42,7 +49,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		Email:          req.Email,
 		Password:       util.HashingPassword(req.Password),
 		ActivationCode: pgtype.Text{String: ""},
-		IsActive:       req.IsActive,
+		IsActive:       pgtype.Bool{Bool: true, Valid: true},
 		RoleID:         req.RoleID,
 	})
 	if err != nil {
@@ -104,6 +111,12 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		userUsedThisEmail, _ := server.r.GetUserByEmail(ctx, req.Email)
 		if userUsedThisEmail.ID != 0 && userUsedThisEmail.ID != req.ID {
 			ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email is already used")))
+			return
+		}
+	}
+	if req.Email != "" {
+		if err := util.VerifyEmail(req.Email); err != nil {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
 			return
 		}
 	}

@@ -67,14 +67,14 @@ create table message_status(
     primary key(user_id, message_id)
 );
 
-alter table users add constraint fk_role_id foreign key (role_id) references roles(id) ON DELETE CASCADE;
-alter table rooms add constraint fk_creator_id foreign key (creator_id) references users(id) ON DELETE CASCADE;
-alter table room_users add constraint fk_room_id foreign key (room_id) references rooms(id) ON DELETE CASCADE;
-alter table room_users add constraint fk_user_id foreign key (user_id) references users(id) ON DELETE CASCADE;
-alter table files add constraint fk_owner_id foreign key (owner_id) references users(id) ON DELETE CASCADE;
-alter table files add constraint fk_room_id foreign key (room_id) references rooms(id) ON DELETE CASCADE;
-alter table refresh_tokens add constraint fk_user_id foreign key (user_id) references users(id) ON DELETE CASCADE;
-alter table messages add constraint fk_sender_id foreign key (sender_id) references users(id) ON DELETE CASCADE;
-alter table messages add constraint fk_room_id foreign key (room_id) references rooms(id) ON DELETE CASCADE;
-alter table message_status add constraint fk_message_id foreign key (message_id) references messages(id) ON DELETE CASCADE;
-alter table message_status add constraint fk_user_id foreign key (user_id) references users(id) ON DELETE CASCADE;
+alter table users add constraint fk_role_id foreign key (role_id) references roles(id) ;
+alter table rooms add constraint fk_creator_id foreign key (creator_id) references users(id) ;
+alter table room_users add constraint fk_room_id foreign key (room_id) references rooms(id) ;
+alter table room_users add constraint fk_user_id foreign key (user_id) references users(id) ;
+alter table files add constraint fk_owner_id foreign key (owner_id) references users(id) ;
+alter table files add constraint fk_room_id foreign key (room_id) references rooms(id) ;
+alter table refresh_tokens add constraint fk_user_id foreign key (user_id) references users(id) ;
+alter table messages add constraint fk_sender_id foreign key (sender_id) references users(id) ;
+alter table messages add constraint fk_room_id foreign key (room_id) references rooms(id) ;
+alter table message_status add constraint fk_message_id foreign key (message_id) references messages(id) ;
+alter table message_status add constraint fk_user_id foreign key (user_id) references users(id) ;

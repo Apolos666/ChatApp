@@ -10,10 +10,18 @@ import (
 
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteMessStatusUser(ctx context.Context, userID int32) error
+	DeleteRefrTokenByUserId(ctx context.Context, userID int32) error
+	DeleteRoomUserByUserId(ctx context.Context, userID int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListUsers(ctx context.Context) ([]User, error)
+	SetCreatorIDNullInRoom(ctx context.Context, creatorID int32) error
+	SetOwnerIDNullInFiles(ctx context.Context, ownerID int32) error
+	SetSenderIDNullInMess(ctx context.Context, senderID int32) error
+	SetUserIDNullInRoomUser(ctx context.Context, userID int32) error
+	UpdateMessStatusUser(ctx context.Context, userID int32) error
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
