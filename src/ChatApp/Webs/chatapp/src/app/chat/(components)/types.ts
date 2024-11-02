@@ -6,10 +6,3 @@ export interface Conversation {
   avatar?: string;
   selected?: boolean;
 }
-
-export interface Message {
-  id: number;
-  sender: string;
-  content: string;
-  time: string;
-} 

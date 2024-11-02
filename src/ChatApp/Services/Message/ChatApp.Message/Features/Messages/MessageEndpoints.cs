@@ -6,18 +6,19 @@ public class MessageEndpoints : ICarterModule
     {
         var messageGroup = app.MapGroup("/api/messages")
             .RequireAuthorization()
-            .WithTags("Messages");
+            .WithTags("Messages")
+            .DisableAntiforgery();
 
-        messageGroup.MapPost("/send-text", async (
-            SendMessageCommand command,
+        messageGroup.MapPost("/send", async (
+            [FromForm] SendMessageCommand command,
             ISender sender,
             CancellationToken cancellationToken) =>
         {
             var result = await sender.Send(command, cancellationToken);
             return Results.Accepted(value: result);
         })
-        .WithName("SendTextMessage")
-        .WithDescription("Send a text message to a room and return message ID")
-        .WithSummary("Send Text Message");
+        .WithName("SendMessage")
+        .WithDescription("Send a message with optional text content, images and videos to a room")
+        .WithSummary("Send Message");
     }
 }

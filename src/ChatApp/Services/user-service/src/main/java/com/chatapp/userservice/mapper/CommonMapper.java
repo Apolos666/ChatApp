@@ -10,11 +10,11 @@ public class CommonMapper {
 
     private ModelMapper modelMapper;
 
-    public <E,D> E convertDtoToEntity(D dto, Class<E> eClass){
+    public <E, D> E convertDtoToEntity(D dto, Class<E> eClass) {
         return modelMapper.map(dto, eClass);
     }
 
-    public <E,D> D convertEntityToDto(E entity, Class<D> dClass){
+    public <E, D> D convertEntityToDto(E entity, Class<D> dClass) {
         return modelMapper.map(entity, dClass);
     }
 

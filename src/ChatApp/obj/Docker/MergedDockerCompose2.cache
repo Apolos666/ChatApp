@@ -1,0 +1,85 @@
+name: dockercompose2243055491643105108
+services:
+  admin-crud-user:
+    build:
+      context: C:\Projects\ChatApp\src\ChatApp\Services\admin-crud-user
+      dockerfile: admin.crud.user.Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+        required: true
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8085
+        published: "8085"
+        protocol: tcp
+    restart: on-failure
+  admin-service:
+    container_name: admin-service
+    image: tumuaxuan/admin-service:s1
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "8080"
+        protocol: tcp
+    restart: on-failure
+  chatapp.message:
+    build:
+      context: C:\Projects\ChatApp\src\ChatApp
+      dockerfile: Services/Message/ChatApp.Message/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ASPNETCORE_HTTPS_PORTS: "8081"
+    image: chatappmessage
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 8080
+        protocol: tcp
+      - mode: ingress
+        target: 8081
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: C:\Users\quang\AppData\Roaming/Microsoft/UserSecrets
+        target: /home/app/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\quang\AppData\Roaming/ASP.NET/Https
+        target: /home/app/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  db:
+    container_name: db
+    environment:
+      POSTGRES_DB: chatapp
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: root
+    image: postgres:alpine3.20
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 5432
+        published: "5432"
+        protocol: tcp
+    volumes:
+      - type: volume
+        source: db-data
+        target: /var/lib/postgresql/data
+        volume: {}
+networks:
+  default:
+    name: dockercompose2243055491643105108_default
+volumes:
+  db-data:
+    name: dockercompose2243055491643105108_db-data
