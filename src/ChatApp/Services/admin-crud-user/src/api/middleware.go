@@ -39,10 +39,6 @@ func DeserializeAdmin() gin.HandlerFunc {
 		}
 		claims, ok := tokenClaims.Claims.(jwt.MapClaims)
 		if ok && tokenClaims.Valid {
-			// if int64(claims["exp"].(float64)) < time.Now().Unix() {
-			// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
-			// 	return
-			// }
 			if authorities, ok := claims["Authorities"].([]interface{}); ok {
 				for _, auth := range authorities {
 					if authority, ok := auth.(map[string]interface{}); ok {
@@ -56,7 +52,7 @@ func DeserializeAdmin() gin.HandlerFunc {
 			}
 		}
 
-		go ctx.Set("email", claims["sub"].(string))
+		ctx.Set("email", claims["sub"].(string))
 		ctx.Next()
 	}
 }

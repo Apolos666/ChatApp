@@ -6,12 +6,12 @@ import (
 )
 
 type Server struct {
-	q      *db.Queries
+	r      *db.Repo
 	router *gin.Engine
 }
 
-func NewServer(q *db.Queries) *Server {
-	server := &Server{q: q}
+func NewServer(r *db.Repo) *Server {
+	server := &Server{r: r}
 	server.router = gin.Default()
 	authRoutes := server.router.Group("/admin/manager/").Use(DeserializeAdmin())
 	authRoutes.POST("/user", server.createUser)
@@ -19,7 +19,7 @@ func NewServer(q *db.Queries) *Server {
 	authRoutes.GET("/users", server.getListUsers)
 	authRoutes.GET("/myself", server.getMyself)
 	authRoutes.PUT("/user", server.updateUser)
-	authRoutes.DELETE("/:id", server.deleteUser)
+	authRoutes.DELETE("/user/:id", server.deleteUser)
 
 	return server
 }

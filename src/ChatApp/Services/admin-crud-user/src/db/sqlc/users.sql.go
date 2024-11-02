@@ -99,7 +99,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id FROM users
-WHERE email = $1 LIMIT 1
+WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -167,26 +167,22 @@ UPDATE users SET
   dob = COALESCE($4, dob),
   address = COALESCE($5, address),
   email = COALESCE($6, email),
-  password = COALESCE($7, password),
-  activation_code = COALESCE($8, activation_code),
-  is_active = COALESCE($9, is_active),
+  is_active = COALESCE($7, is_active),
   updated_at = current_timestamp,
-  role_id = COALESCE($10, role_id)
+  role_id = COALESCE($8, role_id)
 WHERE id = $1
 RETURNING id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id
 `
 
 type UpdateUserParams struct {
-	ID             int32       `json:"id"`
-	Name           string      `json:"name"`
-	PhoneNumber    string      `json:"phone_number"`
-	Dob            pgtype.Date `json:"dob"`
-	Address        pgtype.Text `json:"address"`
-	Email          string      `json:"email"`
-	Password       string      `json:"password"`
-	ActivationCode pgtype.Text `json:"activation_code"`
-	IsActive       pgtype.Bool `json:"is_active"`
-	RoleID         int32       `json:"role_id"`
+	ID          int32       `json:"id"`
+	Name        string      `json:"name"`
+	PhoneNumber string      `json:"phone_number"`
+	Dob         pgtype.Date `json:"dob"`
+	Address     pgtype.Text `json:"address"`
+	Email       string      `json:"email"`
+	IsActive    pgtype.Bool `json:"is_active"`
+	RoleID      int32       `json:"role_id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -197,8 +193,6 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Dob,
 		arg.Address,
 		arg.Email,
-		arg.Password,
-		arg.ActivationCode,
 		arg.IsActive,
 		arg.RoleID,
 	)
