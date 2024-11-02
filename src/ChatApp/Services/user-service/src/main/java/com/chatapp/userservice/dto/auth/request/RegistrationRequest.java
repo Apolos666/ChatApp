@@ -1,6 +1,7 @@
 package com.chatapp.userservice.dto.auth.request;
 
-import com.chatapp.userservice.validator.User.DobConstraint;
+import com.chatapp.userservice.validator.user.DobConstraint;
+import com.chatapp.userservice.validator.password.PasswordConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,6 +44,7 @@ public class RegistrationRequest {
 
     @NotBlank(message = "Password must be not blank or null")
     @NotNull(message = "Password must be not null")
-    @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
+    @Size(min = 8, max = 16, message = "Password must be between 8 and 16 characters")
+    @PasswordConstraint
     String password;
 }

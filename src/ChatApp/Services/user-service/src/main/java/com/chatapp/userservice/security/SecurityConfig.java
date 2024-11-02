@@ -27,7 +27,8 @@ public class SecurityConfig {
                                         "/api/auth/login",
                                         "/api/auth/registration",
                                         "/api/auth/activation",
-                                        "/api/auth/reset"
+                                        "/api/auth/reset",
+                                        "/api/auth/token"
                                 ).permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers(

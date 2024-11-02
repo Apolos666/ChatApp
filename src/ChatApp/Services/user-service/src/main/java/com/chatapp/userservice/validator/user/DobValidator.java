@@ -1,4 +1,4 @@
-package com.chatapp.userservice.validator.User;
+package com.chatapp.userservice.validator.user;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
