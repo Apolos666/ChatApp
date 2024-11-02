@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 
 	db "github.com/Apolos666/ChatApp/src/db/sqlc"
@@ -107,31 +108,64 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+	userNeedUpdate, err := server.r.GetUser(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, errorResponse(errors.New("user not found")))
+		return
+	}
+
 	if req.Email != "" {
 		userUsedThisEmail, _ := server.r.GetUserByEmail(ctx, req.Email)
 		if userUsedThisEmail.ID != 0 && userUsedThisEmail.ID != req.ID {
 			ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email is already used")))
 			return
 		}
-	}
-	if req.Email != "" {
 		if err := util.VerifyEmail(req.Email); err != nil {
 			ctx.JSON(http.StatusBadRequest, errorResponse(err))
 			return
 		}
 	}
-	user, err := server.r.UpdateUserTx(ctx, db.UpdateUserParams{
-		ID:          req.ID,
-		Name:        req.Name,
-		PhoneNumber: req.PhoneNumber,
-		Dob:         req.Dob,
-		Address:     req.Address,
-		Email:       req.Email,
-		IsActive:    req.IsActive,
-		RoleID:      req.RoleID,
-	})
+	var updateUserParam db.UpdateUserParams
+	updateUserParam.ID = req.ID
+	if req.Name != "" && req.Name != userNeedUpdate.Name {
+		updateUserParam.Name = req.Name
+	} else {
+		updateUserParam.Name = userNeedUpdate.Name
+	}
+	if req.PhoneNumber != "" && req.PhoneNumber != userNeedUpdate.PhoneNumber {
+		updateUserParam.PhoneNumber = req.PhoneNumber
+	} else {
+		updateUserParam.PhoneNumber = userNeedUpdate.PhoneNumber
+	}
+	if req.Dob.Valid && util.IsEqualPgDate(req.Dob, userNeedUpdate.Dob) {
+		updateUserParam.Dob = req.Dob
+	} else {
+		updateUserParam.Dob = userNeedUpdate.Dob
+	}
+	if req.Address.Valid && util.IsEqualPgText(req.Address, userNeedUpdate.Address) {
+		updateUserParam.Address = req.Address
+	} else {
+		updateUserParam.Address = userNeedUpdate.Address
+	}
+	if req.Email != "" && req.Email != userNeedUpdate.Email {
+		updateUserParam.Email = req.Email
+	} else {
+		updateUserParam.Email = userNeedUpdate.Email
+	}
+	if req.IsActive.Valid && util.IsEqualPgBool(req.IsActive, userNeedUpdate.IsActive) {
+		updateUserParam.IsActive = req.IsActive
+	} else {
+		updateUserParam.IsActive = userNeedUpdate.IsActive
+	}
+	if req.RoleID != 0 && req.RoleID != userNeedUpdate.RoleID {
+		updateUserParam.RoleID = req.RoleID
+	} else {
+		updateUserParam.RoleID = userNeedUpdate.RoleID
+	}
+	fmt.Println(updateUserParam)
+	user, err := server.r.UpdateUserTx(ctx, updateUserParam)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(errors.New(" failed to update user")))
 		return
 	}
 	ctx.JSON(http.StatusOK, user)

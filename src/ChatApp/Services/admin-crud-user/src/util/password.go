@@ -37,5 +37,16 @@ func ValidatePassword(password string) error {
 		return errors.New("password must contain at least one digit")
 	}
 
+	// Check for at least one uppercase letter
+	hasUpperCase := regexp.MustCompile(`[A-Z]`).MatchString(password)
+	if !hasUpperCase {
+		return errors.New("password must contain at least one uppercase letter")
+	}
+
+	// Check for at least one kind of special character
+	hasSpecial := regexp.MustCompile(`[!@#$%^&*()_+{}|:<>?]`).MatchString(password)
+	if !hasSpecial {
+		return errors.New("password must contain at least one special character")
+	}
 	return nil
 }
