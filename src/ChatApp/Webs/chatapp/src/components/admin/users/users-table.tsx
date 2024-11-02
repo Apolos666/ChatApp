@@ -1,245 +1,53 @@
 "use client";
 
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    getPaginationRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Copy,
-    MoreHorizontal,
-    Pencil,
-    Trash2,
-    User,
-    ArrowUpDown,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, getFilteredRowModel, SortingState, ColumnFiltersState, flexRender, OnChangeFn, VisibilityState } from "@tanstack/react-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { User as UserType } from "@/types";
 import { UserModal } from "./user-modal";
 import { mockUsers } from "@/mocks/mockUsers";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UsersToolbar } from "./users-toolbar";
+import { getColumns } from "./table/columns";
+import { PageSizeSelector } from "./page-size-selector";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { useToast } from "@/hooks/use-toast";
 
 export function UsersTable() {
     const { toast } = useToast();
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [pageSize, setPageSize] = useState(5);
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+        name: true,
+        email: true,
+        phone_number: false,
+        role: true,
+        status: true,
+        created_at: false,
+    });
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
-
-    const columns: ColumnDef<UserType>[] = [
-        {
-            id: "select",
-            header: ({ table }) => (
-                <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
-                    }
-                    onCheckedChange={(value) =>
-                        table.toggleAllPageRowsSelected(!!value)
-                    }
-                    aria-label="Select all"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                />
-            ),
-            enableSorting: false,
-        },
-        {
-            accessorKey: "name",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            column.toggleSorting(column.getIsSorted() === "asc")
-                        }
-                    >
-                        Name
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const user = row.original;
-                return (
-                    <div className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage
-                                src={user.avatar || ""}
-                                alt={user.name}
-                                className="object-cover"
-                            />
-                            <AvatarFallback>
-                                {user.name
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")
-                                    .toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-medium">{user.name}</span>
-                    </div>
-                );
-            },
-        },
-        {
-            accessorKey: "email",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            column.toggleSorting(column.getIsSorted() === "asc")
-                        }
-                    >
-                        Email
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-        },
-        {
-            accessorKey: "role",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            column.toggleSorting(column.getIsSorted() === "asc")
-                        }
-                    >
-                        Role
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-        },
-        {
-            accessorKey: "status",
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() =>
-                            column.toggleSorting(column.getIsSorted() === "asc")
-                        }
-                    >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const status = row.getValue("status") as string;
-                return (
-                    <Badge
-                        variant={status === "active" ? "success" : "secondary"}
-                    >
-                        {status}
-                    </Badge>
-                );
-            },
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const user = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    navigator.clipboard.writeText(user.id);
-                                    console.log(user.id);
-                                    toast({
-                                        title: "Copied ID",
-                                        description:
-                                            "User ID has been copied to clipboard.",
-                                    });
-                                }}
-                            >
-                                <Copy className="mr-2 h-4 w-4" />
-                                Copy ID
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => setSelectedUser(user)}
-                            >
-                                <User className="mr-2 h-4 w-4" />
-                                View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedUser(user);
-                                    setIsEditMode(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const table = useReactTable({
         data: mockUsers,
-        columns,
+        columns: getColumns({
+            setSelectedUser,
+            setIsEditMode,
+        }),
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onRowSelectionChange: setRowSelection,
+        onColumnVisibilityChange: setColumnVisibility as OnChangeFn<VisibilityState>,
         state: {
             sorting,
             rowSelection,
+            columnFilters,
+            columnVisibility,
         },
         initialState: {
             pagination: {
@@ -249,34 +57,23 @@ export function UsersTable() {
     });
 
     const handleSave = (updatedUser: UserType) => {
-        // Handle the user update here
         console.log("Updated user:", updatedUser);
-        // Update your local state/refresh table as needed
+        setIsEditMode(false);
+        setSelectedUser(updatedUser);
+        toast({
+            title: "User updated",
+            description: "User has been updated successfully.",
+        });
     };
 
     return (
         <>
-            <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                Rows per page:
-                <Select
-                    value={table.getState().pagination.pageSize.toString()}
-                    onValueChange={(value) => {
-                        table.setPageSize(Number(value));
-                        setPageSize(Number(value));
-                    }}
-                >
-                    <SelectTrigger className="h-8 w-[70px]">
-                        <SelectValue placeholder={table.getState().pagination.pageSize} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {[5, 10, 20].map((pageSize) => (
-                            <SelectItem key={pageSize} value={pageSize.toString()}>
-                                {pageSize}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </span>
+            <UsersToolbar 
+                table={table}
+                columnVisibility={columnVisibility}
+                setColumnVisibility={setColumnVisibility}
+            />
+            <PageSizeSelector table={table} onPageSizeChange={setPageSize} />
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -318,7 +115,7 @@ export function UsersTable() {
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={columns.length}
+                                    colSpan={table.getHeaderGroups()[0].headers.length}
                                     className="h-24 text-center"
                                 >
                                     No results.
@@ -327,10 +124,8 @@ export function UsersTable() {
                         )}
                     </TableBody>
                 </Table>
-                <div className="border-t p-4">
-                    <DataTablePagination table={table} />
-                </div>
             </div>
+            <DataTablePagination table={table} />
             <UserModal
                 user={selectedUser}
                 open={!!selectedUser}
