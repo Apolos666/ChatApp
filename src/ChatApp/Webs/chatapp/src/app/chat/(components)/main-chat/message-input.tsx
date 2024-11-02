@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import {
   addMessage,
@@ -8,30 +8,78 @@ import {
   setMessageFailed,
 } from "@/store/features/messageSlice";
 import type { MessageDto } from "@/types/message";
-import { Button } from "@/components/ui/button";
-import { FileVideo, ImagePlus, Send } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { FilePreview } from "./file-preview";
+import { FileControls } from "./file-controls";
+import { MessageTextInput } from "./message-text-input";
 
 export const MessageInput = () => {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
+  const [selectedFiles, setSelectedFiles] = useState<{
+    images: File[];
+    videos: File[];
+  }>({
+    images: [],
+    videos: [],
+  });
 
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
+  const handleImageSelect = useCallback(() => {
+    imageInputRef.current?.click();
+  }, []);
 
-  const sendMessage = async () => {
-    if ((!message.trim() && !fileInputRef.current?.files?.length) || isSending)
-      return;
+  const handleVideoSelect = useCallback(() => {
+    videoInputRef.current?.click();
+  }, []);
+
+  const handleImageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        setSelectedFiles((prev) => ({
+          ...prev,
+          images: Array.from(e.target.files || []),
+        }));
+      }
+    },
+    []
+  );
+
+  const handleVideoChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        setSelectedFiles((prev) => ({
+          ...prev,
+          videos: Array.from(e.target.files || []),
+        }));
+      }
+    },
+    []
+  );
+
+  const removeFile = useCallback((type: "images" | "videos", index: number) => {
+    setSelectedFiles((prev) => ({
+      ...prev,
+      [type]: prev[type].filter((_, i) => i !== index),
+    }));
+
+    if (type === "images" && imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+    if (type === "videos" && videoInputRef.current) {
+      videoInputRef.current.value = "";
+    }
+  }, []);
+
+  const sendMessage = useCallback(async () => {
+    const files = [...selectedFiles.images, ...selectedFiles.videos];
+
+    if ((!message.trim() && !files.length) || isSending) return;
 
     const currentUserId = Number(localStorage.getItem("chat_user_id"));
     const content = message.trim();
     const tempId = Date.now();
-    const files = fileInputRef.current?.files
-      ? Array.from(fileInputRef.current.files)
-      : [];
 
     const tempFiles = files.map((file, index) => ({
       id: tempId + index,
@@ -63,6 +111,7 @@ export const MessageInput = () => {
     dispatch(addMessage(tempMessage));
     setIsSending(true);
     setMessage("");
+    setSelectedFiles({ images: [], videos: [] });
 
     try {
       const response = await fetch("http://localhost:5221/api/messages/send", {
@@ -84,58 +133,53 @@ export const MessageInput = () => {
       dispatch(setMessageFailed(tempId));
     } finally {
       setIsSending(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
+      if (videoInputRef.current) {
+        videoInputRef.current.value = "";
       }
     }
-  };
+  }, [message, isSending, dispatch, selectedFiles]);
+
+  const handleMessageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMessage(e.target.value);
+    },
+    []
+  );
+
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        sendMessage();
+      }
+    },
+    [sendMessage]
+  );
 
   return (
     <div className="flex-none bg-background border-t-3">
-      <div className="flex space-x-2 mb-2 border-b-3 p-2">
-        <input
-          type="file"
-          ref={fileInputRef}
-          className="hidden"
-          multiple
-          accept="image/*,video/*"
-          onChange={() => {}}
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-12 w-12"
-          onClick={handleFileSelect}
-        >
-          <ImagePlus className="!w-5 !h-5" size={28} />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-12 w-12"
-          onClick={handleFileSelect}
-        >
-          <FileVideo className="!w-5 !h-5" size={28} />
-        </Button>
-      </div>
-      <div className="flex items-center space-x-2 p-2">
-        <Input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-          placeholder="Nhập tin nhắn tới nhóm The family is to Love"
-          className="flex-1 h-12 text-base"
-          disabled={isSending}
-        />
-        <Button
-          size="icon"
-          className="h-12 w-12"
-          onClick={sendMessage}
-          disabled={isSending}
-        >
-          <Send size={28} />
-        </Button>
-      </div>
+      <FilePreview
+        images={selectedFiles.images}
+        videos={selectedFiles.videos}
+        onRemove={removeFile}
+      />
+      <FileControls
+        onImageSelect={handleImageSelect}
+        onVideoSelect={handleVideoSelect}
+        imageInputRef={imageInputRef}
+        videoInputRef={videoInputRef}
+        onImageChange={handleImageChange}
+        onVideoChange={handleVideoChange}
+      />
+      <MessageTextInput
+        message={message}
+        isSending={isSending}
+        onMessageChange={handleMessageChange}
+        onSend={sendMessage}
+        onKeyPress={handleKeyPress}
+      />
     </div>
   );
 };
