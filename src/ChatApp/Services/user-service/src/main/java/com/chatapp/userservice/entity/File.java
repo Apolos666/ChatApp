@@ -34,4 +34,8 @@ public class File {
     @ManyToOne()
     @JoinColumn(name = "room_id")
     Room room;
+
+    @ManyToOne()
+    @JoinColumn(name = "message_id")
+    Message message;
 }

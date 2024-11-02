@@ -16,8 +16,10 @@ export function DataTablePagination<TData>({
     table,
 }: DataTablePaginationProps<TData>) {
     return (
-        <Pagination>
-            <PaginationContent>
+        <div className="flex items-center gap-4">
+            
+            <Pagination>
+                <PaginationContent>
                 <PaginationItem>
                     <PaginationPrevious
                         href="#"
@@ -347,6 +349,7 @@ export function DataTablePagination<TData>({
                     />
                 </PaginationItem>
             </PaginationContent>
-        </Pagination>
+            </Pagination>
+        </div>
     );
 }
