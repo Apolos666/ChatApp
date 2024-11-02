@@ -17,7 +17,6 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
     return (
         <div className="flex items-center gap-4">
-            
             <Pagination>
                 <PaginationContent>
                 <PaginationItem>
