@@ -65,6 +65,7 @@ public class User {
     @PreRemove
     private void preRemove(){
         rooms.forEach(room -> room.setUser(null));
+        refreshTokens.forEach(token -> token.setUser(null));
     }
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)

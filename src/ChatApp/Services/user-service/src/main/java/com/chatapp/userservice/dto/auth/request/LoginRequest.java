@@ -23,7 +23,7 @@ public class LoginRequest {
 
     @NotBlank(message = "Password must be not blank or null")
     @NotNull(message = "Password must be not null")
-    @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
+    @Size(min = 8, max = 16, message = "Password must be between 8 and 16 characters")
     String password;
 
 }

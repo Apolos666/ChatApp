@@ -2,16 +2,20 @@ package com.chatapp.userservice.service.impl;
 
 import com.chatapp.userservice.dto.auth.request.*;
 import com.chatapp.userservice.dto.auth.response.LoginResponse;
+import com.chatapp.userservice.dto.auth.response.RefreshTokenResponse;
+import com.chatapp.userservice.entity.RefreshToken;
 import com.chatapp.userservice.entity.Role;
 import com.chatapp.userservice.entity.User;
 import com.chatapp.userservice.enums.UserRoleEnum;
 import com.chatapp.userservice.exception.ApiException;
+import com.chatapp.userservice.repository.RefreshTokenRepository;
 import com.chatapp.userservice.repository.RoleRepository;
 import com.chatapp.userservice.repository.UserRepository;
 import com.chatapp.userservice.security.CustomizedUserDetails;
 import com.chatapp.userservice.security.JwtProvider;
 import com.chatapp.userservice.service.AuthService;
 import com.chatapp.userservice.service.email.EmailSenderService;
+import com.chatapp.userservice.utils.AppUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +55,8 @@ public class AuthServiceImpl implements AuthService {
     ModelMapper mapper;
 
     RoleRepository roleRepository;
+
+    RefreshTokenRepository refreshTokenRepository;
 
 
     @Transactional
@@ -154,7 +160,7 @@ public class AuthServiceImpl implements AuthService {
                 () -> new ApiException("User not found with given username: "+request.getEmail(), HttpStatus.BAD_REQUEST)
         );
 
-        String newRawPassword = UUID.randomUUID().toString();
+        String newRawPassword = AppUtil.generateRandomPassword(10);
         user.setPassword(passwordEncoder.encode(newRawPassword));
         userRepository.save(user);
 
@@ -186,6 +192,28 @@ public class AuthServiceImpl implements AuthService {
         sendEmail(user.getEmail(), "Reset password", "reset-password-email", emailAttributes);
 
         return "Reset user's password successfully!";
+    }
+
+    @Override
+    public RefreshTokenResponse getNewAccessToken(RefreshTokenRequest request) {
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken()).orElseThrow(
+                () -> new ApiException("Invalid refresh token",HttpStatus.BAD_REQUEST)
+        );
+
+        if(!refreshTokenService.validateRefreshToken(refreshToken)){
+            throw new ApiException("Refresh token was expired. Please login again!", HttpStatus.BAD_REQUEST);
+        }
+
+        String accessToken = jwtProvider.generateToken(refreshToken.getUser());
+
+        RefreshTokenResponse response = RefreshTokenResponse
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .build();
+
+        return response;
     }
 
 

@@ -2,6 +2,7 @@ package com.chatapp.userservice.service;
 
 import com.chatapp.userservice.dto.auth.request.*;
 import com.chatapp.userservice.dto.auth.response.LoginResponse;
+import com.chatapp.userservice.dto.auth.response.RefreshTokenResponse;
 
 public interface AuthService {
 
@@ -16,4 +17,6 @@ public interface AuthService {
     String resetPassword(ResetPasswordRequest request);
 
     String resetPasswordForUser(ResetPasswordForUserRequest request);
+
+    RefreshTokenResponse getNewAccessToken(RefreshTokenRequest request);
 }

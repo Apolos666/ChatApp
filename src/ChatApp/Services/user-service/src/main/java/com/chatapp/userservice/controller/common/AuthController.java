@@ -45,4 +45,9 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request){
         return ResponseEntity.status(HttpStatus.OK).body(authService.resetPassword(request));
     }
+
+    @PostMapping("/token")
+    public ResponseEntity<?> getNewAccessToken(@RequestBody @Valid RefreshTokenRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(authService.getNewAccessToken(request));
+    }
 }

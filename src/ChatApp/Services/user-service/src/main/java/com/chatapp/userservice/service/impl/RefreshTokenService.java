@@ -51,4 +51,11 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
+    public boolean validateRefreshToken(RefreshToken refreshToken){
+        if(refreshToken.getExpiresAt().after(new Timestamp(System.currentTimeMillis()))){
+            return true;
+        }
+        return false;
+    }
+
 }
