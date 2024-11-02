@@ -48,6 +48,12 @@ services:
     build:
       context: ../admin-crud-user
       dockerfile: admin.crud.user.Dockerfile  
+    environment:
+      - DATABASE_NAME=chat_app
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=phamtantudn3
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
     ports:
       - "8085:8085"
     depends_on:
