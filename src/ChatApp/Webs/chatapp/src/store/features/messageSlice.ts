@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { MessageDto, MessageStatus } from '@/types/message';
+import type { MessageDto, MessageStatus } from '@/app/chat/(types)/message';
 
 interface MessageState {
   messages: MessageDto[];

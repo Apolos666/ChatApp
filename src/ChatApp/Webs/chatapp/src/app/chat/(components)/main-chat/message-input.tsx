@@ -7,7 +7,7 @@ import {
   updateTempMessage,
   setMessageFailed,
 } from "@/store/features/messageSlice";
-import type { MessageDto } from "@/types/message";
+import type { MessageDto } from "@/app/chat/(types)/message";
 import { FilePreview } from "./file-preview";
 import { FileControls } from "./file-controls";
 import { MessageTextInput } from "./message-text-input";

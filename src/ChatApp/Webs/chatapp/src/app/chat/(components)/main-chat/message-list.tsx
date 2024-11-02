@@ -8,7 +8,7 @@ import type {
   MessageDto,
   MessageStatus,
   MessageStatusUpdate,
-} from "@/types/message";
+} from "@/app/chat/(types)/message";
 import { Loader2 } from "lucide-react";
 import {
   Card,

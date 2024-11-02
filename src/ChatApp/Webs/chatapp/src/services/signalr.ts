@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
-import type { MessageDto, MessageStatusUpdate } from "@/types/message";
+import type { MessageDto, MessageStatusUpdate } from "@/app/chat/(types)/message";
 
 export class SignalRService {
   private static instance: SignalRService;
