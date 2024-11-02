@@ -1,4 +1,5 @@
 ﻿using File = ChatApp.Message.Models.File;
+using Role = ChatApp.Message.Models.Role;
 
 namespace ChatApp.Message.Data;
 

@@ -22,6 +22,12 @@ global using ChatApp.Message.Infrastructure.ExceptionHandlers;
 global using Microsoft.AspNetCore.Authorization;
 global using Confluent.Kafka.Admin;
 global using ChatApp.Message.Features.Messages.Events.MessageSent;
+global using ChatApp.Message.Features.Common.Behaviors;
+global using FluentValidation;
+global using Microsoft.AspNetCore.Mvc;
+global using CloudinaryDotNet;
+global using CloudinaryDotNet.Actions;
+
 
 
 
