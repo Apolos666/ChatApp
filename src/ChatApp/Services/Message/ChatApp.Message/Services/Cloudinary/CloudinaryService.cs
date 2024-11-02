@@ -15,13 +15,14 @@ public class CloudinaryService : ICloudinaryService
     }
 
     public async Task<(string url, string publicId)> UploadAsync(
-        IFormFile file,
-        string folder,
-        CancellationToken cancellationToken = default)
+    IFormFile file,
+    string folder,
+    CancellationToken cancellationToken = default)
     {
         await using var stream = file.OpenReadStream();
+        var fileType = file.ContentType;
 
-        if (file.ContentType.StartsWith("video/"))
+        if (fileType.StartsWith("video/"))
         {
             var uploadParams = new VideoUploadParams
             {

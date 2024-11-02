@@ -11,12 +11,3 @@ public record MessageDto
     public string Status { get; init; } = null!;
     public List<FileDto> Files { get; init; } = [];
 }
-
-public record SendMessageResponse(int MessageId);
-
-public record MessageStatusUpdateDto
-{
-    public int MessageId { get; init; }
-    public string Status { get; init; } = null!;
-    public string? Error { get; init; }
-}

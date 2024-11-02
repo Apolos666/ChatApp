@@ -16,6 +16,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 export const MessageList = () => {
   const messages = useAppSelector((state) => state.messages.messages);
@@ -97,6 +98,36 @@ export const MessageList = () => {
             </CardHeader>
             <CardContent className="py-1 px-3">
               <p>{msg.content}</p>
+              {msg.files && msg.files.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {msg.files.map((file) => (
+                    <div key={file.id} className="relative">
+                      {file.type.startsWith("image/") ? (
+                        <Image
+                          src={file.url}
+                          alt={file.name}
+                          width={300}
+                          height={200}
+                          quality={100}
+                          className="w-full h-auto rounded object-cover"
+                          loading="lazy"
+                        />
+                      ) : file.type.startsWith("video/") ? (
+                        <video
+                          src={file.url}
+                          controls
+                          className="w-full h-auto rounded"
+                          preload="metadata"
+                        />
+                      ) : (
+                        <div className="p-4 bg-muted rounded">
+                          <p className="text-sm truncate">{file.name}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
             <CardFooter className="py-1 px-3 flex justify-between items-center gap-2">
               <p className="text-xs">

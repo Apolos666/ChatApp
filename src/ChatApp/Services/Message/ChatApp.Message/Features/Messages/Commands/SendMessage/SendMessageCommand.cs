@@ -11,6 +11,8 @@ public record SendMessageCommand : IRequest<SendMessageResponse>
     public IFormFileCollection? Files { get; init; }
 }
 
+public record SendMessageResponse(int MessageId);
+
 public class SendMessageCommandHandler(
     ApplicationDbContext context,
     IMessageProducer producer,
@@ -23,18 +25,35 @@ public class SendMessageCommandHandler(
         SendMessageCommand request,
         CancellationToken cancellationToken)
     {
+        var currentUser = await ValidateAndGetCurrentUser(request.RoomId, cancellationToken);
+        var message = await CreateMessage(request, currentUser, cancellationToken);
+        var files = await HandleFileUploads(request, message, currentUser, cancellationToken);
+        await CreateMessageStatus(message.Id, currentUser.Id, cancellationToken);
+        await NotifyMessageCreated(message, files, currentUser, cancellationToken);
+
+        return new SendMessageResponse(message.Id);
+    }
+
+    private async Task<CurrentUser> ValidateAndGetCurrentUser(int roomId, CancellationToken cancellationToken)
+    {
         var currentUser = httpContextAccessor.HttpContext?.GetCurrentUser();
         if (currentUser == null)
             throw new UnauthorizedAccessException();
 
         var isUserInRoom = await context.RoomUsers
-            .AnyAsync(ru => ru.RoomId == request.RoomId &&
-                           ru.UserId == currentUser.Id,
-                     cancellationToken);
+            .AnyAsync(ru => ru.RoomId == roomId && ru.UserId == currentUser.Id, cancellationToken);
 
         if (!isUserInRoom)
             throw new ValidationException("User is not a member of this room");
 
+        return currentUser;
+    }
+
+    private async Task<Message.Models.Message> CreateMessage(
+        SendMessageCommand request,
+        CurrentUser currentUser,
+        CancellationToken cancellationToken)
+    {
         var message = new Message.Models.Message
         {
             Content = request.Content,
@@ -45,44 +64,64 @@ public class SendMessageCommandHandler(
 
         context.Messages.Add(message);
         await context.SaveChangesAsync(cancellationToken);
+        return message;
+    }
 
+    private async Task<List<File>> HandleFileUploads(
+        SendMessageCommand request,
+        Message.Models.Message message,
+        CurrentUser currentUser,
+        CancellationToken cancellationToken)
+    {
         var files = new List<File>();
-        if (request.Files != null && request.Files.Any())
+        if (request.Files == null || !request.Files.Any())
+            return files;
+
+        foreach (var file in request.Files)
         {
-            foreach (var file in request.Files)
+            var (url, publicId) = await cloudinaryService.UploadAsync(
+                file,
+                $"messages/{message.Id}",
+                cancellationToken);
+
+            files.Add(new File
             {
-                var (url, publicId) = await cloudinaryService.UploadAsync(
-                    file,
-                    $"messages/{message.Id}",
-                    cancellationToken);
-
-                var messageFile = new File
-                {
-                    MessageId = message.Id,
-                    Name = file.FileName,
-                    Url = url,
-                    OwnerId = currentUser.Id,
-                    CreatedAt = DateTime.UtcNow.ToLocalTime(),
-                    RoomId = request.RoomId
-                };
-
-                files.Add(messageFile);
-            }
-
-            context.Files.AddRange(files);
-            await context.SaveChangesAsync(cancellationToken);
+                MessageId = message.Id,
+                Name = file.FileName,
+                Url = url,
+                OwnerId = currentUser.Id,
+                CreatedAt = DateTime.UtcNow.ToLocalTime(),
+                RoomId = request.RoomId
+            });
         }
 
+        context.Files.AddRange(files);
+        await context.SaveChangesAsync(cancellationToken);
+        return files;
+    }
+
+    private async Task CreateMessageStatus(
+        int messageId,
+        int userId,
+        CancellationToken cancellationToken)
+    {
         var messageStatus = new MessageStatusModel
         {
-            MessageId = message.Id,
-            UserId = currentUser.Id,
+            MessageId = messageId,
+            UserId = userId,
             Status = MessageStatusEnum.Sending.ToString()
         };
 
         context.MessageStatuses.Add(messageStatus);
         await context.SaveChangesAsync(cancellationToken);
+    }
 
+    private async Task NotifyMessageCreated(
+        Message.Models.Message message,
+        List<File> files,
+        CurrentUser currentUser,
+        CancellationToken cancellationToken)
+    {
         var messageDto = new MessageDto
         {
             Id = message.Id,
@@ -97,7 +136,8 @@ public class SendMessageCommandHandler(
                 Id = f.Id,
                 Name = f.Name,
                 Url = f.Url,
-                CreatedAt = f.CreatedAt
+                CreatedAt = f.CreatedAt,
+                Type = f.Name.GetMimeType()
             }).ToList()
         };
 
@@ -105,7 +145,5 @@ public class SendMessageCommandHandler(
             kafkaOptions.Value.MessageTopic,
             messageDto,
             cancellationToken);
-
-        return new SendMessageResponse(message.Id);
     }
 }

@@ -6,7 +6,8 @@ public class MessageEndpoints : ICarterModule
     {
         var messageGroup = app.MapGroup("/api/messages")
             .RequireAuthorization()
-            .WithTags("Messages");
+            .WithTags("Messages")
+            .DisableAntiforgery();
 
         messageGroup.MapPost("/send", async (
             [FromForm] SendMessageCommand command,

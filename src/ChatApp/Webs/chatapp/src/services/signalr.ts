@@ -16,38 +16,6 @@ export class SignalRService {
       })
       .withAutomaticReconnect()
       .build();
-
-    // Lắng nghe các custom events từ MessageInput
-    window.addEventListener("new-message", ((event: CustomEvent<MessageDto>) => {
-      const message = event.detail;
-      this.messageStore.set(message.id, message);
-      this.messageHandlers.forEach(handler => handler(message));
-    }) as EventListener);
-
-    window.addEventListener("update-message", ((event: CustomEvent<{tempId: number, realId: number}>) => {
-      const { tempId, realId } = event.detail;
-      const message = this.messageStore.get(tempId);
-      if (message) {
-        const updatedMessage = { ...message, id: realId };
-        this.messageStore.delete(tempId);
-        this.messageStore.set(realId, updatedMessage);
-      }
-    }) as EventListener);
-
-    window.addEventListener("message-failed", ((event: CustomEvent<number>) => {
-      const messageId = event.detail;
-      const message = this.messageStore.get(messageId);
-      if (message) {
-        const updatedMessage = { ...message, status: "Failed" as const };
-        this.messageStore.set(messageId, updatedMessage);
-        this.statusUpdateHandlers.forEach(handler => {
-          handler({
-            messageId,
-            status: "Failed"
-          });
-        });
-      }
-    }) as EventListener);
   }
 
   public static getInstance(): SignalRService {
