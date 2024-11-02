@@ -21,11 +21,9 @@ UPDATE users SET
   dob = COALESCE($4, dob),
   address = COALESCE($5, address),
   email = COALESCE($6, email),
-  password = COALESCE($7, password),
-  activation_code = COALESCE($8, activation_code),
-  is_active = COALESCE($9, is_active),
+  is_active = COALESCE($7, is_active),
   updated_at = current_timestamp,
-  role_id = COALESCE($10, role_id)
+  role_id = COALESCE($8, role_id)
 WHERE id = $1
 RETURNING *;
 
@@ -35,4 +33,4 @@ WHERE id = $1;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users
-WHERE email = $1 LIMIT 1;
+WHERE email = $1;

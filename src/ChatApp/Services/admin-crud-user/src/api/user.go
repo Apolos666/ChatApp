@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"errors"
 	"net/http"
 
@@ -12,15 +13,14 @@ import (
 )
 
 type createUserRequest struct {
-	Name           string      `json:"name" binding:"required"`
-	PhoneNumber    string      `json:"phone_number" binding:"required"`
-	Dob            pgtype.Date `json:"dob" binding:"required"` // "YYYY-MM-DD"
-	Address        pgtype.Text `json:"address" binding:"required"`
-	Email          string      `json:"email" binding:"required"`
-	Password       string      `json:"password" binding:"required"`
-	ActivationCode pgtype.Text `json:"activation_code"`
-	IsActive       pgtype.Bool `json:"is_active"`
-	RoleID         int32       `json:"role_id" binding:"required"`
+	Name        string      `json:"name" binding:"required"`
+	PhoneNumber string      `json:"phone_number" binding:"required"`
+	Dob         pgtype.Date `json:"dob" binding:"required"` // "YYYY-MM-DD"
+	Address     pgtype.Text `json:"address" binding:"required"`
+	Email       string      `json:"email" binding:"required"`
+	Password    string      `json:"password" binding:"required"`
+	IsActive    pgtype.Bool `json:"is_active"`
+	RoleID      int32       `json:"role_id" binding:"required"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -29,14 +29,19 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.q.CreateUser(ctx, db.CreateUserParams{
+	if existUser, err := server.r.GetUserByEmail(ctx, req.Email); err == nil && existUser.ID != 0 {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email is already used")))
+		return
+
+	}
+	user, err := server.r.CreateUser(ctx, db.CreateUserParams{
 		Name:           req.Name,
 		PhoneNumber:    req.PhoneNumber,
 		Dob:            req.Dob,
 		Address:        req.Address,
 		Email:          req.Email,
 		Password:       util.HashingPassword(req.Password),
-		ActivationCode: req.ActivationCode,
+		ActivationCode: pgtype.Text{String: ""},
 		IsActive:       req.IsActive,
 		RoleID:         req.RoleID,
 	})
@@ -57,7 +62,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.q.GetUser(ctx, req.ID)
+	user, err := server.r.GetUser(ctx, req.ID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -70,7 +75,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 }
 
 func (server *Server) getListUsers(ctx *gin.Context) {
-	users, err := server.q.ListUsers(ctx)
+	users, err := server.r.ListUsers(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -79,16 +84,14 @@ func (server *Server) getListUsers(ctx *gin.Context) {
 }
 
 type updateUserRequest struct {
-	ID             int32       `json:"id" binding:"required,min=1"`
-	Name           string      `json:"name"`
-	PhoneNumber    string      `json:"phone_number"`
-	Dob            pgtype.Date `json:"dob"` // "YYYY-MM-DD"
-	Address        pgtype.Text `json:"address"`
-	Email          string      `json:"email"`
-	Password       string      `json:"password"`
-	ActivationCode pgtype.Text `json:"activation_code"`
-	IsActive       pgtype.Bool `json:"is_active"`
-	RoleID         int32       `json:"role_id"`
+	ID          int32       `json:"id" binding:"required,min=1"`
+	Name        string      `json:"name"`
+	PhoneNumber string      `json:"phone_number"`
+	Dob         pgtype.Date `json:"dob"` // "YYYY-MM-DD"
+	Address     pgtype.Text `json:"address"`
+	Email       string      `json:"email"`
+	IsActive    pgtype.Bool `json:"is_active"`
+	RoleID      int32       `json:"role_id"`
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
@@ -97,17 +100,22 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	user, err := server.q.UpdateUser(ctx, db.UpdateUserParams{
-		ID:             req.ID,
-		Name:           req.Name,
-		PhoneNumber:    req.PhoneNumber,
-		Dob:            req.Dob,
-		Address:        req.Address,
-		Email:          req.Email,
-		Password:       req.Password,
-		ActivationCode: req.ActivationCode,
-		IsActive:       req.IsActive,
-		RoleID:         req.RoleID,
+	if req.Email != "" {
+		userUsedThisEmail, _ := server.r.GetUserByEmail(ctx, req.Email)
+		if userUsedThisEmail.ID != 0 && userUsedThisEmail.ID != req.ID {
+			ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email is already used")))
+			return
+		}
+	}
+	user, err := server.r.UpdateUserTx(ctx, db.UpdateUserParams{
+		ID:          req.ID,
+		Name:        req.Name,
+		PhoneNumber: req.PhoneNumber,
+		Dob:         req.Dob,
+		Address:     req.Address,
+		Email:       req.Email,
+		IsActive:    req.IsActive,
+		RoleID:      req.RoleID,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -122,7 +130,15 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.q.DeleteUser(ctx, req.ID)
+	if _, err := server.r.GetUser(ctx, req.ID); err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(errors.New("user not found")))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	err := server.r.DeleteUserTx(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -131,8 +147,17 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 }
 
 func (server *Server) getMyself(ctx *gin.Context) {
-	email, _ := ctx.Get("email")
-	user, err := server.q.GetUserByEmail(ctx, email.(string))
+	email, exists := ctx.Get("email")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email not found in context")))
+		return
+	}
+	strEmail, ok := email.(string)
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("email is not a valid string")))
+		return
+	}
+	user, err := server.r.GetUserByEmail(ctx, strEmail)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

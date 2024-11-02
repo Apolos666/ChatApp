@@ -10,11 +10,10 @@ import (
 )
 
 func main() {
-	// LoadEnv()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	connPool, err := pgxpool.New(ctx, "postgresql://root:secret@db:5432/chatapp")
+	connPool, err := pgxpool.New(ctx, "postgresql://postgres:phamtantudn3@postgres:5432/chat_app?sslmode=disable")
 	if err != nil {
 		log.Fatalf("cannot connect to db: %v", err)
 	}
@@ -22,15 +21,8 @@ func main() {
 	if err := connPool.Ping(ctx); err != nil {
 		log.Fatalf("cannot ping db: %v", err)
 	}
-
-	server := api.NewServer(db.New(connPool))
+	repo := db.NewRepo(connPool)
+	server := api.NewServer(repo)
 
 	server.Start(":8085")
 }
-
-// func LoadEnv() {
-// 	err := godotenv.Load("admincrud.env")
-// 	if err != nil {
-// 		log.Fatalf("Failed to load .env file: %v", err)
-// 	}
-// }

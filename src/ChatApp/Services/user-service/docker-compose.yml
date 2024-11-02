@@ -44,6 +44,17 @@ services:
     networks:
       - app-network
 
+  admin-crud-user:
+    build:
+      context: ../admin-crud-user
+      dockerfile: admin.crud.user.Dockerfile  
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
   postgres:
     image: postgres
     container_name: postgres
