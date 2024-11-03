@@ -16,6 +16,7 @@ type Querier interface {
 	DeleteUser(ctx context.Context, id int32) error
 	GetUser(ctx context.Context, id int32) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	ListAllUsers(ctx context.Context) ([]User, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	SetCreatorIDNullInRoom(ctx context.Context, creatorID int32) error
 	SetOwnerIDNullInFiles(ctx context.Context, ownerID int32) error
