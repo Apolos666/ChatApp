@@ -13,7 +13,7 @@ type Server struct {
 func NewServer(r *db.Repo) *Server {
 	server := &Server{r: r}
 	server.router = gin.Default()
-	authRoutes := server.router.Group("/admin/manager/").Use(DeserializeAdmin())
+	authRoutes := server.router.Group("/api/admin/").Use(DeserializeAdmin())
 	authRoutes.POST("/user", server.createUser)
 	authRoutes.GET("/user/:id", server.getUser)
 	authRoutes.GET("/users", server.getListUsers)
