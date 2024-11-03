@@ -170,6 +170,16 @@ type updateUserRequest struct {
 	IsActive    pgtype.Bool `json:"is_active"`
 	RoleID      int32       `json:"role_id"`
 }
+type updateUserResponse struct {
+	ID          int32            `json:"id" `
+	Name        string           `json:"name" `
+	PhoneNumber string           `json:"phone_number" `
+	Dob         pgtype.Date      `json:"dob" `
+	Address     pgtype.Text      `json:"address" `
+	Email       string           `json:"email" `
+	UpdateAt    pgtype.Timestamp `json:"update_at" `
+	RoleID      int32            `json:"role_id" `
+}
 
 func (server *Server) updateUser(ctx *gin.Context) {
 	var req updateUserRequest
@@ -219,7 +229,17 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(errors.New(" failed to update user")))
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	userResp := updateUserResponse{
+		ID:          user.ID,
+		Name:        user.Name,
+		PhoneNumber: user.PhoneNumber,
+		Dob:         user.Dob,
+		Address:     user.Address,
+		Email:       user.Email,
+		UpdateAt:    user.UpdatedAt,
+		RoleID:      user.RoleID,
+	}
+	ctx.JSON(http.StatusOK, userResp)
 }
 
 func (server *Server) deleteUser(ctx *gin.Context) {
