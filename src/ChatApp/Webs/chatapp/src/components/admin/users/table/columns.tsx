@@ -40,7 +40,7 @@ export const getColumns = ({
     {
         accessorKey: "name",
         header: ({ column }) => (
-            <SortableTableHeader column={column} title="Name"/>
+            <SortableTableHeader column={column} title="Name" />
         ),
         cell: ({ row }) => {
             const user = row.original;
@@ -74,37 +74,62 @@ export const getColumns = ({
     {
         accessorKey: "phone_number",
         header: ({ column }) => {
-            return <SortableTableHeader column={column} title="Phone Number" />;
-        }
-    },
-    {
-        accessorKey: "role",
-        header: ({ column }) => (
-            <SortableTableHeader column={column} title="Role" />
-        ),
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }) => (
-            <SortableTableHeader column={column} title="Status" />
-        ),
-        cell: ({ row }) => {
-            const status = row.getValue("status") as string;
             return (
-                <Badge variant={status === "active" ? "success" : "secondary"}>
-                    {status}
-                </Badge>
+                <SortableTableHeader
+                    column={column}
+                    title="Phone Number"
+                    align="center"
+                />
             );
+        },
+        cell: ({ row }) => {
+            const phoneNumber = row.getValue("phone_number") as string;
+            return <div className="text-center">{phoneNumber}</div>;
         },
     },
     {
         accessorKey: "created_at",
         header: ({ column }) => (
-            <SortableTableHeader column={column} title="Joined At" />
+            <SortableTableHeader
+                column={column}
+                title="Joined At"
+                align="center"
+            />
         ),
         cell: ({ row }) => {
             const createdAt = row.getValue("created_at") as string;
-            return <span>{formatDate(createdAt)}</span>;
+            return <div className="text-center">{formatDate(createdAt)}</div>;
+        },
+    },
+    {
+        accessorKey: "role",
+        header: ({ column }) => (
+            <SortableTableHeader column={column} title="Role" align="center" />
+        ),
+        cell: ({ row }) => (
+            <div className="text-center">{row.getValue("role")}</div>
+        ),
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }) => (
+            <SortableTableHeader
+                column={column}
+                title="Status"
+                align="center"
+            />
+        ),
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string;
+            return (
+                <div className="text-center">
+                    <Badge
+                        variant={status === "active" ? "success" : "secondary"}
+                    >
+                        {status}
+                    </Badge>
+                </div>
+            );
         },
     },
     {

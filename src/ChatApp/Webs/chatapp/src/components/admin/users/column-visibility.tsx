@@ -70,12 +70,10 @@ export function ColumnVisibility({ columnVisibility, setColumnVisibility }: Colu
                     <DropdownMenuItem
                         key={column.value}
                         onClick={() => toggleColumn(column.value)}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-start"
                     >
+                        <Check className={`h-4 w-4 ${!columnVisibility[column.value] ? "invisible" : ""}`} />
                         <span>{column.label}</span>
-                        {columnVisibility[column.value] && (
-                            <Check className="h-4 w-4" />
-                        )}
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>

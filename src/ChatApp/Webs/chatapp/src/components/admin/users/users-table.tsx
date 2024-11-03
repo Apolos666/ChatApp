@@ -1,8 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel, getFilteredRowModel, SortingState, ColumnFiltersState, flexRender, OnChangeFn, VisibilityState } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    getPaginationRowModel,
+    getFilteredRowModel,
+    SortingState,
+    ColumnFiltersState,
+    flexRender,
+    OnChangeFn,
+    VisibilityState,
+} from "@tanstack/react-table";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { User as UserType } from "@/types";
 import { UserModal } from "./user-modal";
 import { mockUsers } from "@/mocks/mockUsers";
@@ -11,6 +29,7 @@ import { getColumns } from "./table/columns";
 import { PageSizeSelector } from "./page-size-selector";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export function UsersTable() {
     const { toast } = useToast();
@@ -42,7 +61,9 @@ export function UsersTable() {
         onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onRowSelectionChange: setRowSelection,
-        onColumnVisibilityChange: setColumnVisibility as OnChangeFn<VisibilityState>,
+        onColumnVisibilityChange:
+            setColumnVisibility as OnChangeFn<VisibilityState>,
+        enableColumnResizing: true,
         state: {
             sorting,
             rowSelection,
@@ -68,7 +89,7 @@ export function UsersTable() {
 
     return (
         <>
-            <UsersToolbar 
+            <UsersToolbar
                 table={table}
                 columnVisibility={columnVisibility}
                 setColumnVisibility={setColumnVisibility}
@@ -80,12 +101,20 @@ export function UsersTable() {
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead 
+                                        key={header.id}
+                                        className={cn({
+                                            'w-[50px]': header.id === 'select',
+                                            'w-[250px]': header.id === 'name',
+                                            'w-[200px]': ['email', 'phone_number'].includes(header.id),
+                                            'w-[150px]': ['created_at', 'role', 'status'].includes(header.id),
+                                            'w-[100px]': header.id === 'actions',
+                                        })}
+                                    >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
-                                                header.column.columnDef
-                                                    .header,
+                                                header.column.columnDef.header,
                                                 header.getContext()
                                             )}
                                     </TableHead>
@@ -103,7 +132,9 @@ export function UsersTable() {
                                     }
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell
+                                            key={cell.id}
+                                        >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
@@ -115,7 +146,10 @@ export function UsersTable() {
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={table.getHeaderGroups()[0].headers.length}
+                                    colSpan={
+                                        table.getHeaderGroups()[0].headers
+                                            .length
+                                    }
                                     className="h-24 text-center"
                                 >
                                     No results.
