@@ -17,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT * FROM users WHERE email=:email AND is_active=false", nativeQuery = true)
     User findByEmailWithoutActivation(String email);
 
+    @Query(value = "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM users u WHERE u.email = :email AND u.is_active = true", nativeQuery = true)
     boolean existsByEmail(String email);
 
 }

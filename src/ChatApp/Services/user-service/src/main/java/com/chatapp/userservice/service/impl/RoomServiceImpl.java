@@ -132,6 +132,20 @@ public class RoomServiceImpl implements RoomService {
         return "Remove user from room successfully!";
     }
 
+    @Override
+    public List<RoomDto> searchByRoomName(int userId, String roomName) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException("User is not exists with given id:" +userId, HttpStatus.NOT_FOUND));
+
+
+        List<Room> rooms = roomRepository.searchByRoomName(roomName, userId);
+
+        return rooms.stream()
+                .map((room) -> convertToDTO(room))
+                .collect(Collectors.toList());
+    }
+
     private RoomDto convertToDTO(Room room) {
 
         List<UserDto> userDTOs = room.getUsers().stream()

@@ -116,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
 
         if(user != null){
             userRepository.deleteById(user.getId());
+            System.out.println("Here");
         }
 
         user = new User();

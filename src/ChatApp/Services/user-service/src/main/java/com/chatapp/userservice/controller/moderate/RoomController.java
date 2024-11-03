@@ -72,4 +72,15 @@ public class RoomController {
         String result = roomService.removeUserFromRoom(roomId, userId);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<RoomDto>> searchByRoomName(
+            @AuthenticationPrincipal CustomizedUserDetails userDetails,
+            @RequestParam("name") String roomName) {
+
+        List<RoomDto> rooms = roomService.searchByRoomName(userDetails.getId(), roomName);
+
+        return ResponseEntity.ok(rooms);
+
+    }
 }

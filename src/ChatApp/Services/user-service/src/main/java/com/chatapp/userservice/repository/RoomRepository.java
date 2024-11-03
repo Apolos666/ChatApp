@@ -16,4 +16,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     List<Room> findByCreatorId(int userId);
 
     void deleteByUser(User user);
+
+    @Query("SELECT r FROM Room r JOIN r.users u WHERE u.id=?2 AND r.name LIKE %?1%")
+    List<Room> searchByRoomName(String roomName, int userId);
 }
