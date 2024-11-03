@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { SignalRService } from "@/services/signalr";
 import { addMessage, updateMessageStatus } from "@/store/features/messageSlice";
@@ -17,12 +17,104 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import Image from "next/image";
+import { useInView } from "react-intersection-observer";
+import { useMessages } from "../../(hooks)/useMessages";
 
 export const MessageList = () => {
-  const messages = useAppSelector((state) => state.messages.messages);
+  const reduxMessages = useAppSelector((state) => state.messages.messages);
   const dispatch = useAppDispatch();
+  const {
+    data: queryData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMessages(1);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: "50px 0px 0px 0px",
+  });
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const canFetchMoreRef = useRef(true);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
+
+  const allMessages = useMemo(() => {
+    const queryMessages =
+      queryData?.pages.flatMap((page) => page.messages) ?? [];
+    return [...queryMessages, ...reduxMessages].sort((a, b) => a.id - b.id);
+  }, [queryData, reduxMessages]);
+
+  const scrollToBottom = useCallback(() => {
+    if (shouldScrollToBottom) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "instant",
+        block: "end",
+      });
+    }
+  }, [shouldScrollToBottom]);
+
+  useEffect(() => {
+    if (reduxMessages.length > 0 && shouldScrollToBottom) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 0);
+    }
+  }, [reduxMessages, scrollToBottom, shouldScrollToBottom]);
+
+  useEffect(() => {
+    if (queryData?.pages.length === 1 && !initialLoadComplete) {
+      setInitialLoadComplete(true);
+      scrollToBottom();
+    }
+  }, [initialLoadComplete, queryData?.pages.length, scrollToBottom]);
+
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+    setShouldScrollToBottom(isNearBottom);
+  }, []);
+
+  useEffect(() => {
+    if (
+      inView &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      initialLoadComplete &&
+      canFetchMoreRef.current
+    ) {
+      console.log("🚀 Fetching next page...");
+      canFetchMoreRef.current = false;
+
+      const scrollContainer = scrollContainerRef.current;
+      if (scrollContainer) {
+        // Lưu lại chiều cao hiện tại của container
+        const previousScrollHeight = scrollContainer.scrollHeight;
+
+        fetchNextPage().then(() => {
+          requestAnimationFrame(() => {
+            // Tính toán độ chênh lệch chiều cao và điều chỉnh scrollTop
+            const newScrollHeight = scrollContainer.scrollHeight;
+            const heightDifference = newScrollHeight - previousScrollHeight;
+            scrollContainer.scrollTop += heightDifference;
+
+            // Enable fetch lại sau khi đã xử lý scroll
+            setTimeout(() => {
+              canFetchMoreRef.current = true;
+            }, 500);
+          });
+        });
+      }
+    }
+  }, [
+    inView,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    initialLoadComplete,
+  ]);
 
   useEffect(() => {
     const signalR = SignalRService.getInstance();
@@ -78,70 +170,96 @@ export const MessageList = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 messages-scrollbar bg-slate-300">
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={`flex ${
-            msg.senderId === currentUserId ? "justify-end" : "justify-start"
-          }`}
-        >
-          <Card
-            className={`max-w-xs ${
-              msg.senderId === currentUserId
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted"
+    <div
+      ref={scrollContainerRef}
+      className="flex-1 overflow-y-auto p-4 space-y-4 messages-scrollbar bg-slate-300"
+      onScroll={handleScroll}
+    >
+      {initialLoadComplete && (
+        <div ref={ref} className="h-4 w-full">
+          {isFetchingNextPage && (
+            <div className="flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        {allMessages.map((msg) => (
+          <div
+            key={msg.id}
+            ref={(node) => {
+              if (msg.id === allMessages[0].id) {
+                lastMessageRef.current = node;
+              }
+            }}
+            className={`flex ${
+              msg.senderId === currentUserId ? "justify-end" : "justify-start"
             }`}
           >
-            <CardHeader className="py-1 px-3">
-              <p className="font-semibold">{msg.senderName}</p>
-            </CardHeader>
-            <CardContent className="py-1 px-3">
-              <p>{msg.content}</p>
-              {msg.files && msg.files.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {msg.files.map((file) => (
-                    <div key={file.id} className="relative">
-                      {file.type.startsWith("image/") ? (
-                        <Image
-                          src={file.url}
-                          alt={file.name}
-                          width={300}
-                          height={200}
-                          quality={100}
-                          className="w-full h-auto rounded object-cover"
-                          loading="lazy"
-                        />
-                      ) : file.type.startsWith("video/") ? (
-                        <video
-                          src={file.url}
-                          controls
-                          className="w-full h-auto rounded"
-                          preload="metadata"
-                        />
-                      ) : (
-                        <div className="p-4 bg-muted rounded">
-                          <p className="text-sm truncate">{file.name}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-            <CardFooter className="py-1 px-3 flex justify-between items-center gap-2">
-              <p className="text-xs">
-                {new Date(msg.createdAt).toLocaleTimeString()}
-              </p>
-              {msg.senderId === currentUserId && (
-                <div className="flex items-center">
-                  {getStatusIcon(msg.status)}
-                </div>
-              )}
-            </CardFooter>
-          </Card>
-        </div>
-      ))}
+            <Card
+              className={`max-w-xs ${
+                msg.senderId === currentUserId
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted"
+              }`}
+            >
+              <CardHeader className="py-1 px-3">
+                <p className="font-semibold">{msg.senderName}</p>
+              </CardHeader>
+              <CardContent className="py-1 px-3">
+                <p>{msg.content}</p>
+                {msg.files && msg.files.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {msg.files.map((file) => (
+                      <div key={file.id} className="relative">
+                        {file.type && file.type.startsWith("image/") ? (
+                          <Image
+                            src={file.url}
+                            alt={file.name}
+                            width={300}
+                            height={200}
+                            quality={100}
+                            className="w-full h-auto rounded object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              console.error(
+                                `Error loading image: ${file.url}`,
+                                e
+                              );
+                            }}
+                          />
+                        ) : file.type && file.type.startsWith("video/") ? (
+                          <video
+                            src={file.url}
+                            controls
+                            className="w-full h-auto rounded"
+                            preload="metadata"
+                          />
+                        ) : (
+                          <div className="p-4 bg-muted rounded">
+                            <p className="text-sm truncate">{file.name}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="py-1 px-3 flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">
+                  {new Date(msg.createdAt).toLocaleTimeString("vi-VN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                {msg.senderId === currentUserId && getStatusIcon(msg.status)}
+              </CardFooter>
+            </Card>
+          </div>
+        ))}
+      </div>
       <div ref={messagesEndRef} />
     </div>
   );
