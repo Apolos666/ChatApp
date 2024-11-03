@@ -123,17 +123,17 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	} else {
 		updateUserParam.PhoneNumber = userNeedUpdate.PhoneNumber
 	}
-	if req.Dob.Valid && util.IsEqualPgDate(req.Dob, userNeedUpdate.Dob) {
+	if req.Dob.Valid && !util.IsEqualPgDate(req.Dob, userNeedUpdate.Dob) {
 		updateUserParam.Dob = req.Dob
 	} else {
 		updateUserParam.Dob = userNeedUpdate.Dob
 	}
-	if req.Address.Valid && util.IsEqualPgText(req.Address, userNeedUpdate.Address) {
+	if req.Address.Valid && !util.IsEqualPgText(req.Address, userNeedUpdate.Address) {
 		updateUserParam.Address = req.Address
 	} else {
 		updateUserParam.Address = userNeedUpdate.Address
 	}
-	if req.IsActive.Valid && util.IsEqualPgBool(req.IsActive, userNeedUpdate.IsActive) {
+	if req.IsActive.Valid && !util.IsEqualPgBool(req.IsActive, userNeedUpdate.IsActive) {
 		updateUserParam.IsActive = req.IsActive
 	} else {
 		updateUserParam.IsActive = userNeedUpdate.IsActive
