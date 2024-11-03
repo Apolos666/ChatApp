@@ -4,7 +4,7 @@ import { MessageDto } from "@/app/chat/(types)/message";
 
 interface GetMessagesResponse {
   messages: MessageDto[];
-  hasMore: boolean;
+  hasMore: boolean; 
 }
 
 type MessagesQueryKey = ["messages", "room", number];

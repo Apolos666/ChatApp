@@ -9,7 +9,7 @@ import type {
   MessageStatus,
   MessageStatusUpdate,
 } from "@/app/chat/(types)/message";
-import { Loader2 } from "lucide-react";
+import { ArrowDownToDot, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { useMessages } from "../../(hooks)/useMessages";
+import { Button } from "@/components/ui/button";
 
 export const MessageList = () => {
   const reduxMessages = useAppSelector((state) => state.messages.messages);
@@ -39,6 +40,7 @@ export const MessageList = () => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canFetchMoreRef = useRef(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   const allMessages = useMemo(() => {
     const queryMessages =
@@ -106,6 +108,20 @@ export const MessageList = () => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
     setShouldScrollToBottom(isNearBottom);
+
+    const scrollThreshold = 500;
+    const shouldShowButton =
+      scrollHeight - scrollTop - clientHeight > scrollThreshold;
+
+    setShowScrollButton(shouldShowButton);
+  }, []);
+
+  const scrollToBottomManually = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+    setShouldScrollToBottom(true);
   }, []);
 
   useEffect(() => {
@@ -286,6 +302,17 @@ export const MessageList = () => {
           </div>
         ))}
       </div>
+      {showScrollButton && (
+        <div className="sticky bottom-4 left-0 right-0 flex justify-center">
+          <Button
+            onClick={scrollToBottomManually}
+            size="icon"
+            className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <ArrowDownToDot className="!h-5 !w-5" />
+          </Button>
+        </div>
+      )}
       <div ref={messagesEndRef} />
     </div>
   );
