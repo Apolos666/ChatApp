@@ -3,16 +3,23 @@ import { User as UserType } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SortableTableHeader } from "../sortable-table-header";
-import { UserActionsCell } from "../user-actions-cell";
+import { SortableTableHeader } from "./sortable-table-header";
+import { UserActionsCell } from "./user-actions-cell";
 import { formatDate } from "@/lib/utils";
+
+const multiValueFilter = (row: any, columnId: string, filterValue: string) => {
+    const cellValue = row.getValue(columnId);
+    return Array.isArray(filterValue) ? filterValue.includes(cellValue) : cellValue === filterValue;
+};
 
 export const getColumns = ({
     setSelectedUser,
     setIsEditMode,
+    handleDelete,
 }: {
     setSelectedUser: (user: UserType) => void;
     setIsEditMode: (isEditMode: boolean) => void;
+    handleDelete: (ids: string[]) => void;
 }): ColumnDef<UserType>[] => [
     {
         id: "select",
@@ -40,7 +47,7 @@ export const getColumns = ({
     {
         accessorKey: "name",
         header: ({ column }) => (
-            <SortableTableHeader column={column} title="Name"/>
+            <SortableTableHeader column={column} title="Name" />
         ),
         cell: ({ row }) => {
             const user = row.original;
@@ -74,38 +81,65 @@ export const getColumns = ({
     {
         accessorKey: "phone_number",
         header: ({ column }) => {
-            return <SortableTableHeader column={column} title="Phone Number" />;
-        }
-    },
-    {
-        accessorKey: "role",
-        header: ({ column }) => (
-            <SortableTableHeader column={column} title="Role" />
-        ),
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }) => (
-            <SortableTableHeader column={column} title="Status" />
-        ),
-        cell: ({ row }) => {
-            const status = row.getValue("status") as string;
             return (
-                <Badge variant={status === "active" ? "success" : "secondary"}>
-                    {status}
-                </Badge>
+                <SortableTableHeader
+                    column={column}
+                    title="Phone Number"
+                    align="center"
+                />
             );
+        },
+        cell: ({ row }) => {
+            const phoneNumber = row.getValue("phone_number") as string;
+            return <div className="text-center">{phoneNumber}</div>;
         },
     },
     {
         accessorKey: "created_at",
         header: ({ column }) => (
-            <SortableTableHeader column={column} title="Joined At" />
+            <SortableTableHeader
+                column={column}
+                title="Joined At"
+                align="center"
+            />
         ),
         cell: ({ row }) => {
             const createdAt = row.getValue("created_at") as string;
-            return <span>{formatDate(createdAt)}</span>;
+            return <div className="text-center">{formatDate(createdAt)}</div>;
         },
+    },
+    {
+        accessorKey: "role",
+        header: ({ column }) => (
+            <SortableTableHeader column={column} title="Role" align="center" />
+        ),
+        cell: ({ row }) => (
+            <div className="text-center">{row.getValue("role")}</div>
+        ),
+        filterFn: multiValueFilter,
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }) => (
+            <SortableTableHeader
+                column={column}
+                title="Status"
+                align="center"
+            />
+        ),
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string;
+            return (
+                <div className="text-center">
+                    <Badge
+                        variant={status === "active" ? "success" : "secondary"}
+                    >
+                        {status}
+                    </Badge>
+                </div>
+            );
+        },
+        filterFn: multiValueFilter,
     },
     {
         id: "actions",
@@ -116,6 +150,9 @@ export const getColumns = ({
                 onEdit={(user) => {
                     setSelectedUser(user);
                     setIsEditMode(true);
+                }}
+                onDelete={(user) => {
+                    handleDelete([user.id]);
                 }}
             />
         ),

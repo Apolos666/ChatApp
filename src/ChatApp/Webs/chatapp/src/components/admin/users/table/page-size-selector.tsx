@@ -9,8 +9,8 @@ interface PageSizeSelectorProps {
 
 export function PageSizeSelector({ table, onPageSizeChange }: PageSizeSelectorProps) {
     return (
-        <span className="flex items-center gap-1 text-sm text-muted-foreground">
-            Rows per page:
+        <span className="flex items-center gap-1 px-4 text-sm text-muted-foreground">
+            Show
             <Select
                 value={table.getState().pagination.pageSize.toString()}
                 onValueChange={(value) => {
@@ -19,10 +19,10 @@ export function PageSizeSelector({ table, onPageSizeChange }: PageSizeSelectorPr
                     onPageSizeChange(size);
                 }}
             >
-                <SelectTrigger className="h-8 w-[70px]">
+                <SelectTrigger className="h-8 w-[60px] mx-2">
                     <SelectValue placeholder={table.getState().pagination.pageSize} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent side="top" className="w-full">
                     {[5, 10, 20].map((pageSize) => (
                         <SelectItem key={pageSize} value={pageSize.toString()}>
                             {pageSize}
@@ -30,6 +30,7 @@ export function PageSizeSelector({ table, onPageSizeChange }: PageSizeSelectorPr
                     ))}
                 </SelectContent>
             </Select>
+            pages
         </span>
     );
 } 
