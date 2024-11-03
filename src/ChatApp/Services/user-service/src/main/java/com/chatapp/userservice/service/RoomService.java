@@ -14,4 +14,5 @@ public interface RoomService {
     RoomDto addUserToRoom(int roomId, int userId);
     String deleteRoom(int roomId);
     String removeUserFromRoom(int roomId, int userId);
+    List<RoomDto> searchByRoomName(int userId, String roomName);
 }
