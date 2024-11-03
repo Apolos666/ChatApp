@@ -30,6 +30,7 @@ import { PageSizeSelector } from "./page-size-selector";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import RowActions from "./row-actions";
 
 export function UsersTable() {
     const { toast } = useToast();
@@ -48,6 +49,7 @@ export function UsersTable() {
     const [rowSelection, setRowSelection] = useState({});
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+    // Initialize the table with data and configurations
     const table = useReactTable({
         data: mockUsers,
         columns: getColumns({
@@ -87,34 +89,58 @@ export function UsersTable() {
         });
     };
 
+    const handleDelete = (ids: string[]) => {
+        console.log("Deleted users:", ids);
+        toast({
+            title: "Users deleted",
+            description: "Users have been deleted successfully.",
+        });
+    };
+
     return (
         <>
+            {/* Toolbar for user actions and column visibility */}
             <UsersToolbar
                 table={table}
                 columnVisibility={columnVisibility}
                 setColumnVisibility={setColumnVisibility}
             />
-            <PageSizeSelector table={table} onPageSizeChange={setPageSize} />
+
+            {/* Conditional rendering of row actions if any row is selected */}
+            {table.getSelectedRowModel().rows.length > 0 && (
+                <RowActions table={table} onDelete={handleDelete} />
+            )}
+
+            {/* Main table display */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead 
+                                    <TableHead
                                         key={header.id}
                                         className={cn({
-                                            'w-[50px]': header.id === 'select',
-                                            'w-[250px]': header.id === 'name',
-                                            'w-[200px]': ['email', 'phone_number'].includes(header.id),
-                                            'w-[150px]': ['created_at', 'role', 'status'].includes(header.id),
-                                            'w-[100px]': header.id === 'actions',
+                                            "w-[30px]": header.id === "select",
+                                            "w-[250px]": header.id === "name",
+                                            "w-[200px]": [
+                                                "email",
+                                                "phone_number",
+                                            ].includes(header.id),
+                                            "w-[150px]": [
+                                                "created_at",
+                                                "role",
+                                                "status",
+                                            ].includes(header.id),
+                                            "w-[100px]":
+                                                header.id === "actions",
                                         })}
                                     >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
-                                                header.column.columnDef.header,
+                                                header.column.columnDef
+                                                    .header,
                                                 header.getContext()
                                             )}
                                     </TableHead>
@@ -132,9 +158,7 @@ export function UsersTable() {
                                     }
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell
-                                            key={cell.id}
-                                        >
+                                        <TableCell key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
@@ -159,7 +183,22 @@ export function UsersTable() {
                     </TableBody>
                 </Table>
             </div>
-            <DataTablePagination table={table} />
+
+            {/* Pagination and page size selector */}
+            <div className="flex items-center">
+                <div className="flex-1">
+                    <PageSizeSelector
+                        table={table}
+                        onPageSizeChange={setPageSize}
+                    />
+                </div>
+                <div className="flex-1 flex justify-center">
+                    <DataTablePagination table={table} />
+                </div>
+                <div className="flex-1" />
+            </div>
+
+            {/* Modal for editing user details */}
             <UserModal
                 user={selectedUser}
                 open={!!selectedUser}

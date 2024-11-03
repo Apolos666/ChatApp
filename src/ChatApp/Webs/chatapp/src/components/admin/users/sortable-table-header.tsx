@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Column } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SortableTableHeaderProps<TData, TValue> {
     column: Column<TData, TValue>;
@@ -13,14 +14,29 @@ export function SortableTableHeader<TData, TValue>({
     title,
     align = "left",
 }: SortableTableHeaderProps<TData, TValue>) {
+    const isSorted = column.getIsSorted();
+
     return (
         <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className={`w-full px-1 ${align === "center" ? "justify-center" : align === "right" ? "justify-end" : "justify-start"}`}
+            onClick={() => column.toggleSorting(isSorted === "asc")}
+            className={cn(
+                "w-full px-1 gap-1",
+                {
+                    "justify-center": align === "center",
+                    "justify-end": align === "right",
+                    "justify-start": align === "left"
+                }
+            )}
         >
             {title}
-            <ArrowUpDown className="h-4 w-4" />
+            {isSorted === "asc" ? (
+                <ArrowDown className="h-4 w-4" />
+            ) : isSorted === "desc" ? (
+                <ArrowUp className="h-4 w-4" />
+            ) : (
+                <ArrowUpDown className="h-4 w-4 opacity-50" />
+            )}
         </Button>
     );
 }
