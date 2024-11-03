@@ -54,6 +54,8 @@ services:
       - DATABASE_PASSWORD=phamtantudn3
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
+    depends_on:
+      - postgres
     ports:
       - "8085:8085"
     networks:

@@ -63,6 +63,16 @@ type getUserIdRequest struct {
 	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
+type userResponse struct {
+	ID          int32       `json:"id" `
+	Name        string      `json:"name" `
+	PhoneNumber string      `json:"phone_number" `
+	Dob         pgtype.Date `json:"dob" `
+	Address     pgtype.Text `json:"address" `
+	Email       string      `json:"email" `
+	RoleID      int32       `json:"role_id" `
+}
+
 func (server *Server) getUser(ctx *gin.Context) {
 	var req getUserIdRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -78,18 +88,47 @@ func (server *Server) getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	resp := userResponse{
+		ID:          user.ID,
+		Name:        user.Name,
+		PhoneNumber: user.PhoneNumber,
+		Dob:         user.Dob,
+		Address:     user.Address,
+		Email:       user.Email,
+		RoleID:      user.RoleID,
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 type listUsersRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=1"`
+	PageID   int32 `form:"page_id" binding:"min=0"`          // default 1
+	PageSize int32 `form:"page_size" binding:"min=0,max=10"` // default 5
+}
+
+type listUsersRespone struct {
+	TotalElements int32          `json:"total_elements"`
+	TotalPages    int32          `json:"total_pages"`
+	PageID        int32          `json:"page_id"`
+	PageSize      int32          `json:"page_size"`
+	PageSizeMax   int32          `json:"page_size_max"`
+	Users         []userResponse `json:"users"`
 }
 
 func (server *Server) getListUsers(ctx *gin.Context) {
 	var req listUsersRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	if req.PageID == 0 {
+		req.PageID = 1
+	}
+	if req.PageSize == 0 {
+		req.PageSize = 5
+	}
+	listUser, err := server.r.ListAllUsers(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	users, err := server.r.ListUsers(ctx, db.ListUsersParams{
@@ -100,7 +139,26 @@ func (server *Server) getListUsers(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, users)
+	var userResponses []userResponse
+	for _, user := range users {
+		userResponses = append(userResponses, userResponse{
+			ID:          user.ID,
+			Name:        user.Name,
+			PhoneNumber: user.PhoneNumber,
+			Dob:         user.Dob,
+			Address:     user.Address,
+			Email:       user.Email,
+			RoleID:      user.RoleID,
+		})
+	}
+	ctx.JSON(http.StatusOK, listUsersRespone{
+		TotalElements: int32(len(listUser)),
+		TotalPages:    int32(len(listUser))/int32(req.PageSize) + 1,
+		PageID:        req.PageID,
+		PageSize:      req.PageSize,
+		PageSizeMax:   10,
+		Users:         userResponses,
+	})
 }
 
 type updateUserRequest struct {
