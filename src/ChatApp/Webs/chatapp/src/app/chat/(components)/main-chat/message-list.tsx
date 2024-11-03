@@ -39,7 +39,6 @@ export const MessageList = () => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canFetchMoreRef = useRef(true);
-  const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
   const allMessages = useMemo(() => {
     const queryMessages =
@@ -58,18 +57,50 @@ export const MessageList = () => {
 
   useEffect(() => {
     if (reduxMessages.length > 0 && shouldScrollToBottom) {
-      setTimeout(() => {
-        scrollToBottom();
-      }, 0);
+      const hasImages = reduxMessages.some((msg) =>
+        msg.files?.some((file) => file.type?.startsWith("image/"))
+      );
+
+      if (hasImages) {
+        setTimeout(scrollToBottom, 300);
+      } else {
+        setTimeout(scrollToBottom, 0);
+      }
     }
   }, [reduxMessages, scrollToBottom, shouldScrollToBottom]);
 
   useEffect(() => {
     if (queryData?.pages.length === 1 && !initialLoadComplete) {
-      setInitialLoadComplete(true);
-      scrollToBottom();
+      const hasImages = queryData.pages[0].messages.some((msg) =>
+        msg.files?.some((file) => file.type?.startsWith("image/"))
+      );
+
+      setTimeout(
+        () => {
+          setInitialLoadComplete(true);
+          messagesEndRef.current?.scrollIntoView({
+            behavior: "instant",
+            block: "end",
+          });
+        },
+        hasImages ? 300 : 100
+      );
     }
-  }, [initialLoadComplete, queryData?.pages.length, scrollToBottom]);
+  }, [initialLoadComplete, queryData?.pages]);
+
+  useEffect(() => {
+    if (initialLoadComplete && allMessages.length > 0) {
+      const hasImages = allMessages.some((msg) =>
+        msg.files?.some((file) => file.type?.startsWith("image/"))
+      );
+
+      if (hasImages) {
+        setTimeout(scrollToBottom, 300);
+      } else {
+        scrollToBottom();
+      }
+    }
+  }, [initialLoadComplete, allMessages, scrollToBottom]);
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
@@ -90,20 +121,20 @@ export const MessageList = () => {
 
       const scrollContainer = scrollContainerRef.current;
       if (scrollContainer) {
-        // Lưu lại chiều cao hiện tại của container
         const previousScrollHeight = scrollContainer.scrollHeight;
+        const previousScrollTop = scrollContainer.scrollTop;
 
         fetchNextPage().then(() => {
           requestAnimationFrame(() => {
-            // Tính toán độ chênh lệch chiều cao và điều chỉnh scrollTop
-            const newScrollHeight = scrollContainer.scrollHeight;
-            const heightDifference = newScrollHeight - previousScrollHeight;
-            scrollContainer.scrollTop += heightDifference;
+            if (scrollContainer) {
+              const newScrollHeight = scrollContainer.scrollHeight;
+              const heightDifference = newScrollHeight - previousScrollHeight;
+              scrollContainer.scrollTop = previousScrollTop + heightDifference;
 
-            // Enable fetch lại sau khi đã xử lý scroll
-            setTimeout(() => {
-              canFetchMoreRef.current = true;
-            }, 500);
+              setTimeout(() => {
+                canFetchMoreRef.current = true;
+              }, 500);
+            }
           });
         });
       }
@@ -189,11 +220,6 @@ export const MessageList = () => {
         {allMessages.map((msg) => (
           <div
             key={msg.id}
-            ref={(node) => {
-              if (msg.id === allMessages[0].id) {
-                lastMessageRef.current = node;
-              }
-            }}
             className={`flex ${
               msg.senderId === currentUserId ? "justify-end" : "justify-start"
             }`}
