@@ -166,10 +166,9 @@ UPDATE users SET
   phone_number = COALESCE($3, phone_number),
   dob = COALESCE($4, dob),
   address = COALESCE($5, address),
-  email = COALESCE($6, email),
-  is_active = COALESCE($7, is_active),
+  is_active = COALESCE($6, is_active),
   updated_at = current_timestamp,
-  role_id = COALESCE($8, role_id)
+  role_id = COALESCE($7, role_id)
 WHERE id = $1
 RETURNING id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id
 `
@@ -180,7 +179,6 @@ type UpdateUserParams struct {
 	PhoneNumber string      `json:"phone_number"`
 	Dob         pgtype.Date `json:"dob"`
 	Address     pgtype.Text `json:"address"`
-	Email       string      `json:"email"`
 	IsActive    pgtype.Bool `json:"is_active"`
 	RoleID      int32       `json:"role_id"`
 }
@@ -192,7 +190,6 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.PhoneNumber,
 		arg.Dob,
 		arg.Address,
-		arg.Email,
 		arg.IsActive,
 		arg.RoleID,
 	)
