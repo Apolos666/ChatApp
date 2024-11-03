@@ -3,16 +3,23 @@ import { User as UserType } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SortableTableHeader } from "../sortable-table-header";
-import { UserActionsCell } from "../user-actions-cell";
+import { SortableTableHeader } from "./sortable-table-header";
+import { UserActionsCell } from "./user-actions-cell";
 import { formatDate } from "@/lib/utils";
+
+const multiValueFilter = (row: any, columnId: string, filterValue: string) => {
+    const cellValue = row.getValue(columnId);
+    return Array.isArray(filterValue) ? filterValue.includes(cellValue) : cellValue === filterValue;
+};
 
 export const getColumns = ({
     setSelectedUser,
     setIsEditMode,
+    handleDelete,
 }: {
     setSelectedUser: (user: UserType) => void;
     setIsEditMode: (isEditMode: boolean) => void;
+    handleDelete: (ids: string[]) => void;
 }): ColumnDef<UserType>[] => [
     {
         id: "select",
@@ -109,6 +116,7 @@ export const getColumns = ({
         cell: ({ row }) => (
             <div className="text-center">{row.getValue("role")}</div>
         ),
+        filterFn: multiValueFilter,
     },
     {
         accessorKey: "status",
@@ -131,6 +139,7 @@ export const getColumns = ({
                 </div>
             );
         },
+        filterFn: multiValueFilter,
     },
     {
         id: "actions",
@@ -141,6 +150,9 @@ export const getColumns = ({
                 onEdit={(user) => {
                     setSelectedUser(user);
                     setIsEditMode(true);
+                }}
+                onDelete={(user) => {
+                    handleDelete([user.id]);
                 }}
             />
         ),

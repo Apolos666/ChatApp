@@ -1,34 +1,56 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
-import { Filter, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { User } from "@/types/user";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useState, useEffect } from "react";
 import { ColumnVisibility } from "./column-visibility";
+import FilterButton, { Filters } from "./filter-button";
 
 interface UsersToolbarProps {
     table: Table<User>;
     columnVisibility: Record<string, boolean>;
     setColumnVisibility: (columnVisibility: Record<string, boolean>) => void;
+    filters: Filters;
+    setFilters: (filters: Filters) => void;
 }
 
-export function UsersToolbar({ 
-    table, 
-    columnVisibility, 
-    setColumnVisibility 
+export function UsersToolbar({
+    table,
+    columnVisibility,
+    setColumnVisibility,
+    filters,
+    setFilters,
 }: UsersToolbarProps) {
     const [searchValue, setSearchValue] = useState<string>("");
     const debouncedSearchValue = useDebounce(searchValue, 300);
 
     useEffect(() => {
-        table.setColumnFilters([
+        const columnFilters = [
             {
                 id: "name",
                 value: debouncedSearchValue,
             },
-        ]);
-    }, [debouncedSearchValue, table]);
+        ];
+
+        // Only add role/status filters if they have values
+        if (filters.role.length > 0) {
+            columnFilters.push({ 
+                id: "role", 
+                value: filters.role,
+            });
+        }
+        
+        if (filters.status.length > 0) {
+            columnFilters.push({ 
+                id: "status", 
+                value: filters.status,
+            });
+        }
+
+        table.setColumnFilters(columnFilters);
+    }, [debouncedSearchValue, table, filters]);
 
     return (
         <div className="flex items-center justify-between px-4">
@@ -46,11 +68,8 @@ export function UsersToolbar({
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
-                <Button variant="outline">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter
-                </Button>
-                <ColumnVisibility 
+                <FilterButton filters={filters} setFilters={setFilters} />
+                <ColumnVisibility
                     columnVisibility={columnVisibility}
                     setColumnVisibility={setColumnVisibility}
                 />

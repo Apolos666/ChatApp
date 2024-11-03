@@ -22,21 +22,23 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { User as UserType } from "@/types";
-import { UserModal } from "./user-modal";
+import { UserModal } from "../modals/user-modal";
 import { mockUsers } from "@/mocks/mockUsers";
-import { UsersToolbar } from "./users-toolbar";
-import { getColumns } from "./table/columns";
+import { UsersToolbar } from "../toolbar/users-toolbar";
+import { getColumns } from "./columns";
 import { PageSizeSelector } from "./page-size-selector";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import RowActions from "./row-actions";
+import { Filters } from "../toolbar/filter-button";
 
 export function UsersTable() {
     const { toast } = useToast();
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [pageSize, setPageSize] = useState(5);
+    const [filters, setFilters] = useState<Filters>({ role: [], status: [], startDate: null, endDate: null });
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         email: true,
@@ -49,12 +51,31 @@ export function UsersTable() {
     const [rowSelection, setRowSelection] = useState({});
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+    const handleSave = (updatedUser: UserType) => {
+        console.log("Updated user:", updatedUser);
+        setIsEditMode(false);
+        setSelectedUser(updatedUser);
+        toast({
+            title: "User updated",
+            description: "User has been updated successfully.",
+        });
+    };
+
+    const handleDelete = (ids: string[]) => {
+        console.log("Deleted users:", ids);
+        toast({
+            title: "Users deleted",
+            description: "Users have been deleted successfully.",
+        });
+    };
+
     // Initialize the table with data and configurations
     const table = useReactTable({
         data: mockUsers,
         columns: getColumns({
             setSelectedUser,
             setIsEditMode,
+            handleDelete
         }),
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -79,23 +100,7 @@ export function UsersTable() {
         },
     });
 
-    const handleSave = (updatedUser: UserType) => {
-        console.log("Updated user:", updatedUser);
-        setIsEditMode(false);
-        setSelectedUser(updatedUser);
-        toast({
-            title: "User updated",
-            description: "User has been updated successfully.",
-        });
-    };
-
-    const handleDelete = (ids: string[]) => {
-        console.log("Deleted users:", ids);
-        toast({
-            title: "Users deleted",
-            description: "Users have been deleted successfully.",
-        });
-    };
+    
 
     return (
         <>
@@ -104,6 +109,8 @@ export function UsersTable() {
                 table={table}
                 columnVisibility={columnVisibility}
                 setColumnVisibility={setColumnVisibility}
+                filters={filters}
+                setFilters={setFilters}
             />
 
             {/* Conditional rendering of row actions if any row is selected */}
