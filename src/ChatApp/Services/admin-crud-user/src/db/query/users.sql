@@ -4,7 +4,8 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListUsers :many
 SELECT * FROM users
-ORDER BY name ASC;
+ORDER BY name ASC
+LIMIT $1 OFFSET $2;
 
 -- name: CreateUser :one
 INSERT INTO users (

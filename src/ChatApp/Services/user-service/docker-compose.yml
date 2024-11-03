@@ -56,8 +56,6 @@ services:
       - DATABASE_PORT=5432
     ports:
       - "8085:8085"
-    depends_on:
-      - postgres
     networks:
       - app-network
 
