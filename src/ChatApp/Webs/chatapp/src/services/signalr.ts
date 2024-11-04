@@ -1,4 +1,4 @@
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr"
 import type { MessageDto, MessageStatusUpdate } from "@/app/chat/(types)/message";
 
 export class SignalRService {
@@ -35,6 +35,10 @@ export class SignalRService {
       console.error("SignalR Connection Error:", error);
       throw error;
     }
+  }
+
+  public isConnected(): boolean {
+    return this.connection?.state === HubConnectionState.Connected;
   }
 
   public async stop(): Promise<void> {
@@ -87,7 +91,6 @@ export class SignalRService {
     if (!this.statusUpdateHandlers.includes(handler)) {
       this.statusUpdateHandlers.push(handler);
       this.connection.on("MessageStatusUpdated", (update: MessageStatusUpdate) => {
-        console.log("Received status update:", update);
         handler(update);
       });
     }

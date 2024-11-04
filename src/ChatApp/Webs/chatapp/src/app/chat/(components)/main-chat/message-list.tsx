@@ -1,14 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { SignalRService } from "@/services/signalr";
-import { addMessage, updateMessageStatus } from "@/store/features/messageSlice";
-import type {
-  MessageDto,
-  MessageStatus,
-  MessageStatusUpdate,
-} from "@/app/chat/(types)/message";
+import { useAppSelector } from "@/store/hooks";
+import type { MessageStatus } from "@/app/chat/(types)/message";
 import { ArrowDownToDot, Loader2 } from "lucide-react";
 import {
   Card,
@@ -23,7 +17,6 @@ import { Button } from "@/components/ui/button";
 
 export const MessageList = () => {
   const reduxMessages = useAppSelector((state) => state.messages.messages);
-  const dispatch = useAppDispatch();
   const {
     data: queryData,
     fetchNextPage,
@@ -41,6 +34,13 @@ export const MessageList = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canFetchMoreRef = useRef(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
+
+  useEffect(() => {
+    const userIdStr = localStorage.getItem("chat_user_id");
+    if (userIdStr) {
+      setCurrentUserId(parseInt(userIdStr, 10));
+    }
+  }, []);
 
   const allMessages = useMemo(() => {
     const queryMessages =
@@ -162,41 +162,6 @@ export const MessageList = () => {
     fetchNextPage,
     initialLoadComplete,
   ]);
-
-  useEffect(() => {
-    const signalR = SignalRService.getInstance();
-
-    const messageHandler = (message: MessageDto) => {
-      dispatch(addMessage(message));
-    };
-
-    const statusUpdateHandler = (update: MessageStatusUpdate) => {
-      dispatch(
-        updateMessageStatus({
-          messageId: update.messageId,
-          status: update.status,
-        })
-      );
-    };
-
-    const initConnection = async () => {
-      await signalR.startConnection();
-      await signalR.joinRoom(1);
-
-      const userId = Number(localStorage.getItem("chat_user_id"));
-      setCurrentUserId(userId);
-
-      signalR.onReceiveMessage(messageHandler);
-      signalR.onMessageStatusUpdated(statusUpdateHandler);
-    };
-
-    initConnection();
-
-    return () => {
-      signalR.removeMessageHandler(messageHandler);
-      signalR.removeStatusUpdateHandler(statusUpdateHandler);
-    };
-  }, [dispatch]);
 
   const getStatusIcon = (status: MessageStatus) => {
     switch (status) {
