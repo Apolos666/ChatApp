@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppSelector } from "@/store/hooks";
 import type { MessageStatus } from "@/app/chat/(types)/message";
@@ -15,14 +13,18 @@ import { useInView } from "react-intersection-observer";
 import { useMessages } from "../../(hooks)/useMessages";
 import { Button } from "@/components/ui/button";
 
-export const MessageList = () => {
+interface MessageListProps {
+  roomId: number;
+}
+
+export const MessageList = ({ roomId }: MessageListProps) => {
   const reduxMessages = useAppSelector((state) => state.messages.messages);
   const {
     data: queryData,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useMessages(1);
+  } = useMessages(roomId);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { ref, inView } = useInView({
@@ -45,8 +47,10 @@ export const MessageList = () => {
   const allMessages = useMemo(() => {
     const queryMessages =
       queryData?.pages.flatMap((page) => page.messages) ?? [];
-    return [...queryMessages, ...reduxMessages].sort((a, b) => a.id - b.id);
-  }, [queryData, reduxMessages]);
+    return [...queryMessages, ...reduxMessages]
+      .filter((msg) => msg.roomId === roomId)
+      .sort((a, b) => a.id - b.id);
+  }, [queryData, reduxMessages, roomId]);
 
   const scrollToBottom = useCallback(() => {
     if (shouldScrollToBottom) {
@@ -132,7 +136,6 @@ export const MessageList = () => {
       initialLoadComplete &&
       canFetchMoreRef.current
     ) {
-      console.log("🚀 Fetching next page...");
       canFetchMoreRef.current = false;
 
       const scrollContainer = scrollContainerRef.current;

@@ -12,7 +12,11 @@ import { FilePreview } from "./file-preview";
 import { FileControls } from "./file-controls";
 import { MessageTextInput } from "./message-text-input";
 
-export const MessageInput = () => {
+interface MessageInputProps {
+  roomId: number;
+}
+
+export const MessageInput = ({ roomId }: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -92,7 +96,7 @@ export const MessageInput = () => {
     const tempMessage: MessageDto = {
       id: tempId,
       content,
-      roomId: 1,
+      roomId: roomId,
       senderId: currentUserId,
       senderName: "You",
       createdAt: new Date().toISOString(),
@@ -102,7 +106,7 @@ export const MessageInput = () => {
 
     const formData = new FormData();
     formData.append("content", content);
-    formData.append("roomId", "1");
+    formData.append("roomId", roomId.toString());
 
     files.forEach((file) => {
       formData.append("files", file);
@@ -140,7 +144,14 @@ export const MessageInput = () => {
         videoInputRef.current.value = "";
       }
     }
-  }, [message, isSending, dispatch, selectedFiles]);
+  }, [
+    selectedFiles.images,
+    selectedFiles.videos,
+    message,
+    isSending,
+    roomId,
+    dispatch,
+  ]);
 
   const handleMessageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import messageReducer from './features/messageSlice';
+import roomSlice from './features/roomSlice';
 
 export const store = configureStore({
   reducer: {
     messages: messageReducer,
+    room: roomSlice
   },
 });
 

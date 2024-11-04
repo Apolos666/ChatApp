@@ -1,7 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAppDispatch } from "@/store/hooks";
+import { setRooms } from "@/store/features/roomSlice";
 import type { Room } from "../(types)/room";
 
 export function useRooms() {
+  const dispatch = useAppDispatch();
+
   return useQuery({
     queryKey: ["rooms"],
     queryFn: async () => {
@@ -17,10 +21,8 @@ export function useRooms() {
       }
 
       const rooms: Room[] = await response.json();
-      return rooms.map(room => ({
-        ...room,
-        selected: false
-      }));
+      dispatch(setRooms(rooms));
+      return rooms;
     },
   });
 }
