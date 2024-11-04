@@ -1,18 +1,22 @@
 import { Users2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Conversation } from "../types";
+import type { Room } from "../../(types)/room";
 
-interface ConversationCardProps {
-  conversation: Conversation;
+interface RoomCardProps {
+  room: Room;
 }
 
-export const ConversationCard = ({ conversation }: ConversationCardProps) => {
+export const RoomCard = ({ room }: RoomCardProps) => {
+  const lastMessageText = room.lastMessage
+    ? `${room.lastMessage.senderName}: ${room.lastMessage.content}`
+    : "Chưa có tin nhắn";
+
   return (
     <Card
       className={`hover:bg-accent cursor-pointer transition-colors ${
-        conversation.unread ? "bg-accent/50" : ""
+        room.unreadCount > 0 ? "bg-accent/50" : ""
       } ${
-        conversation.selected
+        room.selected
           ? "bg-accent border-primary border-2"
           : "border border-border"
       }`}
@@ -22,13 +26,15 @@ export const ConversationCard = ({ conversation }: ConversationCardProps) => {
           <Users2 className="h-5 w-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold truncate">{conversation.name}</div>
+          <div className="font-semibold truncate">{room.name}</div>
           <div className="text-sm text-muted-foreground truncate">
-            {conversation.lastMessage}
+            {lastMessageText}
           </div>
         </div>
-        {conversation.unread && (
-          <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+        {room.unreadCount > 0 && (
+          <div className="w-5 h-5 rounded-full bg-primary flex-shrink-0 flex items-center justify-center">
+            <span className="text-xs text-white">{room.unreadCount}</span>
+          </div>
         )}
       </CardContent>
     </Card>

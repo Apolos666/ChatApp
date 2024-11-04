@@ -30,6 +30,8 @@ global using CloudinaryDotNet.Actions;
 global using ChatApp.Message.Features.Messages.Contracts.Requests;
 global using Features.Messages.Queries.GetMessages;
 global using ChatApp.Message.Features.Messages.Contracts.Responses;
+global using ChatApp.Message.Features.Rooms.Dtos;
+
 
 
 

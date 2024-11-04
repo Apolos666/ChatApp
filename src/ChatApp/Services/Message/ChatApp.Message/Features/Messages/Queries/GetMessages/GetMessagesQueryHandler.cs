@@ -57,9 +57,9 @@ public class GetMessagesQueryHandler(
 
         // Lấy tin nhắn + 1 để check còn tin nhắn không
         var messages = await query
-            .Include(m => m.Files)  
-            .Include(m => m.Sender) 
-            .Include(m => m.MessageStatuses) 
+            .Include(m => m.Files)
+            .Include(m => m.Sender)
+            .Include(m => m.MessageStatuses)
             .OrderByDescending(m => m.Id)
             .Take(request.PageSize + 1)
             .Select(m => new MessageDto
