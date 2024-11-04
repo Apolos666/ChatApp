@@ -36,6 +36,15 @@ export const MessageList = ({ roomId }: MessageListProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const canFetchMoreRef = useRef(true);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isRoomChanged, setIsRoomChanged] = useState(false);
+
+  useEffect(() => {
+    setIsRoomChanged(true);
+    setShouldScrollToBottom(true);
+    setInitialLoadComplete(false);
+    setShowScrollButton(false);
+    canFetchMoreRef.current = true;
+  }, [roomId]);
 
   useEffect(() => {
     const userIdStr = localStorage.getItem("chat_user_id");
@@ -83,16 +92,19 @@ export const MessageList = ({ roomId }: MessageListProps) => {
 
       setTimeout(
         () => {
+          if (isRoomChanged) {
+            messagesEndRef.current?.scrollIntoView({
+              behavior: "instant",
+              block: "end",
+            });
+            setIsRoomChanged(false);
+          }
           setInitialLoadComplete(true);
-          messagesEndRef.current?.scrollIntoView({
-            behavior: "instant",
-            block: "end",
-          });
         },
         hasImages ? 300 : 100
       );
     }
-  }, [initialLoadComplete, queryData?.pages]);
+  }, [initialLoadComplete, queryData?.pages, isRoomChanged]);
 
   useEffect(() => {
     if (initialLoadComplete && allMessages.length > 0) {
@@ -134,7 +146,8 @@ export const MessageList = ({ roomId }: MessageListProps) => {
       hasNextPage &&
       !isFetchingNextPage &&
       initialLoadComplete &&
-      canFetchMoreRef.current
+      canFetchMoreRef.current &&
+      !isRoomChanged
     ) {
       canFetchMoreRef.current = false;
 
@@ -164,6 +177,7 @@ export const MessageList = ({ roomId }: MessageListProps) => {
     isFetchingNextPage,
     fetchNextPage,
     initialLoadComplete,
+    isRoomChanged,
   ]);
 
   const getStatusIcon = (status: MessageStatus) => {
