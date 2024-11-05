@@ -15,6 +15,7 @@ interface UserModalProps {
     open: boolean;
     onClose: () => void;
     onSave?: (updatedUser: User) => void;
+    resetPassword?: User;
     initialEditMode?: boolean;
 }
 

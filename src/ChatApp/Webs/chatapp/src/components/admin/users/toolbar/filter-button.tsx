@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Filter, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { UserRole, UserStatus } from "@/types/user";
 
 type Role = UserRole;
@@ -13,6 +13,10 @@ export interface Filters {
     status: Status[];
     startDate: Date | null;
     endDate: Date | null;
+}
+
+export interface FilterButtonRef {
+    resetFilters: () => void;
 }
 
 interface FilterButtonProps {
@@ -30,8 +34,12 @@ const DEFAULT_FILTERS: Filters = {
 const ROLES: Role[] = ['Admin', 'User', 'Moderator'];
 const STATUSES: Status[] = ['active', 'inactive'];
 
-export default function FilterButton({ filters, setFilters }: FilterButtonProps) {
+const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, setFilters }, ref) => {
     const [localFilters, setLocalFilters] = useState<Filters>(filters);
+
+    useEffect(() => {
+        setLocalFilters(filters);
+    }, [filters]);
 
     const toggleFilter = (type: keyof Pick<Filters, 'role' | 'status'>, value: Role | Status) => {
         setLocalFilters((prev) => {
@@ -58,16 +66,37 @@ export default function FilterButton({ filters, setFilters }: FilterButtonProps)
         setFilters?.(localFilters);
     };
 
+    const getFilterCount = () => {
+        let count = 0;
+        for (const key in localFilters) {
+            if (key === 'role' || key === 'status') {
+                if (localFilters[key].length > 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    };
+
     const hasChanges = () => {
         return JSON.stringify(localFilters) !== JSON.stringify(filters);
     };
 
+    useImperativeHandle(ref, () => ({
+        resetFilters
+    }));
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                    <Filter className="mr-2 h-4 w-4" />
+                <Button variant="outline"> 
+                    <Filter className="h-4 w-4 mr-2" />
                     Filter
+                    {!hasChanges() && (localFilters.role.length > 0 || localFilters.status.length > 0) && (
+                        <Badge variant="secondary" className="ml-2">
+                            {getFilterCount()}
+                        </Badge>
+                    )}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[250px] px-2">
@@ -126,4 +155,8 @@ export default function FilterButton({ filters, setFilters }: FilterButtonProps)
             </DropdownMenuContent>
         </DropdownMenu>
     );
-}
+});
+
+FilterButton.displayName = "FilterButton";
+
+export default FilterButton;
