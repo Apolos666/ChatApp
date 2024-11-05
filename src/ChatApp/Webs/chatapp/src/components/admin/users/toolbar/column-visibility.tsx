@@ -18,18 +18,18 @@ const COLUMN_OPTIONS = [
     { value: "name", label: "Name" },
     { value: "email", label: "Email" },
     { value: "phone_number", label: "Phone Number" },
+    { value: "created_at", label: "Joined At" },
     { value: "role", label: "Role" },
     { value: "status", label: "Status" },
-    { value: "created_at", label: "Joined At" },
 ] as const;
 
 const DEFAULT_VISIBILITY = {
     name: true,
     email: true,
     phone_number: false,
+    created_at: false,
     role: true,
     status: true,
-    created_at: false,
 } as const;
 
 export function ColumnVisibility({ columnVisibility, setColumnVisibility }: ColumnVisibilityProps) {

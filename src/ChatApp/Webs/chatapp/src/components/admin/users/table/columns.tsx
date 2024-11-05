@@ -16,10 +16,12 @@ export const getColumns = ({
     setSelectedUser,
     setIsEditMode,
     handleDelete,
+    setResetPassword,
 }: {
     setSelectedUser: (user: UserType) => void;
     setIsEditMode: (isEditMode: boolean) => void;
     handleDelete: (ids: string[]) => void;
+    setResetPassword: (user: UserType) => void;
 }): ColumnDef<UserType>[] => [
     {
         id: "select",
@@ -153,6 +155,9 @@ export const getColumns = ({
                 }}
                 onDelete={(user) => {
                     handleDelete([user.id]);
+                }}
+                onResetPassword={(user) => {
+                    setResetPassword(user);
                 }}
             />
         ),
