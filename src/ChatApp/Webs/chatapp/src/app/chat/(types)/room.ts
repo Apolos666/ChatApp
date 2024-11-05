@@ -5,6 +5,7 @@ export interface Room {
         content: string;
         senderName: string;
         createdAt: string;
+        senderId: number;
     };
     updatedAt?: string;
     createdAt: string;

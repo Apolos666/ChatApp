@@ -45,8 +45,13 @@ export function useMessageListManager(roomId: number) {
   // Merge và sort messages
   const allMessages = useMemo(() => {
     const queryMessages = queryData?.pages.flatMap((page) => page.messages) ?? [];
-    return [...queryMessages, ...reduxMessages]
-      .filter((msg) => msg.roomId === roomId)
+    const filteredReduxMessages = reduxMessages.filter(
+      (reduxMsg) =>
+        reduxMsg.roomId === roomId &&
+        !queryMessages.some((queryMsg) => queryMsg.id === reduxMsg.id)
+    );
+    
+    return [...queryMessages, ...filteredReduxMessages]
       .sort((a, b) => a.id - b.id);
   }, [queryData, reduxMessages, roomId]);
 

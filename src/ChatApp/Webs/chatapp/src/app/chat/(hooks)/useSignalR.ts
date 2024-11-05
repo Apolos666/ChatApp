@@ -3,6 +3,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { SignalRService } from '@/services/signalr';
 import { addMessage, updateMessageStatus } from '@/store/features/messageSlice';
 import type { MessageDto, MessageStatusUpdate } from '../(types)/message';
+import { updateLastMessage } from '@/store/features/roomSlice';
 
 export function useSignalR(rooms: number[]) {
   const dispatch = useAppDispatch();
@@ -13,6 +14,7 @@ export function useSignalR(rooms: number[]) {
   useEffect(() => {
     const messageHandler = (message: MessageDto) => {
       dispatch(addMessage(message));
+      dispatch(updateLastMessage(message));
     };
 
     const statusUpdateHandler = (update: MessageStatusUpdate) => {
