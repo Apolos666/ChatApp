@@ -19,7 +19,6 @@ export const MessageTextInput = memo(
     onSend,
     onKeyPress,
   }: MessageTextInputProps) => {
-    console.log("MessageTextInput rendered");
     return (
       <div className="flex items-center space-x-2 p-2">
         <Input
