@@ -64,13 +64,15 @@ type getUserIdRequest struct {
 }
 
 type userResponse struct {
-	ID          int32       `json:"id" `
-	Name        string      `json:"name" `
-	PhoneNumber string      `json:"phone_number" `
-	Dob         pgtype.Date `json:"dob" `
-	Address     pgtype.Text `json:"address" `
-	Email       string      `json:"email" `
-	RoleID      int32       `json:"role_id" `
+	ID          int32            `json:"id" `
+	Name        string           `json:"name" `
+	PhoneNumber string           `json:"phone_number" `
+	Dob         pgtype.Date      `json:"dob" `
+	Address     pgtype.Text      `json:"address" `
+	Email       string           `json:"email" `
+	Is_active   pgtype.Bool      `json:"is_active" `
+	RoleID      int32            `json:"role_id" `
+	CreatedAt   pgtype.Timestamp `json:"created_at" `
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
@@ -95,7 +97,9 @@ func (server *Server) getUser(ctx *gin.Context) {
 		Dob:         user.Dob,
 		Address:     user.Address,
 		Email:       user.Email,
+		Is_active:   user.IsActive,
 		RoleID:      user.RoleID,
+		CreatedAt:   user.CreatedAt,
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
@@ -148,7 +152,9 @@ func (server *Server) getListUsers(ctx *gin.Context) {
 			Dob:         user.Dob,
 			Address:     user.Address,
 			Email:       user.Email,
+			Is_active:   user.IsActive,
 			RoleID:      user.RoleID,
+			CreatedAt:   user.CreatedAt,
 		})
 	}
 	ctx.JSON(http.StatusOK, listUsersRespone{
@@ -177,6 +183,8 @@ type updateUserResponse struct {
 	Dob         pgtype.Date      `json:"dob" `
 	Address     pgtype.Text      `json:"address" `
 	Email       string           `json:"email" `
+	IsActive    pgtype.Bool      `json:"is_active"`
+	CreatedAt   pgtype.Timestamp `json:"created_at" `
 	UpdateAt    pgtype.Timestamp `json:"update_at" `
 	RoleID      int32            `json:"role_id" `
 }
@@ -236,6 +244,8 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		Dob:         user.Dob,
 		Address:     user.Address,
 		Email:       user.Email,
+		IsActive:    user.IsActive,
+		CreatedAt:   user.CreatedAt,
 		UpdateAt:    user.UpdatedAt,
 		RoleID:      user.RoleID,
 	}
