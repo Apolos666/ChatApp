@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
+namespace ChatApp.Message.Extensions;
 
 public static class FileExtensions
 {

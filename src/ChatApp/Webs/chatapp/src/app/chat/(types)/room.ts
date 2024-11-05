@@ -11,4 +11,5 @@ export interface Room {
     createdAt: string;
     selected?: boolean;
     unreadCount: number;
+    memberCount: number;
   }

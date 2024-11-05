@@ -7,4 +7,6 @@ public record RoomDto
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; init; }
     public MessageDto? LastMessage { get; init; }
+    public int MemberCount { get; init; }
+    public ICollection<FileDto> Files { get; init; } = [];
 }

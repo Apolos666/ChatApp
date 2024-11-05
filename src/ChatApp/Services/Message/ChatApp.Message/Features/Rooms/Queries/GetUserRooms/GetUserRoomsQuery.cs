@@ -1,5 +1,3 @@
-using MessageStatusEnum = ChatApp.Message.Features.Messages.Enums.MessageStatus;
-
 namespace ChatApp.Message.Features.Rooms.Queries.GetUserRooms;
 
 public record GetUserRoomsQuery : IRequest<List<RoomDto>>;
@@ -15,28 +13,45 @@ public class GetUserRoomsQueryHandler(
     {
         var currentUser = httpContextAccessor.HttpContext?.GetCurrentUser()
                           ?? throw new UnauthorizedAccessException();
-
-        var rooms = await context.RoomUsers
+        
+        var userRoomIds = await context.RoomUsers
             .Where(ru => ru.UserId == currentUser.Id)
-            .Select(ru => new RoomDto
+            .Select(ru => ru.RoomId)
+            .ToListAsync(cancellationToken);
+
+
+        var rooms = await context.Rooms
+            .Where(r => userRoomIds.Contains(r.Id))
+            .Select(r => new RoomDto
             {
-                Id = ru.Room.Id,
-                Name = ru.Room.Name,
-                CreatedAt = ru.Room.CreatedAt,
-                UpdatedAt = ru.Room.UpdatedAt,
-                LastMessage = ru.Room.Messages
+                Id = r.Id,
+                Name = r.Name,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
+                MemberCount = context.RoomUsers.Count(ru => ru.RoomId == r.Id),
+                Files = r.Files.Select(f => new FileDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Url = f.Url,
+                    CreatedAt = f.CreatedAt,
+                    Type = f.Name.GetMimeType()
+                }).ToList(),
+                LastMessage = r.Messages
                     .OrderByDescending(m => m.CreatedAt)
                     .Select(m => new MessageDto
                     {
                         Content = m.Content,
                         SenderName = m.Sender.Name,
-                        CreatedAt = m.CreatedAt
+                        CreatedAt = m.CreatedAt,
+                        SenderId = m.SenderId,
                     })
                     .FirstOrDefault()
             })
             .OrderByDescending(r => r.UpdatedAt ?? r.CreatedAt)
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
-        
+
         return rooms;
     }
 }
