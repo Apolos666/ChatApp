@@ -41,8 +41,13 @@ function SigninForm() {
   }
 
   return (
-    <div className='w-96 border rounded-2xl shadow-md flex flex-col items-center p-6'>
-      <h3 className='text-2xl font-semibold'>User Login</h3>
+    <div className='relative w-96 border rounded-2xl shadow-md flex flex-col items-center px-6 py-10 bg-white'>
+      <div className='flex items-center justify-center gap-4'>
+        <h3 className='text-2xl font-semibold'>User</h3>
+        <h3 className='relative z-[100] text-2xl text-white font-semibold after:bg-black after:z-[-1] after:block after:w-[120%] after:-translate-x-[10%] after:h-full after:absolute after:top-0 after:-skew-x-12'>
+          Login
+        </h3>
+      </div>
       <p className='text-center text-base mt-3 mb-4'>
         Hey, Enter your details to get sign in <br /> to your account
       </p>
@@ -86,6 +91,8 @@ function SigninForm() {
           Request Now
         </Link>
       </div>
+
+      <div className='absolute size-full bg-white border shadow-md rounded-2xl z-[-1] top-0 -translate-y-2 translate-x-2'></div>
     </div>
   )
 }
