@@ -16,7 +16,9 @@ export const RoomCard = ({ room }: RoomCardProps) => {
     : "Chưa có tin nhắn";
 
   const handleClick = () => {
-    dispatch(setSelectedRoom(room.id));
+    if (selectedRoomId !== room.id) {
+      dispatch(setSelectedRoom(room.id));
+    }
   };
 
   return (
