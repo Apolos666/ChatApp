@@ -18,15 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", 
-    allowedHeaders = "*", 
-    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-    allowCredentials = "true",
-    exposedHeaders = {
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials"
-    }
-)
 public class AuthController {
 
     private final AuthService authService;

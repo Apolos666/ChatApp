@@ -14,15 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000",
-    allowedHeaders = "*",
-    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
-    allowCredentials = "true",
-    exposedHeaders = {
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials"
-    }
-)
 public class UserController {
 
     private final UserService userService;
