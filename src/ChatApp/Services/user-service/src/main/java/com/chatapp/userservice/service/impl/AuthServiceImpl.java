@@ -121,7 +121,8 @@ public class AuthServiceImpl implements AuthService {
 
         user = new User();
         user = mapper.map(request, User.class);
-        user.setActivationCode(UUID.randomUUID().toString());
+//        user.setActivationCode(UUID.randomUUID().toString());
+        user.setActivationCode(AppUtil.generateRandomPassword(8));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role role = roleRepository.findById(UserRoleEnum.NORMAL_USER.getRoleId()).get();
