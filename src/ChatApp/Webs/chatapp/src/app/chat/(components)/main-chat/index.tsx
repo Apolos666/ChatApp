@@ -5,11 +5,16 @@ import { PinnedMessage } from "./pinned-message";
 import { MessageList } from "./message-list";
 import { MessageInput } from "./message-input";
 import { NoRoomSelected } from "./no-room-selected";
+import { useTypingIndicator } from "../../(hooks)/useTypingIndicator";
+import { TypingIndicator } from "../utils/typing-indicator";
 
 export const MainChatArea = () => {
   const selectedRoomId = useAppSelector((state) => state.room.selectedRoomId);
   const rooms = useAppSelector((state) => state.room.rooms);
   const selectedRoom = rooms.find((room) => room.id === selectedRoomId);
+  const { typingUsers } = useTypingIndicator(selectedRoomId || 0);
+
+  console.log(typingUsers);
 
   if (!selectedRoomId || !selectedRoom) {
     return (
@@ -25,6 +30,7 @@ export const MainChatArea = () => {
         <ChatHeader />
         <PinnedMessage />
         <MessageList roomId={selectedRoomId} />
+        <TypingIndicator typingUsers={typingUsers} />
         <MessageInput roomId={selectedRoomId} />
       </div>
     </SidebarInset>
