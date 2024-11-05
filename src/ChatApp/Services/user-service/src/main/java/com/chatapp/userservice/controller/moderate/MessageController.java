@@ -9,10 +9,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/management/messages")
+@CrossOrigin(origins = "http://localhost:3000",
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowCredentials = "true",
+    exposedHeaders = {
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
+    }
+)
 public class MessageController {
 
     private final MessageService messageService;

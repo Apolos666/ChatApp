@@ -16,6 +16,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/management/rooms")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000",
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowCredentials = "true",
+    exposedHeaders = {
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
+    }
+)
 public class RoomController {
     private final RoomService roomService;
     private final UserService userService;
