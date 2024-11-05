@@ -4,9 +4,10 @@ import { Table } from "@tanstack/react-table";
 import { Plus } from "lucide-react";
 import { User } from "@/types/user";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ColumnVisibility } from "./column-visibility";
-import FilterButton, { Filters } from "./filter-button";
+import FilterButton, { Filters, FilterButtonRef } from "./filter-button";
+import { RotateCcw } from "lucide-react";
 
 interface UsersToolbarProps {
     table: Table<User>;
@@ -25,6 +26,7 @@ export function UsersToolbar({
 }: UsersToolbarProps) {
     const [searchValue, setSearchValue] = useState<string>("");
     const debouncedSearchValue = useDebounce(searchValue, 300);
+    const filterButtonRef = useRef<FilterButtonRef>(null);
 
     useEffect(() => {
         const columnFilters = [
@@ -60,6 +62,20 @@ export function UsersToolbar({
                         ? `Users found (${table.getRowCount()})`
                         : `All Users (${table.getRowCount()})`}
                 </h2>
+                {(table.getState().columnFilters.length > 0 || Object.keys(table.getState().rowSelection).length > 0) && (
+                    <Button 
+                        variant="ghost" 
+                        className="h-8 px-2 text-muted-foreground"
+                        onClick={() => {
+                            setSearchValue("");
+                            filterButtonRef.current?.resetFilters();
+                            table.resetRowSelection();
+                        }}
+                    >
+                        <RotateCcw className="h-3 w-3 mr-1" />
+                        Reset all
+                    </Button>
+                )}
             </div>
             <div className="flex gap-3">
                 <Input
@@ -68,7 +84,11 @@ export function UsersToolbar({
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
-                <FilterButton filters={filters} setFilters={setFilters} />
+                <FilterButton 
+                    ref={filterButtonRef}
+                    filters={filters} 
+                    setFilters={setFilters} 
+                />
                 <ColumnVisibility
                     columnVisibility={columnVisibility}
                     setColumnVisibility={setColumnVisibility}
