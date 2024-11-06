@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "proxy": "lcp --proxyUrl http://localhost:8080"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -33,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "local-cors-proxy": "^1.1.0",
     "lucide-react": "^0.453.0",
     "next": "14.2.16",
     "react": "^18",

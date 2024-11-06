@@ -3,7 +3,7 @@ import { PersistedStateKey } from '@/data/persisted-keys'
 import { getLocalStorageItem } from '@/utils/local-storage'
 
 const instance = axios.create({
-  baseURL: 'http://localhost:8080/api/'
+  baseURL: 'http://localhost:8010/proxy/api/'
 })
 
 instance.interceptors.request.use(

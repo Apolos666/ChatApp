@@ -5,9 +5,9 @@ import { LoginDtoSchema, LoginResponseDtoSchema } from "./auth.contracts";
 
 export class AuthService {
   static loginMutation(data: { loginDto: LoginDto }) {
-    // const loginDto = AxiosContracts.requestContract(LoginDtoSchema, data)
+    const loginDto = AxiosContracts.requestContract(LoginDtoSchema, data.loginDto)
 
-    return httpPost('/auth/login', data.loginDto)
-          // .then(AxiosContracts.responseContract(LoginResponseDtoSchema))
+    return httpPost('/auth/login', loginDto)
+          .then(AxiosContracts.responseContract(LoginResponseDtoSchema))
   }
 }
