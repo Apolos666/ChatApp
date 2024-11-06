@@ -1,6 +1,8 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr"
 import type { MessageDto, MessageStatusUpdate } from "@/app/chat/(types)/message";
 import { TypingIndicator } from "@/app/chat/(types)/typing";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 export class SignalRService {
   private static instance: SignalRService;
@@ -12,7 +14,7 @@ export class SignalRService {
   private constructor() {
     this.connection = new HubConnectionBuilder()
       .withUrl("http://localhost:5221/chatHub", {
-        accessTokenFactory: () => localStorage.getItem("chat_token") || "",
+        accessTokenFactory: () => getLocalStorageItem(PersistedStateKey.Token) || "",
         withCredentials: true
       })
       .withAutomaticReconnect()

@@ -12,6 +12,8 @@ import { FilePreview } from "./file-preview";
 import { FileControls } from "./file-controls";
 import { MessageTextInput } from "./message-text-input";
 import { useTypingIndicator } from "../../(hooks)/useTypingIndicator";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 interface MessageInputProps {
   roomId: number;
@@ -84,7 +86,9 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
 
     if ((!message.trim() && !files.length) || isSending) return;
 
-    const currentUserId = Number(localStorage.getItem("chat_user_id"));
+    sendTypingIndicator(false);
+
+    const currentUserId = Number(getLocalStorageItem(PersistedStateKey.MeId));
     const content = message.trim();
     const tempId = Date.now();
 
@@ -124,7 +128,9 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
       const response = await fetch("http://localhost:5221/api/messages/send", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("chat_token")}`,
+          Authorization: `Bearer ${getLocalStorageItem(
+            PersistedStateKey.Token
+          )}`,
         },
         body: formData,
       });

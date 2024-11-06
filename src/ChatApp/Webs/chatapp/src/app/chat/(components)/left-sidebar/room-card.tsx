@@ -5,6 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 interface RoomCardProps {
   room: Room;
@@ -16,7 +18,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const lastMessageRef = useRef(room.lastMessage);
   const currentUserId = parseInt(
-    localStorage.getItem("chat_user_id") || "0",
+    getLocalStorageItem(PersistedStateKey.MeId) || "0",
     10
   );
 
