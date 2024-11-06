@@ -1,6 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { QueryFunction } from "@tanstack/react-query";
 import { MessageDto } from "@/app/chat/(types)/message";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 interface GetMessagesResponse {
   messages: MessageDto[];
@@ -12,7 +14,7 @@ type MessagesQueryKey = ["messages", "room", number];
 const fetchMessages: QueryFunction<GetMessagesResponse, MessagesQueryKey, number | undefined> = 
   async ({ pageParam, queryKey }) => {
     const [, , roomId] = queryKey;
-    const token = localStorage.getItem("chat_token");
+    const token = getLocalStorageItem(PersistedStateKey.Token);
     const response = await fetch(
       `http://localhost:5221/api/messages?roomId=${roomId}&pageSize=20${
         pageParam ? `&lastMessageId=${pageParam}` : ""

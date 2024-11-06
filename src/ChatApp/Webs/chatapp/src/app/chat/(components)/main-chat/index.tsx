@@ -14,8 +14,6 @@ export const MainChatArea = () => {
   const selectedRoom = rooms.find((room) => room.id === selectedRoomId);
   const { typingUsers } = useTypingIndicator(selectedRoomId || 0);
 
-  console.log(typingUsers);
-
   if (!selectedRoomId || !selectedRoom) {
     return (
       <SidebarInset>

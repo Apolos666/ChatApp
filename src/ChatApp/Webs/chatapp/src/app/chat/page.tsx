@@ -9,6 +9,8 @@ import { RightSidebar } from "./(components)/right-sidebar";
 import { useRooms } from "./(hooks)/useRooms";
 import { useSignalR } from "./(hooks)/useSignalR";
 import { Loader2 } from "lucide-react";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 export default function ChatInterface() {
   const router = useRouter();
@@ -22,8 +24,8 @@ export default function ChatInterface() {
   const isSignalRConnected = useSignalR(roomIds);
 
   useEffect(() => {
-    const token = localStorage.getItem("chat_token");
-    const userId = localStorage.getItem("chat_user_id");
+    const token = getLocalStorageItem(PersistedStateKey.Token);
+    const userId = getLocalStorageItem(PersistedStateKey.MeId);
 
     if (!token || !userId) {
       router.push("/");

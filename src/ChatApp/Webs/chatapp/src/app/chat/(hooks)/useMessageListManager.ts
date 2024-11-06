@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAppSelector } from '@/store/hooks';
 import { useMessages } from './useMessages';
 import { useMessageScroll } from './useMessageScroll';
+import { getLocalStorageItem } from '@/utils/local-storage';
+import { PersistedStateKey } from '@/data/persisted-keys';
 
 export function useMessageListManager(roomId: number) {
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
@@ -30,7 +32,7 @@ export function useMessageListManager(roomId: number) {
 
   // Lấy current user ID
   useEffect(() => {
-    const userIdStr = localStorage.getItem("chat_user_id");
+    const userIdStr = getLocalStorageItem(PersistedStateKey.MeId);
     if (userIdStr) {
       setCurrentUserId(parseInt(userIdStr, 10));
     }

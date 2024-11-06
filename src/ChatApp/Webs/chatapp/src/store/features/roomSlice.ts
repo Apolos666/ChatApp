@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Room } from '@/app/chat/(types)/room';
 import type { MessageDto } from '@/app/chat/(types)/message';
+import { getLocalStorageItem } from '@/utils/local-storage';
+import { PersistedStateKey } from '@/data/persisted-keys';
 
 interface RoomState {
   selectedRoomId: number | null;
@@ -31,7 +33,7 @@ const roomSlice = createSlice({
     },
     updateLastMessage: (state, action: PayloadAction<MessageDto>) => {
       const message = action.payload;
-      const currentUserId = parseInt(localStorage.getItem("chat_user_id") || "0", 10);
+      const currentUserId = parseInt(getLocalStorageItem(PersistedStateKey.MeId) || "0", 10);
       
       state.rooms = state.rooms.map(room =>
         room.id === message.roomId

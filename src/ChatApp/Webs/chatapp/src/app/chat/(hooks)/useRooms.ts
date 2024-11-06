@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAppDispatch } from "@/store/hooks";
 import { setRooms } from "@/store/features/roomSlice";
 import type { Room } from "../(types)/room";
+import { getLocalStorageItem } from "@/utils/local-storage";
+import { PersistedStateKey } from "@/data/persisted-keys";
 
 export function useRooms() {
   const dispatch = useAppDispatch();
@@ -9,7 +11,7 @@ export function useRooms() {
   return useQuery({
     queryKey: ["rooms"],
     queryFn: async () => {
-      const token = localStorage.getItem("chat_token");
+      const token = getLocalStorageItem(PersistedStateKey.Token);
       const response = await fetch("http://localhost:5221/api/rooms", {
         headers: {
           Authorization: `Bearer ${token}`,
