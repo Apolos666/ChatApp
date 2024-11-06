@@ -9,6 +9,8 @@ interface MessageTextInputProps {
   onMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSend: () => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
+  onFocus: () => void;
+  onBlur: () => void;
 }
 
 export const MessageTextInput = memo(
@@ -18,14 +20,17 @@ export const MessageTextInput = memo(
     onMessageChange,
     onSend,
     onKeyPress,
+    onFocus,
+    onBlur,
   }: MessageTextInputProps) => {
-    console.log("MessageTextInput rendered");
     return (
       <div className="flex items-center space-x-2 p-2">
         <Input
           value={message}
           onChange={onMessageChange}
           onKeyPress={onKeyPress}
+          onFocus={onFocus}
+          onBlur={onBlur}
           placeholder="Nhập tin nhắn tới nhóm The family is to Love"
           className="flex-1 h-12 text-base"
           disabled={isSending}

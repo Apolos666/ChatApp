@@ -1,148 +1,57 @@
-"use client";
+import { Loader2, ArrowDownToDot } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MessageItem } from "./message-item";
+import { useMessageListManager } from "../../(hooks)/useMessageListManager";
 
-import { useEffect, useRef, useState } from "react";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { SignalRService } from "@/services/signalr";
-import { addMessage, updateMessageStatus } from "@/store/features/messageSlice";
-import type {
-  MessageDto,
-  MessageStatus,
-  MessageStatusUpdate,
-} from "@/app/chat/(types)/message";
-import { Loader2 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import Image from "next/image";
+interface MessageListProps {
+  roomId: number;
+}
 
-export const MessageList = () => {
-  const messages = useAppSelector((state) => state.messages.messages);
-  const dispatch = useAppDispatch();
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const signalR = SignalRService.getInstance();
-
-    const messageHandler = (message: MessageDto) => {
-      dispatch(addMessage(message));
-    };
-
-    const statusUpdateHandler = (update: MessageStatusUpdate) => {
-      dispatch(
-        updateMessageStatus({
-          messageId: update.messageId,
-          status: update.status,
-        })
-      );
-    };
-
-    const initConnection = async () => {
-      await signalR.startConnection();
-      await signalR.joinRoom(1);
-
-      const userId = Number(localStorage.getItem("chat_user_id"));
-      setCurrentUserId(userId);
-
-      signalR.onReceiveMessage(messageHandler);
-      signalR.onMessageStatusUpdated(statusUpdateHandler);
-    };
-
-    initConnection();
-
-    return () => {
-      signalR.removeMessageHandler(messageHandler);
-      signalR.removeStatusUpdateHandler(statusUpdateHandler);
-    };
-  }, [dispatch]);
-
-  const getStatusIcon = (status: MessageStatus) => {
-    switch (status) {
-      case "Sending":
-        return <Loader2 className="h-3 w-3 animate-spin" />;
-      case "Sent":
-        return <span className="text-xs">✓</span>;
-      case "Delivered":
-        return <span className="text-xs">✓✓</span>;
-      case "Seen":
-        return <span className="text-xs text-blue-500">✓✓</span>;
-      case "Failed":
-        return <span className="text-xs text-red-500">!</span>;
-      default:
-        console.log("Unknown status:", status);
-        return null;
-    }
-  };
+export const MessageList = ({ roomId }: MessageListProps) => {
+  const {
+    currentUserId,
+    allMessages,
+    isFetchingNextPage,
+    showScrollButton,
+    scrollContainerRef,
+    handleScroll,
+    scrollToBottom,
+  } = useMessageListManager(roomId);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 messages-scrollbar bg-slate-300">
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={`flex ${
-            msg.senderId === currentUserId ? "justify-end" : "justify-start"
-          }`}
-        >
-          <Card
-            className={`max-w-xs ${
-              msg.senderId === currentUserId
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted"
-            }`}
-          >
-            <CardHeader className="py-1 px-3">
-              <p className="font-semibold">{msg.senderName}</p>
-            </CardHeader>
-            <CardContent className="py-1 px-3">
-              <p>{msg.content}</p>
-              {msg.files && msg.files.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {msg.files.map((file) => (
-                    <div key={file.id} className="relative">
-                      {file.type.startsWith("image/") ? (
-                        <Image
-                          src={file.url}
-                          alt={file.name}
-                          width={300}
-                          height={200}
-                          quality={100}
-                          className="w-full h-auto rounded object-cover"
-                          loading="lazy"
-                        />
-                      ) : file.type.startsWith("video/") ? (
-                        <video
-                          src={file.url}
-                          controls
-                          className="w-full h-auto rounded"
-                          preload="metadata"
-                        />
-                      ) : (
-                        <div className="p-4 bg-muted rounded">
-                          <p className="text-sm truncate">{file.name}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-            <CardFooter className="py-1 px-3 flex justify-between items-center gap-2">
-              <p className="text-xs">
-                {new Date(msg.createdAt).toLocaleTimeString()}
-              </p>
-              {msg.senderId === currentUserId && (
-                <div className="flex items-center">
-                  {getStatusIcon(msg.status)}
-                </div>
-              )}
-            </CardFooter>
-          </Card>
+    <div
+      ref={scrollContainerRef}
+      className="flex-1 overflow-y-auto p-4 space-y-4 messages-scrollbar bg-slate-300"
+      style={{ scrollBehavior: "auto" }}
+      onScroll={handleScroll}
+    >
+      {isFetchingNextPage && (
+        <div className="flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin" />
         </div>
-      ))}
-      <div ref={messagesEndRef} />
+      )}
+
+      <div className="space-y-4">
+        {allMessages.map((message) => (
+          <MessageItem
+            key={message.id}
+            message={message}
+            isOwnMessage={message.senderId === currentUserId}
+          />
+        ))}
+      </div>
+
+      {showScrollButton && (
+        <div className="sticky bottom-4 left-0 right-0 flex justify-center">
+          <Button
+            onClick={() => scrollToBottom(true)}
+            size="icon"
+            className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <ArrowDownToDot className="!h-5 !w-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

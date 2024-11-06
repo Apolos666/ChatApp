@@ -6,12 +6,22 @@ namespace ChatApp.Message.Features.Messages.Commands;
 
 public record SendMessageCommand : IRequest<SendMessageResponse>
 {
-    public required string? Content { get; init; }
-    public required int RoomId { get; init; }
+    private SendMessageCommand(SendMessageRequest request)
+    {
+        Content = request.Content;
+        RoomId = request.RoomId;
+        Files = request.Files;
+    }
+
+    public static SendMessageCommand FromRequest(SendMessageRequest request)
+    {
+        return new SendMessageCommand(request);
+    }
+
+    public string? Content { get; init; }
+    public int RoomId { get; init; }
     public IFormFileCollection? Files { get; init; }
 }
-
-public record SendMessageResponse(int MessageId);
 
 public class SendMessageCommandHandler(
     ApplicationDbContext context,
@@ -31,7 +41,10 @@ public class SendMessageCommandHandler(
         await CreateMessageStatus(message.Id, currentUser.Id, cancellationToken);
         await NotifyMessageCreated(message, files, currentUser, cancellationToken);
 
-        return new SendMessageResponse(message.Id);
+        return new SendMessageResponse
+        {
+            MessageId = message.Id
+        };
     }
 
     private async Task<CurrentUser> ValidateAndGetCurrentUser(int roomId, CancellationToken cancellationToken)

@@ -1,5 +1,3 @@
-using ChatApp.Message.Services.Cloudinary;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -51,6 +49,8 @@ builder.Services.Configure<KafkaOptions>(
 
 builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
 builder.Services.AddHostedService<MessageSentEventHandler>();
+builder.Services.AddSingleton<ITypingIndicatorProducer, TypingIndicatorProducer>();
+builder.Services.AddHostedService<TypingIndicatorEventHandler>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

@@ -37,6 +37,7 @@ export function UsersTable() {
     const { toast } = useToast();
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [resetPassword, setResetPassword] = useState<UserType | null>(null);
     const [pageSize, setPageSize] = useState(5);
     const [filters, setFilters] = useState<Filters>({ role: [], status: [], startDate: null, endDate: null });
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -75,7 +76,8 @@ export function UsersTable() {
         columns: getColumns({
             setSelectedUser,
             setIsEditMode,
-            handleDelete
+            handleDelete,
+            setResetPassword,
         }),
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),

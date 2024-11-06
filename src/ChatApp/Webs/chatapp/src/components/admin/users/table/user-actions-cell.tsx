@@ -8,16 +8,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, MoreHorizontal, Pencil, Trash2, User } from "lucide-react";
+import { Copy, Lock, MoreHorizontal, Pencil, Trash2, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { DeleteConfirmationDialog } from "../modals/delete-confirmation-dialog";
+import { ResetPasswordDialog } from "../modals/reset-password-dialog";
 
 interface UserActionsCellProps {
     user: UserType;
     onEdit?: (user: UserType) => void;
     onView?: (user: UserType) => void;
     onDelete?: (user: UserType) => void;
+    onResetPassword?: (user: UserType) => void;
 }
 
 export function UserActionsCell({
@@ -25,10 +27,12 @@ export function UserActionsCell({
     onEdit,
     onView,
     onDelete,
+    onResetPassword,
 }: UserActionsCellProps) {
     const { toast } = useToast();
 
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
 
     return (
         <>
@@ -67,6 +71,14 @@ export function UserActionsCell({
                         Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                        onClick={() => {
+                            setOpenResetPasswordModal(true);
+                        }}
+                    >
+                        <Lock className="mr-2 h-4 w-4" />
+                        Reset Password
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                         onClick={() => setOpenConfirmationModal(true)}
                         className="text-destructive"
                     >
@@ -85,6 +97,12 @@ export function UserActionsCell({
                 }}
                 itemCount={1}
                 itemType="user"
+            />
+
+            <ResetPasswordDialog
+                user={user}
+                onClose={() => setOpenResetPasswordModal(false)}
+                open={openResetPasswordModal}
             />
         </>
     );

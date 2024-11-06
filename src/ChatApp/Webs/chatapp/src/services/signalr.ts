@@ -1,5 +1,6 @@
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr"
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr"
 import type { MessageDto, MessageStatusUpdate } from "@/app/chat/(types)/message";
+import { TypingIndicator } from "@/app/chat/(types)/typing";
 
 export class SignalRService {
   private static instance: SignalRService;
@@ -35,6 +36,10 @@ export class SignalRService {
       console.error("SignalR Connection Error:", error);
       throw error;
     }
+  }
+
+  public isConnected(): boolean {
+    return this.connection?.state === HubConnectionState.Connected;
   }
 
   public async stop(): Promise<void> {
@@ -87,9 +92,24 @@ export class SignalRService {
     if (!this.statusUpdateHandlers.includes(handler)) {
       this.statusUpdateHandlers.push(handler);
       this.connection.on("MessageStatusUpdated", (update: MessageStatusUpdate) => {
-        console.log("Received status update:", update);
         handler(update);
       });
+    }
+  }
+
+  public onTypingIndicatorReceived(handler: (typing: TypingIndicator) => void): void {
+    this.connection.on("TypingIndicatorReceived", (typing) => {
+      console.log("Received typing indicator:", typing);
+      handler(typing);
+    });
+  }
+  
+  public async sendTypingIndicator(roomId: number, isTyping: boolean): Promise<void> {
+    try {
+      console.log("Sending typing indicator:", { roomId, isTyping });
+      await this.connection.invoke("SendTypingIndicator", roomId, isTyping);
+    } catch (error) {
+      console.error("Error sending typing indicator:", error);
     }
   }
 
@@ -101,5 +121,9 @@ export class SignalRService {
   public removeStatusUpdateHandler(handler: (update: MessageStatusUpdate) => void): void {
     this.statusUpdateHandlers = this.statusUpdateHandlers.filter(h => h !== handler);
     this.connection.off("MessageStatusUpdated", handler);
+  }
+  
+  public removeTypingIndicatorHandler(handler: (typing: TypingIndicator) => void): void {
+    this.connection.off("TypingIndicatorReceived", handler);
   }
 } 

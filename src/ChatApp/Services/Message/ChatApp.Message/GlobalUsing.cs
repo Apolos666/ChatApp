@@ -27,6 +27,16 @@ global using FluentValidation;
 global using Microsoft.AspNetCore.Mvc;
 global using CloudinaryDotNet;
 global using CloudinaryDotNet.Actions;
+global using ChatApp.Message.Features.Messages.Contracts.Requests;
+global using Features.Messages.Queries.GetMessages;
+global using ChatApp.Message.Features.Messages.Contracts.Responses;
+global using ChatApp.Message.Features.Rooms.Dtos;
+global using ChatApp.Message.Features.Messages.Dtos;
+global using ChatApp.Message.Features.Messages.Events.TypingIndicator;
+global using ChatApp.Message.Services.Cloudinary;
+global using Features.Messages.Infrastructure;
+
+
 
 
 
