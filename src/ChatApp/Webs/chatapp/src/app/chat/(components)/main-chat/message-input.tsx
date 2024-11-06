@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useAppDispatch } from "@/store/hooks";
 import {
   addMessage,
@@ -11,6 +11,7 @@ import type { MessageDto } from "@/app/chat/(types)/message";
 import { FilePreview } from "./file-preview";
 import { FileControls } from "./file-controls";
 import { MessageTextInput } from "./message-text-input";
+import { useTypingIndicator } from "../../(hooks)/useTypingIndicator";
 
 interface MessageInputProps {
   roomId: number;
@@ -18,6 +19,7 @@ interface MessageInputProps {
 
 export const MessageInput = ({ roomId }: MessageInputProps) => {
   const [message, setMessage] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -29,6 +31,7 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
     images: [],
     videos: [],
   });
+  const { sendTypingIndicator } = useTypingIndicator(roomId);
 
   const handleImageSelect = useCallback(() => {
     imageInputRef.current?.click();
@@ -155,9 +158,15 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
 
   const handleMessageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
       setMessage(e.target.value);
+      if (newValue.trim() && isFocused) {
+        sendTypingIndicator(true);
+      } else {
+        sendTypingIndicator(false);
+      }
     },
-    []
+    [isFocused, sendTypingIndicator]
   );
 
   const handleKeyPress = useCallback(
@@ -168,6 +177,24 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
     },
     [sendMessage]
   );
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    if (message.trim()) {
+      sendTypingIndicator(true);
+    }
+  }, [message, sendTypingIndicator]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    sendTypingIndicator(false);
+  }, [sendTypingIndicator]);
+
+  useEffect(() => {
+    return () => {
+      sendTypingIndicator(false);
+    };
+  }, [sendTypingIndicator]);
 
   return (
     <div className="flex-none bg-background border-t-3">
@@ -190,6 +217,8 @@ export const MessageInput = ({ roomId }: MessageInputProps) => {
         onMessageChange={handleMessageChange}
         onSend={sendMessage}
         onKeyPress={handleKeyPress}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       />
     </div>
   );

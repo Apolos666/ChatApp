@@ -59,7 +59,7 @@ public sealed class MessageProducer : IMessageProducer, IDisposable
 
         if (disposing)
         {
-            _producer?.Dispose();
+            _producer.Dispose();
         }
 
         _disposed = true;

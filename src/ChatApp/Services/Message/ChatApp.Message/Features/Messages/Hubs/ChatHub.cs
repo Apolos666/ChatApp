@@ -3,7 +3,9 @@ namespace ChatApp.Message.Features.Messages.Hubs;
 [Authorize]
 public class ChatHub(
     ILogger<ChatHub> logger,
-    ApplicationDbContext dbContext)
+    ApplicationDbContext dbContext,
+    ITypingIndicatorProducer typingProducer,
+    IOptions<KafkaOptions> options)
     : Hub<IChatClient>
 {
     public async Task JoinRoom(int roomId)
@@ -75,5 +77,27 @@ public class ChatHub(
                 currentUser.Id);
         }
         await base.OnDisconnectedAsync(exception);
+    }
+
+    public async Task SendTypingIndicator(int roomId, bool isTyping)
+    {
+        var currentUser = Context.GetHttpContext()?.GetCurrentUser()
+            ?? throw new UnauthorizedException();
+
+        var isUserInRoom = await dbContext.RoomUsers
+            .AnyAsync(ru => ru.RoomId == roomId && ru.UserId == currentUser.Id);
+
+        if (!isUserInRoom)
+            throw new ValidationException("User is not in this room");
+
+        var typing = new TypingIndicatorDto(
+            currentUser.Id,
+            currentUser.Name,
+            roomId,
+            isTyping,
+            Context.ConnectionId,
+            DateTime.UtcNow);
+
+        await typingProducer.ProduceAsync(options.Value.TypingTopic, typing);
     }
 }

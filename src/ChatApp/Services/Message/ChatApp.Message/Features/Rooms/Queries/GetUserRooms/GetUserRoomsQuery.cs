@@ -13,7 +13,7 @@ public class GetUserRoomsQueryHandler(
     {
         var currentUser = httpContextAccessor.HttpContext?.GetCurrentUser()
                           ?? throw new UnauthorizedAccessException();
-        
+
         var userRoomIds = await context.RoomUsers
             .Where(ru => ru.UserId == currentUser.Id)
             .Select(ru => ru.RoomId)

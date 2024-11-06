@@ -31,6 +31,11 @@ global using ChatApp.Message.Features.Messages.Contracts.Requests;
 global using Features.Messages.Queries.GetMessages;
 global using ChatApp.Message.Features.Messages.Contracts.Responses;
 global using ChatApp.Message.Features.Rooms.Dtos;
+global using ChatApp.Message.Features.Messages.Dtos;
+global using ChatApp.Message.Features.Messages.Events.TypingIndicator;
+global using ChatApp.Message.Services.Cloudinary;
+global using Features.Messages.Infrastructure;
+
 
 
 

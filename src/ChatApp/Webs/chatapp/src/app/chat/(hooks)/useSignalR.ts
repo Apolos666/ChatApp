@@ -4,6 +4,8 @@ import { SignalRService } from '@/services/signalr';
 import { addMessage, updateMessageStatus } from '@/store/features/messageSlice';
 import type { MessageDto, MessageStatusUpdate } from '../(types)/message';
 import { updateLastMessage } from '@/store/features/roomSlice';
+import { TypingIndicator } from '../(types)/typing';
+import { setTypingIndicator } from '@/store/features/typingSlice';
 
 export function useSignalR(rooms: number[]) {
   const dispatch = useAppDispatch();
@@ -24,6 +26,10 @@ export function useSignalR(rooms: number[]) {
       }));
     };
 
+    const typingHandler = (typing: TypingIndicator) => {
+      dispatch(setTypingIndicator(typing));
+    };
+
     const initConnection = async () => {
       if (isInitializing.current) {
         return;
@@ -41,6 +47,7 @@ export function useSignalR(rooms: number[]) {
 
         signalR.current.onReceiveMessage(messageHandler);
         signalR.current.onMessageStatusUpdated(statusUpdateHandler);
+        signalR.current.onTypingIndicatorReceived(typingHandler);
         
         setIsConnected(true);
       } catch (error) {
@@ -58,6 +65,7 @@ export function useSignalR(rooms: number[]) {
     return () => {
       signalR.current.removeMessageHandler(messageHandler);
       signalR.current.removeStatusUpdateHandler(statusUpdateHandler);
+      signalR.current.removeTypingIndicatorHandler(typingHandler);
     };
   }, [dispatch, rooms, isConnected]);
 
