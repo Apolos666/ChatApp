@@ -1,6 +1,5 @@
 'use client'
 
-import axios from 'axios'
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -36,7 +35,6 @@ function SigninForm() {
   })
 
   const onSubmit = (data: LoginFormValues) => {
-    console.log(data)
     login(data)
   }
 
