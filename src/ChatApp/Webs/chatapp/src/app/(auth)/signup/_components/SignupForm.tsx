@@ -1,81 +1,49 @@
-import React from 'react'
-import Link from 'next/link'
-import FormInput from '@/components/signin/FormInput'
-import FormPasswordInput from '@/components/signin/FormPasswordInput'
-import { KeyRound, Mail } from 'lucide-react'
-import ButtonLoading from '@/components/signin/ButtonLoading'
-import { authContractsDto, authTypesDto } from '@/services/user.service.api/auth'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import React, { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import SignupInformationForm from './SignupInformationForm'
+import SignupProcessBar from './SignupProcessBar'
+import SignupActivateAccountForm from './SignupActivateAccountForm'
+import MotionForm from './MotionForm'
 
-type LoginFormValues = authTypesDto.LoginDto
+const STEPS = 2
 
 function SignupForm() {
-  const {
-    handleSubmit,
-    control,
-    formState: { errors }
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(authContractsDto.LoginDtoSchema)
-  })
+  const [step, setStep] = useState(1)
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log(data)
+  const handleGoToNextForm = () => {
+    if (step < STEPS) {
+      setStep(step + 1)
+    }
+  }
+
+  const renderForm = () => {
+    if (step === 1)
+      return (
+        <MotionForm key='informationForm'>
+          <SignupInformationForm onFinishForm={handleGoToNextForm} />
+        </MotionForm>
+      )
+    if (step === 2)
+      return (
+        <MotionForm key='activateForm'>
+          <SignupActivateAccountForm />
+        </MotionForm>
+      )
   }
 
   return (
-    <div className='relative w-96 border rounded-2xl shadow-md flex flex-col items-center px-6 py-10 bg-white'>
+    <div className='relative flex w-auto flex-col items-center overflow-hidden rounded-2xl border bg-white px-6 py-10 shadow-md'>
       <div className='flex items-center justify-center gap-4'>
         <h3 className='text-2xl font-semibold'>User</h3>
-        <h3 className='relative z-[100] text-2xl text-white font-semibold after:bg-black after:z-[-1] after:block after:w-[120%] after:-translate-x-[10%] after:h-full after:absolute after:top-0 after:-skew-x-12'>
+        <h3 className='relative z-[100] text-2xl font-semibold text-white after:absolute after:top-0 after:z-[-1] after:block after:h-full after:w-[120%] after:-translate-x-[10%] after:-skew-x-12 after:bg-black'>
           Sign Up
         </h3>
       </div>
-      <p className='text-center text-sm mt-3 mb-4'>
-        Let's get started. Are you ready to be a part of <br /> something new? Join with us
-      </p>
-      <form className='w-full flex flex-col items-center gap-4' onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          name='email'
-          control={control}
-          render={({ field }) => (
-            <FormInput
-              title='Email'
-              icon={<Mail className='size-5' />}
-              placeholder='abc@email.com'
-              onChange={field.onChange}
-              error={errors.email?.message}
-            />
-          )}
-        />
-
-        <Controller
-          name='password'
-          control={control}
-          render={({ field }) => (
-            <FormPasswordInput
-              type='password'
-              placeholder='Your password'
-              title='Password'
-              icon={<KeyRound className='size-4' />}
-              onChange={field.onChange}
-              error={errors.password?.message}
-            />
-          )}
-        />
-
-        <ButtonLoading type='submit' className='text-sm w-full mt-1'>
-          Sign in
-        </ButtonLoading>
-      </form>
-      <div className='mt-4 w-full flex items-center justify-center'>
-        <span className='text-sm mr-2'>Don't have an account?</span>
-        <Link className='text-sm font-semibold hover:underline' href='/signup'>
-          Request Now
-        </Link>
-      </div>
-
-      <div className='absolute size-full bg-white border shadow-md rounded-2xl z-[-1] top-0 -translate-y-2 translate-x-2'></div>
+      <p className='mb-4 mt-3 text-center text-base text-gray-500'>Enter the details to get going</p>
+      <SignupProcessBar indexActive={step} />
+      <AnimatePresence mode='sync' initial={false}>
+        {renderForm()}
+      </AnimatePresence>
     </div>
   )
 }
