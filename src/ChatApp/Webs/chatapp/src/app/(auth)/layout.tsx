@@ -12,7 +12,7 @@ function Header() {
         <Zap className='size-6 group-hover:text-white' />
       </Link>
       <div className='flex items-center'>
-        <Link href='/singup' className='bg-black text-white rounded-md py-2 px-4 hover:bg-black/80'>
+        <Link href='/signup' className='bg-black text-white rounded-md py-2 px-4 hover:bg-black/80'>
           Sign up
         </Link>
       </div>
