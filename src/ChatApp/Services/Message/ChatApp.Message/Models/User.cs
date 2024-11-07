@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace ChatApp.Message.Models;
 
-namespace ChatApp.Message.Models;
-
-public partial class User
+public sealed partial class User
 {
     public int Id { get; set; }
 
@@ -29,15 +26,15 @@ public partial class User
 
     public int? RoleId { get; set; }
 
-    public virtual ICollection<File> Files { get; set; } = new List<File>();
+    public ICollection<File> Files { get; set; } = new List<File>();
 
-    public virtual ICollection<MessageStatus> MessageStatuses { get; set; } = new List<MessageStatus>();
+    public ICollection<MessageStatus> MessageStatuses { get; set; } = new List<MessageStatus>();
 
-    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+    public ICollection<Message> Messages { get; set; } = new List<Message>();
 
-    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-    public virtual Role? Role { get; set; }
+    public Role? Role { get; set; }
 
-    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+    public ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

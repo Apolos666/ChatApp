@@ -1,7 +1,6 @@
-﻿
-namespace ChatApp.Message.Models;
+﻿namespace ChatApp.Message.Models;
 
-public partial class File
+public sealed partial class File
 {
     public int Id { get; set; }
 
@@ -17,9 +16,9 @@ public partial class File
 
     public int? MessageId { get; set; }
 
-    public virtual Message? Message { get; set; }
+    public Message? Message { get; set; }
 
-    public virtual User? Owner { get; set; }
+    public User? Owner { get; set; }
 
-    public virtual Room? Room { get; set; }
+    public Room? Room { get; set; }
 }
