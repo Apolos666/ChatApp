@@ -12,6 +12,7 @@ export function useSignalR(rooms: number[]) {
   const [isConnected, setIsConnected] = useState(false);
   const signalR = useRef(SignalRService.getInstance());
   const isInitializing = useRef(false);
+  const connectedRooms = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     const messageHandler = (message: MessageDto) => {
@@ -31,19 +32,14 @@ export function useSignalR(rooms: number[]) {
     };
 
     const initConnection = async () => {
-      if (isInitializing.current) {
-        return;
-      }
+      if (isInitializing.current) return;
       
       isInitializing.current = true;
-      setIsConnected(false); 
-
+      
       try {
         if (!signalR.current.isConnected()) {
           await signalR.current.startConnection();
         }
-
-        await Promise.all(rooms.map(roomId => signalR.current.joinRoom(roomId)));
 
         signalR.current.onReceiveMessage(messageHandler);
         signalR.current.onMessageStatusUpdated(statusUpdateHandler);
@@ -58,8 +54,25 @@ export function useSignalR(rooms: number[]) {
       }
     };
 
-    if (!isConnected && rooms.length > 0) {
+    const joinRooms = async () => {
+      if (!isConnected || rooms.length === 0) return;
+
+      try {
+        for (const roomId of rooms) {
+          if (!connectedRooms.current.has(roomId)) {
+            await signalR.current.joinRoom(roomId);
+            connectedRooms.current.add(roomId);
+          }
+        }
+      } catch (error) {
+        console.error('Error joining rooms:', error);
+      }
+    };
+
+    if (!isConnected) {
       initConnection();
+    } else {
+      joinRooms();
     }
 
     return () => {
