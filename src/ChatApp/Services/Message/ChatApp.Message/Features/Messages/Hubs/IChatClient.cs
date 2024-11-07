@@ -7,6 +7,7 @@ public interface IChatClient
     Task UserLeft(UserConnectionDto connection);
     Task MessageStatusUpdated(MessageStatusUpdateDto statusUpdate);
     Task TypingIndicatorReceived(TypingIndicatorDto typing);
+    Task MessagePinStatusChanged(MessagePinnedDto pinStatus);
 }
 
 public record UserConnectionDto(

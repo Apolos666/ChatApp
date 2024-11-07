@@ -4,7 +4,7 @@ namespace ChatApp.Message.Features.Messages.Hubs;
 public class ChatHub(
     ILogger<ChatHub> logger,
     ApplicationDbContext dbContext,
-    ITypingIndicatorProducer typingProducer,
+    IKafkaProducer<TypingIndicatorDto> typingProducer,
     IOptions<KafkaOptions> options)
     : Hub<IChatClient>
 {
