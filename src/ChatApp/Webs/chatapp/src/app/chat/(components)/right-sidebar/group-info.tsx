@@ -2,6 +2,7 @@ import { Users, Pin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar'
 import { AddMemberDialog } from '../utils/add-member-dialog'
+import { PinnedMessagesDialog } from '../utils/pinned-messages-dialog'
 
 export const GroupInfo = () => {
   return (
@@ -22,10 +23,14 @@ export const GroupInfo = () => {
               console.log('Thêm thành viên mới vào nhóm:', userId)
             }}
           />
-          <Button variant='outline' className='h-12 w-full justify-start'>
-            <Pin size={24} className='mr-2' />
-            <span>Ghim hội thoại</span>
-          </Button>
+          <PinnedMessagesDialog
+            trigger={
+              <Button variant='outline' className='h-12 w-full justify-start'>
+                <Pin size={24} className='mr-2' />
+                <span>Ghim hội thoại</span>
+              </Button>
+            }
+          />
         </SidebarGroupContent>
       </div>
     </SidebarGroup>
