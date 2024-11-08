@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr"
-import type { MessageDto, MessageStatusUpdate } from "@/app/chat/(types)/message";
+import type { MessageDto, MessageStatusUpdate, PinnedMessage } from "@/app/chat/(types)/message";
 import { TypingIndicator } from "@/app/chat/(types)/typing";
 import { getLocalStorageItem } from "@/utils/local-storage";
 import { PersistedStateKey } from "@/data/persisted-keys";
@@ -105,6 +105,13 @@ export class SignalRService {
       handler(typing);
     });
   }
+
+  public onMessagePinStatusChanged(handler: (pinStatus: PinnedMessage) => void): void {
+    this.connection.on("MessagePinStatusChanged", (pinStatus) => {
+      console.log("Message pin status changed:", pinStatus);
+      handler(pinStatus);
+    });
+  }
   
   public async sendTypingIndicator(roomId: number, isTyping: boolean): Promise<void> {
     try {
@@ -127,5 +134,9 @@ export class SignalRService {
   
   public removeTypingIndicatorHandler(handler: (typing: TypingIndicator) => void): void {
     this.connection.off("TypingIndicatorReceived", handler);
+  }
+
+  public removeMessagePinStatusHandler(handler: (pinStatus: PinnedMessage) => void): void {
+    this.connection.off("MessagePinStatusChanged", handler);
   }
 } 

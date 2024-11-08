@@ -24,3 +24,14 @@ export interface MessageStatusUpdate {
   status: MessageStatus;
   error?: string;
 }
+
+export interface PinnedMessage {
+  id: number;
+  roomId: number;
+  senderId: number;
+  senderName: string;
+  content: string;
+  files: FileDto[];
+  pinnedAt: string;
+  isPinned: boolean;
+}

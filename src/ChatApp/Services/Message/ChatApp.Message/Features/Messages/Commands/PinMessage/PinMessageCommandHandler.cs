@@ -18,6 +18,8 @@ public class PinMessageCommandHandler(
 
         var message = await context.Messages
                           .Include(m => m.Room)
+                          .Include(m => m.Files)
+                          .Include(m => m.Sender)
                           .FirstOrDefaultAsync(m => m.Id == request.MessageId, cancellationToken)
                       ?? throw new NotFoundException($"Message {request.MessageId} not found");
 
@@ -33,7 +35,24 @@ public class PinMessageCommandHandler(
 
         await producer.ProduceAsync(
             _kafkaOptions.MessagePinnedTopic,
-            new MessagePinnedDto(message.Id, message.RoomId!.Value, true),
+            new MessagePinnedDto
+            {
+                Id = message.Id,
+                Content = message.Content,
+                PinnedAt = message.PinnedAt,
+                RoomId = message.RoomId!.Value,
+                SenderId = message.SenderId!.Value,
+                SenderName = message.Sender!.Name,
+                IsPinned = true,
+                Files = message.Files.Select(f => new FileDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Url = f.Url,
+                    CreatedAt = f.CreatedAt,
+                    Type = f.Name.GetMimeType()
+                }).ToList()
+            },
             cancellationToken);
 
         return new PinMessageResult

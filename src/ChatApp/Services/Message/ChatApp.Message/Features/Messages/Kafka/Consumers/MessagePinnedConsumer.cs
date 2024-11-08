@@ -20,9 +20,11 @@ public class MessagePinnedConsumer(
             .MessagePinStatusChanged(pinStatus);
 
         Logger.LogInformation(
-            "Message {MessageId} {Status} in room {RoomId}",
-            pinStatus.MessageId,
+            "Message {MessageId} {Status} in room {RoomId} by user {SenderId}. Content: {Content}",
+            pinStatus.Id,
             pinStatus.IsPinned ? "pinned" : "unpinned",
-            pinStatus.RoomId);
+            pinStatus.RoomId,
+            pinStatus.SenderId,
+            pinStatus.Content);
     }
 }

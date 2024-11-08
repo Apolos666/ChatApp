@@ -5,6 +5,8 @@ import { Loader2, MoreVertical, Copy, Pin, Trash } from 'lucide-react'
 import type { MessageDto, MessageStatus } from '../../(types)/message'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { usePinnedMessages } from '../../(hooks)/usePinnedMessage'
+import { useAppSelector } from '@/store/hooks'
 
 interface MessageItemProps {
   message: MessageDto
@@ -29,6 +31,23 @@ const getStatusIcon = (status: MessageStatus) => {
 }
 
 export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) => {
+  const { pinMessage, unpinMessage } = usePinnedMessages()
+  const pinnedMessages = useAppSelector((state) => state.pinnedMessages.pinnedMessages[message.roomId] || [])
+
+  const isPinned = pinnedMessages.some((pm) => pm.id === message.id)
+
+  const handlePinMessage = async () => {
+    try {
+      if (isPinned) {
+        await unpinMessage.mutateAsync(message.id)
+      } else {
+        await pinMessage.mutateAsync(message.id)
+      }
+    } catch (error) {
+      console.error('Error toggling pin status:', error)
+    }
+  }
+
   return (
     <div className={`group relative flex ${isOwnMessage ? 'justify-end' : 'justify-start'} items-center gap-2`}>
       {isOwnMessage && (
@@ -44,9 +63,9 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
                 <Copy className='mr-2 h-4 w-4' />
                 <span>Sao chép tin nhắn</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePinMessage}>
                 <Pin className='mr-2 h-4 w-4' />
-                <span>Ghim tin nhắn</span>
+                <span>{isPinned ? 'Bỏ ghim tin nhắn' : 'Ghim tin nhắn'}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className='text-destructive focus:text-destructive'>
                 <Trash className='mr-2 h-4 w-4' />
@@ -120,9 +139,9 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
                 <Copy className='mr-2 h-4 w-4' />
                 <span>Sao chép tin nhắn</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePinMessage}>
                 <Pin className='mr-2 h-4 w-4' />
-                <span>Ghim tin nhắn</span>
+                <span>{isPinned ? 'Bỏ ghim tin nhắn' : 'Ghim tin nhắn'}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

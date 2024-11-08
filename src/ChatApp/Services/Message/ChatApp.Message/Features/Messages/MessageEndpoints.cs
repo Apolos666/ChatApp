@@ -1,3 +1,5 @@
+using ChatApp.Message.Features.Messages.Queries.GetPinnedMessages;
+
 namespace ChatApp.Message.Features.Messages;
 
 public class MessageEndpoints : ICarterModule
@@ -28,6 +30,11 @@ public class MessageEndpoints : ICarterModule
             .WithName("UnpinMessage")
             .WithDescription("Unpin a message in a room")
             .WithSummary("Unpin Message");
+
+        messageGroup.MapGet("/{roomId:int}/pinned", GetPinnedMessages)
+            .WithName("GetPinnedMessages")
+            .WithDescription("Get all pinned messages in a room")
+            .WithSummary("Get Pinned Messages");
     }
 
     private static async Task<IResult> SendMessage(
@@ -83,5 +90,16 @@ public class MessageEndpoints : ICarterModule
             MessageId = result.MessageId
         };
         return Results.Ok(response);
+    }
+
+    private static async Task<IResult> GetPinnedMessages(
+        int roomId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var request = new GetPinnedMessagesRequest { RoomId = roomId };
+        var query = GetPinnedMessagesQuery.FromRequest(request);
+        var result = await sender.Send(query, cancellationToken);
+        return Results.Ok(result);
     }
 }

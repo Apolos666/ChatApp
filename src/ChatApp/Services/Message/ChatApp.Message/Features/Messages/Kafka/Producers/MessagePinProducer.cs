@@ -12,7 +12,7 @@ public class MessagePinProducer(
     {
         logger.LogInformation(
             "Pin status for message {MessageId} delivered to topic {Topic} [{Partition}] at offset {Offset}",
-            message.MessageId,
+            message.Id,
             result.Topic,
             result.Partition,
             result.Offset);
