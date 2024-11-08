@@ -56,7 +56,7 @@ create table messages(
                          content text not null,
                          sender_id int,
                          room_id int,
-                         pinned_at timestamp default current_timestamp,
+                         pinned_at timestamp,
                          created_at timestamp default current_timestamp
 );
 
