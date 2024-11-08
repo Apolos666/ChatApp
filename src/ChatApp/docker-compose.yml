@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Services/Message/ChatApp.Message/Dockerfile
+
   admin-service:
     image: tumuaxuan/admin-service:s1
     container_name: admin-service

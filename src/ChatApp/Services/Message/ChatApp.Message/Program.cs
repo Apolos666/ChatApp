@@ -47,10 +47,13 @@ builder.Services.AddSignalR();
 builder.Services.Configure<KafkaOptions>(
     builder.Configuration.GetSection(KafkaOptions.SectionName));
 
-builder.Services.AddSingleton<IMessageProducer, MessageProducer>();
-builder.Services.AddHostedService<MessageSentEventHandler>();
-builder.Services.AddSingleton<ITypingIndicatorProducer, TypingIndicatorProducer>();
-builder.Services.AddHostedService<TypingIndicatorEventHandler>();
+builder.Services.AddSingleton<IKafkaProducer<MessageDto>, MessageProducer>();
+builder.Services.AddSingleton<IKafkaProducer<MessagePinnedDto>, MessagePinProducer>();
+builder.Services.AddSingleton<IKafkaProducer<TypingIndicatorDto>, TypingIndicatorProducer>();
+
+builder.Services.AddHostedService<MessageSentConsumer>();
+builder.Services.AddHostedService<MessagePinnedConsumer>();
+builder.Services.AddHostedService<TypingIndicatorConsumer>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

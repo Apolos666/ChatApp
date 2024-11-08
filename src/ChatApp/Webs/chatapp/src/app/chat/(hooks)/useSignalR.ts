@@ -2,10 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { useAppDispatch } from '@/store/hooks';
 import { SignalRService } from '@/services/signalr';
 import { addMessage, updateMessageStatus } from '@/store/features/messageSlice';
-import type { MessageDto, MessageStatusUpdate } from '../(types)/message';
+import type { MessageDto, MessageStatusUpdate, PinnedMessage } from '../(types)/message';
 import { updateLastMessage } from '@/store/features/roomSlice';
 import { TypingIndicator } from '../(types)/typing';
 import { setTypingIndicator } from '@/store/features/typingSlice';
+import { addPinnedMessage, removePinnedMessage } from '@/store/features/pinnedMessageSlice';
 
 export function useSignalR(rooms: number[]) {
   const dispatch = useAppDispatch();
@@ -31,6 +32,26 @@ export function useSignalR(rooms: number[]) {
       dispatch(setTypingIndicator(typing));
     };
 
+    const pinStatusHandler = (pinStatus: PinnedMessage) => {
+      if (pinStatus.isPinned) {
+        dispatch(addPinnedMessage({
+          id: pinStatus.id,
+          roomId: pinStatus.roomId,
+          senderId: pinStatus.senderId,
+          senderName: pinStatus.senderName,
+          content: pinStatus.content,
+          files: pinStatus.files,
+          pinnedAt: pinStatus.pinnedAt,
+          isPinned: true
+        }));
+      } else {
+        dispatch(removePinnedMessage({
+          roomId: pinStatus.roomId,
+          messageId: pinStatus.id
+        }));
+      }
+    };
+
     const initConnection = async () => {
       if (isInitializing.current) return;
       
@@ -44,6 +65,7 @@ export function useSignalR(rooms: number[]) {
         signalR.current.onReceiveMessage(messageHandler);
         signalR.current.onMessageStatusUpdated(statusUpdateHandler);
         signalR.current.onTypingIndicatorReceived(typingHandler);
+        signalR.current.onMessagePinStatusChanged(pinStatusHandler);
         
         setIsConnected(true);
       } catch (error) {
@@ -79,6 +101,7 @@ export function useSignalR(rooms: number[]) {
       signalR.current.removeMessageHandler(messageHandler);
       signalR.current.removeStatusUpdateHandler(statusUpdateHandler);
       signalR.current.removeTypingIndicatorHandler(typingHandler);
+      signalR.current.removeMessagePinStatusHandler(pinStatusHandler);
     };
   }, [dispatch, rooms, isConnected]);
 
