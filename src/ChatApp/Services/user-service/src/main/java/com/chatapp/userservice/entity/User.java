@@ -47,6 +47,9 @@ public class User {
     @Column(name = "is_active", columnDefinition = "BOOLEAN DEFAULT FALSE", nullable = false)
     boolean isActive;
 
+    @Column(name = "avatar", columnDefinition = "VARCHAR(255)")
+    String avatar;
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
     @CurrentTimestamp
     Timestamp createdAt;
@@ -65,7 +68,7 @@ public class User {
     @PreRemove
     private void preRemove(){
         rooms.forEach(room -> room.setUser(null));
-        refreshTokens.forEach(token -> token.setUser(null));
+//        refreshTokens.forEach(token -> token.setUser(null));
     }
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
@@ -74,7 +77,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     List<File> files = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
