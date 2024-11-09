@@ -71,27 +71,27 @@ services:
     networks:
       - app-network
 
-  message-service:
-    image: quangtran2/message-service
-    container_name: message-serivce
-    ports:
-      - "5221:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=chat_app;User Id=postgres;Password=phamtantudn3
-      - Kafka__BootstrapServers=kafka:9092
-    depends_on:
-      kafka:
-        condition: service_healthy
-      postgres:
-        condition: service_started
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - data-protection-keys:/home/app/.aspnet/DataProtection-Keys
-    networks:
-      - app-network
+  # message-service:
+  #   image: quangtran2/message-service
+  #   container_name: message-serivce
+  #   ports:
+  #     - "5221:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=chat_app;User Id=postgres;Password=phamtantudn3
+  #     - Kafka__BootstrapServers=kafka:9092
+  #   depends_on:
+  #     kafka:
+  #       condition: service_healthy
+  #     postgres:
+  #       condition: service_started
+  #   volumes:
+  #     - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+  #     - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  #     - data-protection-keys:/home/app/.aspnet/DataProtection-Keys
+  #   networks:
+  #     - app-network
 
   postgres:
     image: postgres

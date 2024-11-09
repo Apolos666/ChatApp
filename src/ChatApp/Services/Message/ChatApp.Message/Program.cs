@@ -77,6 +77,9 @@ builder.Services.Configure<CloudinaryOptions>(
     builder.Configuration.GetSection(CloudinaryOptions.SectionName));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IVideoCallService, VideoCallService>();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -90,5 +93,6 @@ app.UseAuthorization();
 app.MapCarter();
 
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<VideoCallHub>("/videoCallHub");
 
 app.Run();
