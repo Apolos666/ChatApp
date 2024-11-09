@@ -38,3 +38,12 @@ mvnw.cmd
 
 # Cloudinary credentials
 src/main/resources/cloudinary-credentials.yml
+
+
+# Docker
+docker-compose.yml
+docker-compose.yaml
+docker-compose.*.yml
+docker-compose.*.yaml
+.docker/
+.env

@@ -25,7 +25,7 @@ public class Message {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     String content;
 
-    @Column(name = "pinned_at", columnDefinition = "TIMESTAMP", nullable = false)
+    @Column(name = "pinned_at", columnDefinition = "TIMESTAMP")
     Timestamp pinnedAt;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
