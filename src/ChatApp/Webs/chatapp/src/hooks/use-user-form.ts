@@ -2,7 +2,7 @@ import { useState } from "react";
 import { User } from "@/types/user";
 
 export function useUserForm(user: User, onSave?: (user: User) => void) {
-    const [formData, setFormData] = useState<Partial<User>>(user);
+    const [formData, setFormData] = useState<Partial<User>>({...user});
     const [isFormChanged, setIsFormChanged] = useState(false);
 
     const handleChange = (field: keyof User, value: string) => {

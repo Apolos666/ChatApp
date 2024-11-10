@@ -30,7 +30,7 @@ export function PageSizeSelector({ table, onPageSizeChange }: PageSizeSelectorPr
                     ))}
                 </SelectContent>
             </Select>
-            pages
+            rows per page
         </span>
     );
 } 

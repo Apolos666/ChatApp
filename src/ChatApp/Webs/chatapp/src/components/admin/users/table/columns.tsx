@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { User as UserType } from "@/types";
+import { USER_ROLES, USER_STATUS, User as UserType } from "@/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -96,32 +96,32 @@ export const getColumns = ({
             return <div className="text-center">{phoneNumber}</div>;
         },
     },
+    // {
+    //     accessorKey: "created_at",
+    //     header: ({ column }) => (
+    //         <SortableTableHeader
+    //             column={column}
+    //             title="Joined At"
+    //             align="center"
+    //         />
+    //     ),
+    //     cell: ({ row }) => {
+    //         const createdAt = row.getValue("created_at") as string;
+    //         return <div className="text-center">{formatDate(createdAt)}</div>;
+    //     },
+    // },
     {
-        accessorKey: "created_at",
-        header: ({ column }) => (
-            <SortableTableHeader
-                column={column}
-                title="Joined At"
-                align="center"
-            />
-        ),
-        cell: ({ row }) => {
-            const createdAt = row.getValue("created_at") as string;
-            return <div className="text-center">{formatDate(createdAt)}</div>;
-        },
-    },
-    {
-        accessorKey: "role",
+        accessorKey: "role_id",
         header: ({ column }) => (
             <SortableTableHeader column={column} title="Role" align="center" />
         ),
         cell: ({ row }) => (
-            <div className="text-center">{row.getValue("role")}</div>
+            <div className="text-center">{USER_ROLES[row.getValue("role_id") as keyof typeof USER_ROLES]}</div>
         ),
         filterFn: multiValueFilter,
     },
     {
-        accessorKey: "status",
+        accessorKey: "is_active",
         header: ({ column }) => (
             <SortableTableHeader
                 column={column}
@@ -130,13 +130,13 @@ export const getColumns = ({
             />
         ),
         cell: ({ row }) => {
-            const status = row.getValue("status") as string;
+            const status = row.getValue("is_active") as string;
             return (
                 <div className="text-center">
                     <Badge
-                        variant={status === "active" ? "success" : "secondary"}
+                        variant={status === "true" ? "success" : "secondary"}
                     >
-                        {status}
+                        {USER_STATUS[status as keyof typeof USER_STATUS]}
                     </Badge>
                 </div>
             );

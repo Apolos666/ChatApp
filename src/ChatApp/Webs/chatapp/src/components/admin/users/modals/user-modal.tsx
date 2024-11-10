@@ -47,8 +47,6 @@ export function UserModal({
           </DialogTitle>
         </DialogHeader>
 
-        <UserAvatar user={user} isEditMode={isEditMode} />
-
         {isEditMode ? (
           <UserEditForm
             user={user}

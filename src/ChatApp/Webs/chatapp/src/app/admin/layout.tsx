@@ -1,7 +1,7 @@
 'use client'
 
-import { Sidebar } from "@/components/admin/dashboard/sidebar"
-import { Header } from "@/components/admin/dashboard/header"
+import { Sidebar } from "@/components/admin/sidebar"
+import { Header } from "@/components/admin/header"
 import { usePathname } from 'next/navigation'
 
 export default function DashboardLayout({
