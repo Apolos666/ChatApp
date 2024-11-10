@@ -76,13 +76,17 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtProvider.generateToken(userDetails);
         String refreshToken = refreshTokenService.generateRefreshToken(userDetails.getId()).getToken();
 
-        return LoginResponse.builder()
+        LoginResponse response =  LoginResponse.builder()
                 .accessToken(token)
                 .refreshToken(refreshToken)
                 .id(userDetails.getId())
                 .email(userDetails.getUsername())
                 .avatar(user.getAvatar())
                 .build();
+
+//        System.out.println(response);
+
+        return response;
     }
 
     @Transactional
