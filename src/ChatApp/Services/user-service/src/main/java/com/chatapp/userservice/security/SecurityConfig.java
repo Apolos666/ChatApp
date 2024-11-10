@@ -50,17 +50,20 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Add your frontend URL
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList(
-            "Access-Control-Allow-Origin", 
-            "Access-Control-Allow-Credentials"
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials",
+                "x-auth-token"
         ));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
