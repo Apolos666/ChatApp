@@ -38,11 +38,6 @@ global using ChatApp.Message.Features.Messages.Kafka.Consumers;
 global using ChatApp.Message.Features.Messages.Kafka.Producers;
 global using Features.Messages.Kafka.Consumers;
 global using Web.Services.Kafka.Consumers;
-global using ChatApp.Message.Infrastructure.RTC;
-global using ChatApp.Message.Features.Messages.Dtos.VideoCall;
-global using ChatApp.Message.Features.VideoCall.Hubs;
-global using ChatApp.Message.Infrastructure.SignalR;
-global using ChatApp.Message.Features.Messages.Services;
 global using Microsoft.Extensions.Caching.Memory;
 
 

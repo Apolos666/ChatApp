@@ -1,3 +1,5 @@
+'use client'
+
 import { CircleUserRound, UserRoundPlus, Search, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
@@ -28,7 +30,6 @@ export const ChatHeader = () => {
             </Button>
           }
           onAddMember={(userId) => {
-            // Xử lý logic thêm thành viên vào phòng chat
             console.log('Thêm user:', userId)
           }}
         />
