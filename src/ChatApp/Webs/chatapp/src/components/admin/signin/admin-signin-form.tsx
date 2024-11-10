@@ -9,10 +9,20 @@ import { PersistedStateKey } from '@/data/persisted-keys'
 import { LoginForm } from './login-form'
 import { LoadingSpinner } from './loading-spinner'
 
-export default function AdminSigninForm() {
+interface AdminSigninFormProps {
+  initialError?: string
+}
+
+export default function AdminSigninForm({ initialError }: AdminSigninFormProps) {
   const router = useRouter()
-  const [error, setError] = useState('')
+  const [error, setError] = useState(initialError || '')
   const [isChecking, setIsChecking] = useState(true)
+
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError)
+    }
+  }, [initialError])
 
   useEffect(() => {
     const checkAdminAuth = async () => {
@@ -54,7 +64,12 @@ export default function AdminSigninForm() {
               </p>
             </CardHeader>
             <CardContent>
-              <LoginForm error={error} setError={setError} onSuccess={() => router.push('/admin/dashboard')} />
+              <LoginForm 
+                error={error} 
+                setError={setError} 
+                onSuccess={() => router.push('/admin/dashboard')} 
+                initialError={initialError}
+              />
             </CardContent>
           </Card>
         </div>
