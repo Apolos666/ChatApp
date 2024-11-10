@@ -10,6 +10,7 @@ import { EmailInput } from './email-input'
 import { SubmitButton } from './submit-button'
 import { setLocalStorageItem } from '@/utils/local-storage'
 import { PersistedStateKey } from '@/data/persisted-keys'
+import { useEffect } from 'react'
 
 // Zod schema for form validation
 const AdminLoginSchema = z.object({
@@ -23,9 +24,16 @@ interface LoginFormProps {
   error: string
   setError: (error: string) => void
   onSuccess: () => void
+  initialError?: string
 }
 
-export function LoginForm({ error, setError, onSuccess }: LoginFormProps) {
+export function LoginForm({ error, setError, onSuccess, initialError }: LoginFormProps) {
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError)
+    }
+  }, [initialError, setError])
+
   const {
     control,
     handleSubmit,

@@ -1,3 +1,12 @@
+'use client'
+
+import Loading from '@/app/(auth)/loading'
+import { useAuthCheck } from '@/hooks/use-auth-check'
+
 export default function SettingsPage() {
-    return <div>SettingsPage</div>;
+  const { isChecking } = useAuthCheck()
+
+  if (isChecking) return <Loading />
+  return <div>SettingsPage</div>
 }
+

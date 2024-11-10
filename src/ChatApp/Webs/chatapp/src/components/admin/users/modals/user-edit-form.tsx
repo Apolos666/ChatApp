@@ -3,6 +3,8 @@ import { Save } from "lucide-react";
 import { useUserForm } from "@/hooks/use-user-form";
 import { User } from "@/types/user";
 import { FormFields } from "./form-fields";
+import { UserHeader } from "../shared/user-header";
+
 interface UserEditFormProps {
     user: User;
     onSave?: (user: User) => void;
@@ -14,6 +16,11 @@ export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            <UserHeader 
+                user={formData as User}
+                isEditMode={true}
+                onChange={handleChange}
+            />
             <FormFields formData={formData} onChange={handleChange} />
             
             <div className="flex justify-between">

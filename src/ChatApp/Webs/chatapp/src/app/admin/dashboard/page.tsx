@@ -1,10 +1,18 @@
+'use client'
+
+import Loading from "@/app/(auth)/loading";
 import { StatCard } from "@/components/admin/dashboard/stat-card";
+import { useAuthCheck } from "@/hooks/use-auth-check";
 import { Users, Shield, MessageSquare } from "lucide-react";
 
 export default function DashboardPage() {
-    return (
-        <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
+  const { isChecking } = useAuthCheck()
+
+  if (isChecking) return <Loading />
+
+  return (
+    <div className='space-y-6'>
+      <div className='grid gap-4 md:grid-cols-3'>
                 <StatCard
                     title="Total Users"
                     value="1,234"
@@ -30,7 +38,7 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2">
                 {/* <UserGrowthChart />
                 <ChatActivityChart /> */}
-            </div>
         </div>
-    );
+      </div>
+    )
 }
