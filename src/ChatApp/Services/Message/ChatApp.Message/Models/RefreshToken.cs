@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ChatApp.Message.Models;
 
-public sealed partial class RefreshToken
+public partial class RefreshToken
 {
     public int Id { get; set; }
 
@@ -13,5 +13,5 @@ public sealed partial class RefreshToken
 
     public int? UserId { get; set; }
 
-    public User? User { get; set; }
+    public virtual User? User { get; set; }
 }

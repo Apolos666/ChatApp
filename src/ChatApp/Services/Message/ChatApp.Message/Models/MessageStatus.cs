@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ChatApp.Message.Models;
 
-public sealed partial class MessageStatus
+public partial class MessageStatus
 {
     public string? Status { get; set; }
 
@@ -11,7 +11,7 @@ public sealed partial class MessageStatus
 
     public int UserId { get; set; }
 
-    public Message Message { get; set; } = null!;
+    public virtual Message Message { get; set; } = null!;
 
-    public User User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

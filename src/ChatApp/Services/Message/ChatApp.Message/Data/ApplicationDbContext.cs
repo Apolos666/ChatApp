@@ -55,7 +55,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.HasOne(d => d.Message).WithMany(p => p.Files)
                 .HasForeignKey(d => d.MessageId)
-                .HasConstraintName("fk_message_id");
+                .HasConstraintName("fk6pp46ifm73sdejnw0n7co96b3");
 
             entity.HasOne(d => d.Owner).WithMany(p => p.Files)
                 .HasForeignKey(d => d.OwnerId)
@@ -207,6 +207,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .HasColumnName("address");
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(255)
+                .HasColumnName("avatar");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
