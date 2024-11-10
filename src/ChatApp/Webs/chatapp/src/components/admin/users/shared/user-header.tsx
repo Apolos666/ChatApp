@@ -2,23 +2,20 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { User } from "@/types/user";
-interface UserAvatarProps {
+
+interface UserHeaderProps {
     user: User;
-    isEditMode: boolean;
-    onChange?: (name: string, value: string) => void;
+    isEditMode?: boolean;
+    onChange?: (field: keyof User, value: string) => void;
 }
 
-export function UserAvatar({ user, isEditMode, onChange }: UserAvatarProps) {
+export function UserHeader({ user, isEditMode = false, onChange }: UserHeaderProps) {
     return (
         <div className="flex items-center gap-4 mb-6">
             <Avatar className="h-16 w-16">
-                <AvatarImage 
-                    src={user.avatar} 
-                    alt={user.name} 
-                    className="object-cover" 
-                />
+                <AvatarImage src={user.avatar || ""} alt={user.name} className="object-cover" />
                 <AvatarFallback>
-                    {user.name.split(" ")[0][0].toUpperCase()}
+                    {user.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
                 </AvatarFallback>
             </Avatar>
             {isEditMode ? (

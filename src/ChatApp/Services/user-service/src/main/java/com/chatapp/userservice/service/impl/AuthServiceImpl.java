@@ -70,17 +70,23 @@ public class AuthServiceImpl implements AuthService {
         securityContext.setAuthentication(authentication);
 
         CustomizedUserDetails userDetails = (CustomizedUserDetails) authentication.getPrincipal();
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new ApiException("User not found", HttpStatus.BAD_REQUEST));
 
         String token = jwtProvider.generateToken(userDetails);
-
         String refreshToken = refreshTokenService.generateRefreshToken(userDetails.getId()).getToken();
 
-        return LoginResponse.builder()
+        LoginResponse response =  LoginResponse.builder()
                 .accessToken(token)
                 .refreshToken(refreshToken)
                 .id(userDetails.getId())
                 .email(userDetails.getUsername())
+                .avatar(user.getAvatar())
                 .build();
+
+//        System.out.println(response);
+
+        return response;
     }
 
     @Transactional
@@ -121,7 +127,8 @@ public class AuthServiceImpl implements AuthService {
 
         user = new User();
         user = mapper.map(request, User.class);
-        user.setActivationCode(UUID.randomUUID().toString());
+//        user.setActivationCode(UUID.randomUUID().toString());
+        user.setActivationCode(AppUtil.generateRandomPassword(8));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Role role = roleRepository.findById(UserRoleEnum.NORMAL_USER.getRoleId()).get();

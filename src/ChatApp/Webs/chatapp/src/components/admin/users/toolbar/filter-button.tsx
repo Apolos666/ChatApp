@@ -32,7 +32,7 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 const ROLES: Role[] = ['Admin', 'User', 'Moderator'];
-const STATUSES: Status[] = ['active', 'inactive'];
+const STATUSES: Status[] = ['Activated', 'Not Activated'];
 
 const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, setFilters }, ref) => {
     const [localFilters, setLocalFilters] = useState<Filters>(filters);
@@ -115,7 +115,7 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
                 <DropdownMenuSeparator />
                 <div className="space-y-4 p-2">
                     <div className="space-y-2">
-                        <div className="font-light text-sm">Role</div>
+                        <div className="font-light text-sm text-muted-foreground">Role</div>
                         <div className="flex flex-wrap gap-2">
                             {ROLES.map((role) => (
                                 <Badge
@@ -130,7 +130,7 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <div className="font-light text-sm">Status</div>
+                        <div className="font-light text-sm text-muted-foreground">Account Status</div>
                         <div className="flex flex-wrap gap-2">
                             {STATUSES.map((status) => (
                                 <Badge

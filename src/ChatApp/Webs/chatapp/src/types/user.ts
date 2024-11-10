@@ -6,18 +6,26 @@ export interface UserConnectionDto {
 } 
 export interface User {
     id: string;
-    avatar: string | null;
-    gender: "Male" | "Female" | "Other";
+    avatar: string;
     name: string;
-    email: string;
-    role: "User" | "Moderator" | "Admin";
-    status: "active" | "inactive";
     phone_number: string;
     dob: string;  // ISO date string format
     address: string;
-    password: string;
-    created_at: string;  // ISO date string format
+    email: string;
+    role_id: number;
+    is_active: boolean;
 }
 
-export type UserStatus = User["status"];
-export type UserRole = User["role"];
+export const USER_ROLES = {
+    1: 'Admin',
+    2: 'Moderator',
+    3: 'User'
+} as const;
+
+export const USER_STATUS = {
+    true: 'Activated',
+    false: 'Not Activated'
+} as const;
+
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];

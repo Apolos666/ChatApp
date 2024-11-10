@@ -19,6 +19,7 @@ public class UserProfileResponse {
     Date dob;
     String address;
     String email;
+    String avatar;
     RoleDto role;
 
 }

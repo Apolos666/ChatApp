@@ -3,6 +3,7 @@ import { PencilIcon } from "lucide-react";
 import { DialogClose } from "@/components/ui/dialog";
 import { ViewFields } from "./view-fields";
 import { User } from "@/types/user";
+import { UserHeader } from "../shared/user-header";
 
 interface UserViewModeProps {
     user: User;
@@ -13,6 +14,7 @@ interface UserViewModeProps {
 export function UserViewMode({ user, onEdit }: Omit<UserViewModeProps, 'onClose'>) {
     return (
         <div className="grid gap-6">
+            <UserHeader user={user} isEditMode={false} />
             <ViewFields user={user} />
             
             <div className="flex justify-between">

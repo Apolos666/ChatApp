@@ -149,7 +149,7 @@ public class RoomServiceImpl implements RoomService {
     private RoomDto convertToDTO(Room room) {
 
         List<UserDto> userDTOs = room.getUsers().stream()
-                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail()))
+                .map(user -> new UserDto(user.getId(), user.getName(), user.getEmail(), user.getAvatar()))
                 .collect(Collectors.toList());
 
         return new RoomDto(
