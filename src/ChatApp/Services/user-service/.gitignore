@@ -35,3 +35,10 @@ build/
 .mvn/
 mvnw
 mvnw.cmd
+
+# Cloudinary credentials
+src/main/resources/cloudinary-credentials.yml
+
+
+# Docker
+.env

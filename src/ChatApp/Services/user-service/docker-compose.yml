@@ -9,9 +9,9 @@ services:
       - postgres
       - kafka
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/chat_app
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=phamtantudn3
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
       - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
     networks:
       - app-network
