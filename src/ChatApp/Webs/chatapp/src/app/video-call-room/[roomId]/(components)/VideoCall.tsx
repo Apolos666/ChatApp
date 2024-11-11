@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Mic, MicOff, Video, PhoneOff, Users } from 'lucide-react'
@@ -23,7 +23,10 @@ export default function VideoCall({ roomId }: { roomId: string }) {
   useEffect(() => {
     console.log('Initializing SignalR connection...')
     const newConnection = new HubConnectionBuilder()
-      .withUrl('https://satyr-grown-dassie.ngrok-free.app/videoCallHub')
+      .withUrl('http://localhost:5221/videoCallHub', {
+        accessTokenFactory: () => getLocalStorageItem(PersistedStateKey.Token) || '',
+        withCredentials: true
+      })
       .withAutomaticReconnect()
       .build()
 
@@ -59,7 +62,6 @@ export default function VideoCall({ roomId }: { roomId: string }) {
         console.error('Error accessing media devices:', error)
         setConnectionStatus('Media Device Error')
       })
-
     return () => {
       console.log('Cleaning up resources...')
       if (stream) {
@@ -130,7 +132,6 @@ export default function VideoCall({ roomId }: { roomId: string }) {
     peersRef.current[userId] = peer
     return peer
   }
-
   const removePeer = (userId: string) => {
     console.log('Removing peer:', userId)
     if (peersRef.current[userId]) {
@@ -200,7 +201,6 @@ export default function VideoCall({ roomId }: { roomId: string }) {
         removePeer(userId)
       }
     }
-
     const handleUserDisconnected = (userId: string) => {
       console.log('User disconnected:', userId)
       removePeer(userId)
