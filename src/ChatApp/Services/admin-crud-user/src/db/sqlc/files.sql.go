@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const setOwnerIDNullInFiles = `-- name: SetOwnerIDNullInFiles :exec
@@ -15,7 +17,7 @@ UPDATE files SET
 WHERE owner_id = $1
 `
 
-func (q *Queries) SetOwnerIDNullInFiles(ctx context.Context, ownerID int32) error {
+func (q *Queries) SetOwnerIDNullInFiles(ctx context.Context, ownerID pgtype.Int4) error {
 	_, err := q.db.Exec(ctx, setOwnerIDNullInFiles, ownerID)
 	return err
 }
