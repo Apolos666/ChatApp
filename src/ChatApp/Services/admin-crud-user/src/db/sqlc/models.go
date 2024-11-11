@@ -12,16 +12,17 @@ type File struct {
 	ID        int32            `json:"id"`
 	Name      string           `json:"name"`
 	Url       string           `json:"url"`
-	OwnerID   int32            `json:"owner_id"`
-	RoomID    int32            `json:"room_id"`
+	OwnerID   pgtype.Int4      `json:"owner_id"`
+	RoomID    pgtype.Int4      `json:"room_id"`
+	MessageID pgtype.Int4      `json:"message_id"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 
 type Message struct {
 	ID        int32            `json:"id"`
 	Content   string           `json:"content"`
-	SenderID  int32            `json:"sender_id"`
-	RoomID    int32            `json:"room_id"`
+	SenderID  pgtype.Int4      `json:"sender_id"`
+	RoomID    pgtype.Int4      `json:"room_id"`
 	PinnedAt  pgtype.Timestamp `json:"pinned_at"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
@@ -34,7 +35,7 @@ type MessageStatus struct {
 
 type RefreshToken struct {
 	ID        int32            `json:"id"`
-	UserID    int32            `json:"user_id"`
+	UserID    pgtype.Int4      `json:"user_id"`
 	Token     string           `json:"token"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 }
@@ -49,7 +50,7 @@ type Room struct {
 	Name      string           `json:"name"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	CreatorID int32            `json:"creator_id"`
+	CreatorID pgtype.Int4      `json:"creator_id"`
 }
 
 type RoomUser struct {
@@ -64,10 +65,11 @@ type User struct {
 	Dob            pgtype.Date      `json:"dob"`
 	Address        pgtype.Text      `json:"address"`
 	Email          string           `json:"email"`
+	Avatar         pgtype.Text      `json:"avatar"`
 	Password       string           `json:"password"`
 	ActivationCode pgtype.Text      `json:"activation_code"`
 	IsActive       pgtype.Bool      `json:"is_active"`
 	CreatedAt      pgtype.Timestamp `json:"created_at"`
 	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
-	RoleID         int32            `json:"role_id"`
+	RoleID         pgtype.Int4      `json:"role_id"`
 }

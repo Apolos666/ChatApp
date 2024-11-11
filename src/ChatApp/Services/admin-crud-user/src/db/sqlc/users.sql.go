@@ -17,7 +17,7 @@ INSERT INTO users (
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9
 )
-RETURNING id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id
+RETURNING id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id
 `
 
 type CreateUserParams struct {
@@ -29,7 +29,7 @@ type CreateUserParams struct {
 	Password       string      `json:"password"`
 	ActivationCode pgtype.Text `json:"activation_code"`
 	IsActive       pgtype.Bool `json:"is_active"`
-	RoleID         int32       `json:"role_id"`
+	RoleID         pgtype.Int4 `json:"role_id"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -52,6 +52,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Dob,
 		&i.Address,
 		&i.Email,
+		&i.Avatar,
 		&i.Password,
 		&i.ActivationCode,
 		&i.IsActive,
@@ -73,7 +74,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id FROM users
+SELECT id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id FROM users
 WHERE id = $1 LIMIT 1
 `
 
@@ -87,6 +88,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 		&i.Dob,
 		&i.Address,
 		&i.Email,
+		&i.Avatar,
 		&i.Password,
 		&i.ActivationCode,
 		&i.IsActive,
@@ -98,7 +100,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id FROM users
+SELECT id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id FROM users
 WHERE email = $1
 `
 
@@ -112,6 +114,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Dob,
 		&i.Address,
 		&i.Email,
+		&i.Avatar,
 		&i.Password,
 		&i.ActivationCode,
 		&i.IsActive,
@@ -123,7 +126,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const listAllUsers = `-- name: ListAllUsers :many
-SELECT id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id FROM users
+SELECT id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id FROM users
 `
 
 func (q *Queries) ListAllUsers(ctx context.Context) ([]User, error) {
@@ -142,6 +145,7 @@ func (q *Queries) ListAllUsers(ctx context.Context) ([]User, error) {
 			&i.Dob,
 			&i.Address,
 			&i.Email,
+			&i.Avatar,
 			&i.Password,
 			&i.ActivationCode,
 			&i.IsActive,
@@ -160,7 +164,7 @@ func (q *Queries) ListAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id FROM users
+SELECT id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id FROM users
 ORDER BY id
 LIMIT $1 OFFSET $2
 `
@@ -186,6 +190,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.Dob,
 			&i.Address,
 			&i.Email,
+			&i.Avatar,
 			&i.Password,
 			&i.ActivationCode,
 			&i.IsActive,
@@ -209,11 +214,12 @@ UPDATE users SET
   phone_number = COALESCE($3, phone_number),
   dob = COALESCE($4, dob),
   address = COALESCE($5, address),
-  is_active = COALESCE($6, is_active),
+  avatar = COALESCE($6, avatar),
+  is_active = COALESCE($7, is_active),
   updated_at = current_timestamp,
-  role_id = COALESCE($7, role_id)
+  role_id = COALESCE($8, role_id)
 WHERE id = $1
-RETURNING id, name, phone_number, dob, address, email, password, activation_code, is_active, created_at, updated_at, role_id
+RETURNING id, name, phone_number, dob, address, email, avatar, password, activation_code, is_active, created_at, updated_at, role_id
 `
 
 type UpdateUserParams struct {
@@ -222,8 +228,9 @@ type UpdateUserParams struct {
 	PhoneNumber string      `json:"phone_number"`
 	Dob         pgtype.Date `json:"dob"`
 	Address     pgtype.Text `json:"address"`
+	Avatar      pgtype.Text `json:"avatar"`
 	IsActive    pgtype.Bool `json:"is_active"`
-	RoleID      int32       `json:"role_id"`
+	RoleID      pgtype.Int4 `json:"role_id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -233,6 +240,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.PhoneNumber,
 		arg.Dob,
 		arg.Address,
+		arg.Avatar,
 		arg.IsActive,
 		arg.RoleID,
 	)
@@ -244,6 +252,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Dob,
 		&i.Address,
 		&i.Email,
+		&i.Avatar,
 		&i.Password,
 		&i.ActivationCode,
 		&i.IsActive,
