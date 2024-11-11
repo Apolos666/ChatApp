@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Mic, MicOff, Video, PhoneOff, Users } from 'lucide-react'
+import { Mic, MicOff, Video, PhoneOff, Users, VideoOff } from 'lucide-react'
 import Peer from 'simple-peer'
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
 import { getLocalStorageItem } from '@/utils/local-storage'
@@ -14,11 +14,31 @@ export default function VideoCall({ roomId }: { roomId: string }) {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({})
   const [connectionStatus, setConnectionStatus] = useState<string>('Disconnected')
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true)
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true)
 
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const peersRef = useRef<Record<string, Peer.Instance>>({})
 
   const initiatorStatusRef = useRef<Record<string, boolean>>({})
+
+  const toggleAudio = useCallback(() => {
+    if (stream) {
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled
+      })
+      setIsAudioEnabled(!isAudioEnabled)
+    }
+  }, [stream, isAudioEnabled])
+
+  const toggleVideo = useCallback(() => {
+    if (stream) {
+      stream.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled
+      })
+      setIsVideoEnabled(!isVideoEnabled)
+    }
+  }, [stream, isVideoEnabled])
 
   useEffect(() => {
     console.log('Initializing SignalR connection...')
@@ -232,15 +252,17 @@ export default function VideoCall({ roomId }: { roomId: string }) {
             variant='outline'
             size='icon'
             className='rounded-full border-gray-600 bg-gray-800 text-white hover:bg-gray-700'
+            onClick={toggleAudio}
           >
-            <Mic className='h-6 w-6' />
+            {isAudioEnabled ? <Mic className='h-6 w-6' /> : <MicOff className='h-6 w-6' />}
           </Button>
           <Button
             variant='outline'
             size='icon'
             className='rounded-full border-gray-600 bg-gray-800 text-white hover:bg-gray-700'
+            onClick={toggleVideo}
           >
-            <Video className='h-6 w-6' />
+            {isVideoEnabled ? <Video className='h-6 w-6' /> : <VideoOff className='h-6 w-6' />}
           </Button>
           <Button variant='destructive' size='icon' className='rounded-full bg-red-500 text-white hover:bg-red-600'>
             <PhoneOff className='h-6 w-6' />

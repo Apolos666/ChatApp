@@ -1,7 +1,7 @@
 ﻿namespace ChatApp.Message.Features.VideoCall.Hubs;
 
-// [Authorize]
-public class VideoCallHub(ILogger<VideoCallHub> logger) : Hub
+[Authorize]
+public class VideoCallHub(ILogger<VideoCallHub> logger, ISender sender, ApplicationDbContext dbContext) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -22,9 +22,28 @@ public class VideoCallHub(ILogger<VideoCallHub> logger) : Hub
 
     public async Task JoinRoom(string roomId)
     {
+        var currentUser = Context.GetHttpContext().GetCurrentUser()
+            ?? throw new HubException("Không thể xác thực người dùng");
+
+        var hasAccess = await dbContext.RoomUsers
+            .AnyAsync(ru =>
+                ru.RoomId == int.Parse(roomId) &&
+                ru.UserId == currentUser.Id);
+
+        if (!hasAccess)
+        {
+            throw new HubException("Bạn không có quyền tham gia phòng này");
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
-        logger.LogInformation("User {ConnectionId} joined room: {RoomId}", Context.ConnectionId, roomId);
-        await Clients.GroupExcept(roomId, Context.ConnectionId).SendAsync("userConnected", Context.ConnectionId);
+        logger.LogInformation(
+            "User {ConnectionId} joined room: {RoomId}",
+            Context.ConnectionId,
+            roomId
+        );
+
+        await Clients.GroupExcept(roomId, Context.ConnectionId)
+            .SendAsync("userConnected", Context.ConnectionId);
     }
 
     public async Task SendSignal(string signal, string roomId, string userId)
