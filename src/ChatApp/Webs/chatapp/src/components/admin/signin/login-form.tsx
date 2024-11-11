@@ -4,7 +4,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { httpPost } from '@/services/user.service.api/_req'
+import { httpPostPrivate } from '@/services/user.service.api/_req'
 import { PasswordInput } from './password-input'
 import { EmailInput } from './email-input'
 import { SubmitButton } from './submit-button'
@@ -51,7 +51,7 @@ export function LoginForm({ error, setError, onSuccess, initialError }: LoginFor
     setError('')
     try {
       // Attempt to login with provided credentials
-      const response = await httpPost('/auth/login', data)
+      const response = await httpPostPrivate('/auth/login', data)
       if (response.status !== 200) {
         throw new Error('Invalid credentials')
       }
