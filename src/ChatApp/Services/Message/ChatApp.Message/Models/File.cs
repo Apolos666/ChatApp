@@ -1,4 +1,7 @@
-﻿namespace ChatApp.Message.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace ChatApp.Message.Models;
 
 public sealed partial class File
 {
@@ -10,11 +13,11 @@ public sealed partial class File
 
     public string Url { get; set; } = null!;
 
+    public int? MessageId { get; set; }
+
     public int? RoomId { get; set; }
 
     public int? OwnerId { get; set; }
-
-    public int? MessageId { get; set; }
 
     public Message? Message { get; set; }
 

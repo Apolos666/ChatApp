@@ -38,6 +38,13 @@ global using ChatApp.Message.Features.Messages.Kafka.Consumers;
 global using ChatApp.Message.Features.Messages.Kafka.Producers;
 global using Features.Messages.Kafka.Consumers;
 global using Web.Services.Kafka.Consumers;
+global using ChatApp.Message.Features.VideoCall.Commands.JoinVideoRoom;
+
+
+
+
+
+
 
 
 

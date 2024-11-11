@@ -1,17 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { SignalRService } from '@/services/signalr';
 import { addMessage, updateMessageStatus } from '@/store/features/messageSlice';
 import type { MessageDto, MessageStatusUpdate, PinnedMessage } from '../(types)/message';
 import { updateLastMessage } from '@/store/features/roomSlice';
 import { TypingIndicator } from '../(types)/typing';
 import { setTypingIndicator } from '@/store/features/typingSlice';
 import { addPinnedMessage, removePinnedMessage } from '@/store/features/pinnedMessageSlice';
+import { ChatSignalRService } from '@/services/signalrs/chat-signalr';
 
 export function useSignalR(rooms: number[]) {
   const dispatch = useAppDispatch();
   const [isConnected, setIsConnected] = useState(false);
-  const signalR = useRef(SignalRService.getInstance());
+  const signalR = useRef(ChatSignalRService.getInstance());
   const isInitializing = useRef(false);
   const connectedRooms = useRef<Set<number>>(new Set());
 
