@@ -63,7 +63,7 @@ export function UsersTable() {
       setIsLoading(true)
       const response = await adminHttpGet('/admin/users')
       console.log('response', response)
-      setUsers(response.data.users)
+      setUsers(response.data)
     } catch (error) {
       toast({
         title: 'Error fetching users',
