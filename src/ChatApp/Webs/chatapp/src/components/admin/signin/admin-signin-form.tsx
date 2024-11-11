@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState, useEffect } from 'react'
-import { httpGet } from '@/services/user.service.api/_req'
+import { httpGetPrivate } from '@/services/user.service.api/_req'
 import { getLocalStorageItem } from '@/utils/local-storage'
 import { PersistedStateKey } from '@/data/persisted-keys'
 import { LoginForm } from './login-form'
@@ -33,12 +33,12 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
           return
         }
 
-        const response = await httpGet('/user/profile')
+        const response = await httpGetPrivate('/user/profile')
         if (response.status === 200 && response.data.role.id === 1) {
           router.push('/admin/dashboard')
           return
         }
-        
+
         setIsChecking(false)
       } catch (err) {
         setIsChecking(false)
@@ -46,7 +46,7 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
     }
 
     checkAdminAuth()
-  }, [router])
+  }, [])
 
   if (isChecking) {
     return <LoadingSpinner />
@@ -64,10 +64,10 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
               </p>
             </CardHeader>
             <CardContent>
-              <LoginForm 
-                error={error} 
-                setError={setError} 
-                onSuccess={() => router.push('/admin/dashboard')} 
+              <LoginForm
+                error={error}
+                setError={setError}
+                onSuccess={() => router.push('/admin/dashboard')}
                 initialError={initialError}
               />
             </CardContent>
