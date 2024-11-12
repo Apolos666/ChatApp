@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/dialog";
 import { User } from "@/types/user";
 import { useState, useEffect } from "react";
-import { UserAvatar } from "../table/user-avatar";
 import { UserEditForm } from "./user-edit-form";
 import { UserViewMode } from "./user-view-mode";
 
