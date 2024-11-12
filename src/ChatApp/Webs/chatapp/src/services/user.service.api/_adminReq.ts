@@ -20,7 +20,7 @@ adminInstance.interceptors.request.use(
 )
 
 export const req = adminInstance
-export const httpGet = req.get
-export const httpPost = req.post
-export const httpPut = req.put
-export const httpDel = req.delete
+export const httpGet = (url: string) => req.get(url)
+export const httpPost = (url: string, data?: any) => req.post(url, data)
+export const httpPut = (url: string, data?: any) => req.put(url, data)
+export const httpDel = (url: string) => req.delete(url)

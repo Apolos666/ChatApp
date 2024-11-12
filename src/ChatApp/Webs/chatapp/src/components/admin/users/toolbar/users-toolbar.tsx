@@ -1,13 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table } from "@tanstack/react-table";
-import { Plus } from "lucide-react";
+import { Plus, RotateCcw } from "lucide-react";
 import { User } from "@/types/user";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useState, useEffect, useRef } from "react";
 import { ColumnVisibility } from "./column-visibility";
 import FilterButton, { Filters, FilterButtonRef } from "./filter-button";
-import { RotateCcw } from "lucide-react";
+
+// Define default filters
+const DEFAULT_FILTERS: Filters = {
+    role_id: [],
+    is_active: [],
+    startDate: null,
+    endDate: null,
+};
 
 interface UsersToolbarProps {
     table: Table<User>;
@@ -21,7 +28,7 @@ export function UsersToolbar({
     table,
     columnVisibility,
     setColumnVisibility,
-    filters,
+    filters = DEFAULT_FILTERS,
     setFilters,
 }: UsersToolbarProps) {
     const [searchValue, setSearchValue] = useState<string>("");
@@ -37,17 +44,17 @@ export function UsersToolbar({
         ];
 
         // Only add role/status filters if they have values
-        if (filters.role.length > 0) {
+        if (filters?.role_id?.length > 0) {
             columnFilters.push({ 
-                id: "role", 
-                value: filters.role,
+                id: "role_id", 
+                value: filters.role_id,
             });
         }
         
-        if (filters.status.length > 0) {
+        if (filters?.is_active?.length > 0) {
             columnFilters.push({ 
-                id: "status", 
-                value: filters.status,
+                id: "is_active", 
+                value: filters.is_active,
             });
         }
 

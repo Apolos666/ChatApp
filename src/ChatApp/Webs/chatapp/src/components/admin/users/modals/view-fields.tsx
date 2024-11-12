@@ -1,4 +1,5 @@
 import { User, USER_ROLES } from '@/types/user'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 interface ViewFieldsProps {
   user: User
@@ -14,9 +15,18 @@ export function ViewFields({ user }: ViewFieldsProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        {renderField('Email', user.email)}
+      <div className='flex flex-col items-center gap-4'>
+        <Avatar className='h-32 w-32 border border-gray-400'>
+          <AvatarImage src={user.avatar || ''} alt={user.name} className='object-cover' />
+          <AvatarFallback>
+            {user.name
+              .split(' ')[0][0]
+              .toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className='text-xl font-semibold'>{user.name}</div>
       </div>
+      <div className='grid grid-cols-2 gap-4'>{renderField('Email', user.email)}</div>
 
       <div className='grid grid-cols-2 gap-6'>
         {renderField('Role', USER_ROLES[user.role_id as keyof typeof USER_ROLES])}
@@ -25,9 +35,7 @@ export function ViewFields({ user }: ViewFieldsProps) {
         {renderField('Phone Number', user.phone_number)}
       </div>
 
-      <div className='grid grid-cols-2 gap-4'>
-        {renderField('Address', user.address)}
-      </div>
+      <div className='grid grid-cols-2 gap-4'>{renderField('Address', user.address)}</div>
     </>
   )
 }

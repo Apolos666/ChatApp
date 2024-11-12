@@ -27,7 +27,6 @@ export function UserActionsCell({
     onEdit,
     onView,
     onDelete,
-    onResetPassword,
 }: UserActionsCellProps) {
     const { toast } = useToast();
 
