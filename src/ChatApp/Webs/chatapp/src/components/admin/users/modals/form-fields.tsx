@@ -6,15 +6,26 @@ import { SelectItem } from '@/components/ui/select'
 
 import { Label } from '@/components/ui/label'
 import { User, USER_ROLES } from '@/types/user'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 interface FormFieldsProps {
   formData: Partial<User>
-  onChange: (field: keyof User, value: string) => void
+  onChange: (field: keyof User, value: string | boolean) => void
 }
 
 export function FormFields({ formData, onChange }: FormFieldsProps) {
   return (
     <>
+      <div className='mb-6 flex items-center gap-4'>
+        <Avatar className='h-16 w-16 border border-gray-400'>
+          <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
+          <AvatarFallback>{formData.name?.split(' ')[0][0].toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className='flex-1'>
+          <Label htmlFor='name'>Name</Label>
+          <Input id='name' value={formData.name || ''} onChange={(e) => onChange?.('name', e.target.value)} />
+        </div>
+      </div>
       <div className='grid gap-4'>
         <div className='space-y-2'>
           <Label htmlFor='email' className='text-muted-foreground'>
@@ -46,15 +57,15 @@ export function FormFields({ formData, onChange }: FormFieldsProps) {
             Account Status
           </Label>
           <Select
-            value={String(formData.is_active)}
-            onValueChange={(value) => onChange('is_active', value)}
+            value={formData.is_active ? 'active' : 'inactive'}
+            onValueChange={(value) => onChange('is_active', value === 'active')}
           >
             <SelectTrigger>
               <SelectValue placeholder='Select status' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='true'>Activated</SelectItem>
-              <SelectItem value='false'>Not Activated</SelectItem>
+              <SelectItem value='active'>Activated</SelectItem>
+              <SelectItem value='inactive'>Not Activated</SelectItem>
             </SelectContent>
           </Select>
         </div>

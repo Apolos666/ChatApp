@@ -37,7 +37,6 @@ export function UsersTable() {
   const { toast } = useToast()
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
-  const [resetPassword, setResetPassword] = useState<UserType | null>(null)
   const [pageSize, setPageSize] = useState(5)
   const [filters, setFilters] = useState<Filters>({ role: [], status: [], startDate: null, endDate: null })
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -62,7 +61,6 @@ export function UsersTable() {
     try {
       setIsLoading(true)
       const response = await adminHttpGet('/admin/users')
-      console.log('response', response)
       setUsers(response.data)
     } catch (error) {
       toast({
@@ -78,12 +76,14 @@ export function UsersTable() {
 
   const handleSave = async (updatedUser: UserType) => {
     try {
+      console.log('updatedUser', updatedUser)
+      console.log(typeof updatedUser.role_id)
       const requestBody = {
         id: updatedUser.id,
         email: updatedUser.email,
         name: updatedUser.name,
-        role_id: updatedUser.role_id,
-        // is_active: Boolean(updatedUser.is_active),
+        role_id: Number(updatedUser.role_id),
+        is_active: updatedUser.is_active,
         dob: updatedUser.dob,
         phone_number: updatedUser.phone_number,
         address: updatedUser.address
@@ -158,7 +158,6 @@ export function UsersTable() {
       setSelectedUser,
       setIsEditMode,
       handleDelete,
-      setResetPassword
     }),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

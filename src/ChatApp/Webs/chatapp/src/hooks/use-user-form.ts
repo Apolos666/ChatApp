@@ -3,12 +3,9 @@ import { User } from "@/types/user";
 
 export function useUserForm(user: User, onSave?: (user: User) => void) {
     const [formData, setFormData] = useState<Partial<User>>({...user});
-    const [isFormChanged, setIsFormChanged] = useState(false);
 
-    const handleChange = (field: keyof User, value: string) => {
-        const newFormData = { ...formData, [field]: value };
-        setFormData(newFormData);
-        setIsFormChanged(checkFormChanged(newFormData));
+    const handleChange = (field: keyof User, value: string | boolean) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -24,6 +21,8 @@ export function useUserForm(user: User, onSave?: (user: User) => void) {
             return newFormData[field] !== user?.[field];
         });
     };
+
+    const isFormChanged = checkFormChanged(formData);
 
     return { formData, isFormChanged, handleChange, handleSubmit };
 } 
