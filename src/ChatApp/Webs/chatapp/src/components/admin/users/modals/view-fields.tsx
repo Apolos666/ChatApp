@@ -1,7 +1,5 @@
 import { User, USER_ROLES } from '@/types/user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 interface ViewFieldsProps {
   user: User

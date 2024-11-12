@@ -7,23 +7,26 @@ import { SelectItem } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { User, USER_ROLES } from '@/types/user'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
 
 interface FormFieldsProps {
   formData: Partial<User>
   onChange: (field: keyof User, value: string | boolean) => void
+  errors?: Record<string, string[]>
 }
 
-export function FormFields({ formData, onChange }: FormFieldsProps) {
+export function FormFields({ formData, onChange, errors }: FormFieldsProps) {
   return (
     <>
       <div className='mb-6 flex items-center gap-4'>
         <Avatar className='h-16 w-16 border border-gray-400'>
           <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
-          <AvatarFallback>{formData.name?.split(' ')[0][0].toUpperCase()}</AvatarFallback>
+          <AvatarFallback>{formData.name ? formData.name.split(' ')[0][0].toUpperCase() : ''}</AvatarFallback>
         </Avatar>
         <div className='flex-1'>
           <Label htmlFor='name'>Name</Label>
-          <Input id='name' value={formData.name || ''} onChange={(e) => onChange?.('name', e.target.value)} />
+          <Input id='name' value={formData.name || ''} onChange={(e) => onChange?.('name', e.target.value)} className={cn(errors?.name && 'border-red-500')} />
+          {errors?.name && <p className='text-sm text-red-500'>{errors.name[0]}</p>}
         </div>
       </div>
       <div className='grid gap-4'>
@@ -31,7 +34,15 @@ export function FormFields({ formData, onChange }: FormFieldsProps) {
           <Label htmlFor='email' className='text-muted-foreground'>
             Email
           </Label>
-          <Input id='email' type='email' value={formData.email} onChange={(e) => onChange('email', e.target.value)} />
+          <Input
+            id='email'
+            type='email'
+            disabled
+            value={formData.email}
+            onChange={(e) => onChange('email', e.target.value)}
+            className={cn(errors?.email && 'border-red-500')}
+          />
+          {errors?.email && <p className='text-sm text-red-500'>{errors.email[0]}</p>}
         </div>
       </div>
 
@@ -85,7 +96,9 @@ export function FormFields({ formData, onChange }: FormFieldsProps) {
             id='phone_number'
             value={formData.phone_number}
             onChange={(e) => onChange('phone_number', e.target.value)}
+            className={cn(errors?.phone_number && 'border-red-500')}
           />
+          {errors?.phone_number && <p className='text-sm text-red-500'>{errors.phone_number[0]}</p>}
         </div>
       </div>
 
@@ -94,7 +107,13 @@ export function FormFields({ formData, onChange }: FormFieldsProps) {
           <Label htmlFor='address' className='text-muted-foreground'>
             Address
           </Label>
-          <Input id='address' value={formData.address} onChange={(e) => onChange('address', e.target.value)} />
+          <Input
+            id='address'
+            value={formData.address}
+            onChange={(e) => onChange('address', e.target.value)}
+            className={cn(errors?.address && 'border-red-500')}
+          />
+          {errors?.address && <p className='text-sm text-red-500'>{errors.address[0]}</p>}
         </div>
       </div>
     </>

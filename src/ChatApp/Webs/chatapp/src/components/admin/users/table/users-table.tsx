@@ -76,8 +76,20 @@ export function UsersTable() {
 
   const handleSave = async (updatedUser: UserType) => {
     try {
-      console.log('updatedUser', updatedUser)
-      console.log(typeof updatedUser.role_id)
+      const currentAdminId = getLocalStorageItem(PersistedStateKey.MeId)
+      if (updatedUser.id === currentAdminId) {
+        if (updatedUser.role_id !== 1) {
+          toast({
+            title: 'Error updating user',
+            description: 'You cannot change your own role',
+            variant: 'destructive'
+          })
+          setIsEditMode(false)
+          setSelectedUser(null)
+          return
+        }
+      }
+
       const requestBody = {
         id: updatedUser.id,
         email: updatedUser.email,
@@ -157,7 +169,7 @@ export function UsersTable() {
     columns: getColumns({
       setSelectedUser,
       setIsEditMode,
-      handleDelete,
+      handleDelete
     }),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

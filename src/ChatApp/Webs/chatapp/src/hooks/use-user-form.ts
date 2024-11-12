@@ -8,10 +8,10 @@ export function useUserForm(user: User, onSave?: (user: User) => void) {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (e: React.FormEvent, data: Partial<User>) => {
+        e.preventDefault(); 
         if (onSave) {
-            onSave({ ...user, ...formData } as User);
+            onSave({ ...user, ...data } as User);
         }
     };
 
