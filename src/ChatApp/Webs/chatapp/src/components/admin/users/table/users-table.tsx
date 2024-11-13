@@ -107,6 +107,8 @@ export function UsersTable() {
         ...(updatedUser.password && { password: updatedUser.password }) // Only include password for new users
       }
 
+      console.log(requestBody)
+
       let response;
       if (updatedUser.id) {
         // Update existing user
