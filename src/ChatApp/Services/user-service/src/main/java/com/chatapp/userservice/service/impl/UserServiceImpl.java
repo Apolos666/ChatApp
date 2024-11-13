@@ -1,5 +1,6 @@
 package com.chatapp.userservice.service.impl;
 
+import com.chatapp.userservice.constant.AppConstant;
 import com.chatapp.userservice.dto.user.request.UserProfileRequest;
 import com.chatapp.userservice.dto.user.response.UserProfileResponse;
 import com.chatapp.userservice.entity.User;
@@ -70,7 +71,6 @@ public class UserServiceImpl implements UserService {
         }
 
         String avatarUrl = cloudinaryService.uploadFile(file);
-
         if (oldAvatar != null){
             cloudinaryService.deleteFile(oldAvatar);
         }
