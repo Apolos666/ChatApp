@@ -38,7 +38,7 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
           router.push('/admin/dashboard')
           return
         }
-        
+
         setIsChecking(false)
       } catch (err) {
         setIsChecking(false)
@@ -46,7 +46,7 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
     }
 
     checkAdminAuth()
-  }, [router])
+  }, [])
 
   if (isChecking) {
     return <LoadingSpinner />
@@ -64,10 +64,10 @@ export default function AdminSigninForm({ initialError }: AdminSigninFormProps) 
               </p>
             </CardHeader>
             <CardContent>
-              <LoginForm 
-                error={error} 
-                setError={setError} 
-                onSuccess={() => router.push('/admin/dashboard')} 
+              <LoginForm
+                error={error}
+                setError={setError}
+                onSuccess={() => router.push('/admin/dashboard')}
                 initialError={initialError}
               />
             </CardContent>

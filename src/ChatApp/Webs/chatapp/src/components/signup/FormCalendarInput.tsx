@@ -1,8 +1,8 @@
-import React, { ChangeEvent, ReactNode, useState } from 'react'
+import React, { ChangeEvent, ReactNode, useState, useEffect } from 'react'
+import { DateTime } from 'luxon'
 import { cn } from '@/lib/utils'
 import { Input } from '../ui/input'
 import { Label } from '@radix-ui/react-label'
-import { format, parse, isValid } from 'date-fns'
 import { Calendar } from '../ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import type { DayPickerProps } from 'react-day-picker'
@@ -13,6 +13,7 @@ interface IProps {
   placeholder: string
   error?: string
   icon?: ReactNode
+  value?: string
   onChange?: (ev: ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -31,19 +32,30 @@ function CalendarButton(props: DayPickerProps) {
   )
 }
 
-function FormCalendarInput({ title, placeholder, error, icon, onChange }: IProps) {
+function FormCalendarInput({ title, placeholder, error, icon, onChange, value }: IProps) {
   const [inputValue, setInputValue] = useState('')
   const [month, setMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
+  useEffect(() => {
+    if (value) {
+      const parsedDate = DateTime.fromISO(value)
+      if (parsedDate.isValid) {
+        setInputValue(parsedDate.toFormat('dd/MM/yyyy'))
+        setMonth(parsedDate.toJSDate())
+        setSelectedDate(parsedDate.toJSDate())
+      }
+    }
+  }, [value])
+
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange && onChange(e)
     setInputValue(e.target.value)
-    const parsedDate = parse(e.target.value, 'dd/MM/yyyy', new Date())
+    const parsedDate = DateTime.fromFormat(e.target.value, 'dd/MM/yyyy')
 
-    if (isValid(parsedDate)) {
-      setMonth(parsedDate)
-      setSelectedDate(parsedDate)
+    if (parsedDate.isValid) {
+      setMonth(parsedDate.toJSDate())
+      setSelectedDate(parsedDate.toJSDate())
     } else {
       setSelectedDate(undefined)
     }
@@ -56,7 +68,7 @@ function FormCalendarInput({ title, placeholder, error, icon, onChange }: IProps
     } else {
       setMonth(date)
       setSelectedDate(date)
-      setInputValue(format(date, 'dd/MM/yyyy'))
+      setInputValue(DateTime.fromJSDate(date).toFormat('dd/MM/yyyy'))
     }
   }
 

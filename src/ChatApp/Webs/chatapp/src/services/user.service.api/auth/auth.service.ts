@@ -1,5 +1,5 @@
 import { AxiosContracts } from "@/lib/axios/AxiosContracts";
-import { httpPostPrivate, httpPostPublic } from "../_req";
+import { httpPostPublic } from "../_req";
 import { ActivateAccountDto, LoginDto, RegisterDto } from "./auth.types";
 import { ActivateAccountDtoSchema, LoginDtoSchema, LoginResponseDtoSchema, RegisterDtoSchema } from "./auth.contracts";
 
@@ -18,6 +18,6 @@ export class AuthService {
 
   static activateAccountMutation(data: { activateAccountDto: ActivateAccountDto }) {
     const activateAccountDto = AxiosContracts.requestContract(ActivateAccountDtoSchema, data.activateAccountDto)
-    return httpPostPrivate('/auth/activation', activateAccountDto)
+    return httpPostPublic('/auth/activation', activateAccountDto)
   }
 }

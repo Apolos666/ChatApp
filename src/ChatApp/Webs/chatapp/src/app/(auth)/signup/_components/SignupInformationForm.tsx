@@ -1,13 +1,12 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 import { z } from 'zod'
-import { format, isValid, parse } from 'date-fns'
+import { DateTime } from 'luxon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import FormInput from '@/components/signin/FormInput'
 import ButtonLoading from '@/components/signin/ButtonLoading'
 import FormCalendarInput from '@/components/signup/FormCalendarInput'
 import { authTypesDto } from '@/services/user.service.api/auth'
-import { motion } from 'framer-motion'
 import { useRegisterMutation } from '../_mutations/register.mutation'
 import FormPasswordInput from '@/components/signin/FormPasswordInput'
 
@@ -20,16 +19,16 @@ const FormSchema = z
       .min(1)
       .refine(
         (dob) => {
-          const parsedData = parse(dob, 'dd/MM/yyyy', new Date())
-          return isValid(parsedData)
+          const parsedData = DateTime.fromFormat(dob, 'dd/MM/yyyy')
+          return parsedData.isValid
         },
         {
           message: 'Invalid date format. Expected format is dd/MM/yyyy'
         }
       )
       .transform((dob) => {
-        const parsedData = parse(dob, 'dd/MM/yyyy', new Date())
-        return format(parsedData, 'yyyy-MM-dd')
+        const parsedData = DateTime.fromFormat(dob, 'dd/MM/yyyy')
+        return parsedData.toFormat('yyyy-MM-dd')
       }),
     address: z.string().min(1),
     email: z.string().email().min(1),
