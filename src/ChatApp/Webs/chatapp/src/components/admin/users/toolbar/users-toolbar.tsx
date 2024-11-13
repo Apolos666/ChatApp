@@ -22,6 +22,7 @@ interface UsersToolbarProps {
     setColumnVisibility: (columnVisibility: Record<string, boolean>) => void;
     filters: Filters;
     setFilters: (filters: Filters) => void;
+    setIsAddMode: (isAddMode: boolean) => void;
 }
 
 export function UsersToolbar({
@@ -30,6 +31,7 @@ export function UsersToolbar({
     setColumnVisibility,
     filters = DEFAULT_FILTERS,
     setFilters,
+    setIsAddMode,
 }: UsersToolbarProps) {
     const [searchValue, setSearchValue] = useState<string>("");
     const debouncedSearchValue = useDebounce(searchValue, 300);
@@ -100,7 +102,7 @@ export function UsersToolbar({
                     columnVisibility={columnVisibility}
                     setColumnVisibility={setColumnVisibility}
                 />
-                <Button variant="default">
+                <Button variant="default" onClick={() => setIsAddMode(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add User
                 </Button>
