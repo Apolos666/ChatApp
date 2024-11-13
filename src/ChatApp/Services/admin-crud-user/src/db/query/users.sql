@@ -24,9 +24,10 @@ UPDATE users SET
   phone_number = COALESCE($3, phone_number),
   dob = COALESCE($4, dob),
   address = COALESCE($5, address),
-  is_active = COALESCE($6, is_active),
+  avatar = COALESCE($6, avatar),
+  is_active = COALESCE($7, is_active),
   updated_at = current_timestamp,
-  role_id = COALESCE($7, role_id)
+  role_id = COALESCE($8, role_id)
 WHERE id = $1
 RETURNING *;
 

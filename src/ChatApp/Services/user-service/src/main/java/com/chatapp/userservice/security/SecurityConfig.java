@@ -18,51 +18,53 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+        private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors
-                        .configurationSource(corsConfigurationSource())
-                )
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        request -> request
-                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                                .requestMatchers(
-                                        "/api/auth/login",
-                                        "/api/auth/registration",
-                                        "/api/auth/activation",
-                                        "/api/auth/reset",
-                                        "/api/auth/token"
-                                ).permitAll()
-                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                                .requestMatchers(
-                                        "/api/management/messages/{messageId}",
-                                        "/api/management/rooms/**"
-                                ).hasAnyAuthority("ADMIN", "MODERATE USER")
-                                .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .cors(cors -> cors
+                                                .configurationSource(corsConfigurationSource()))
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(
+                                                request -> request
+                                                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                                                                .permitAll()
+                                                                .requestMatchers(
+                                                                                "/api/auth/login",
+                                                                                "/api/auth/registration",
+                                                                                "/api/auth/activation",
+                                                                                "/api/auth/reset",
+                                                                                "/api/auth/token")
+                                                                .permitAll()
+                                                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                                                .requestMatchers(
+                                                                                "/api/management/messages/{messageId}",
+                                                                                "/api/management/rooms/**")
+                                                                .hasAnyAuthority("ADMIN", "MODERATE USER")
+                                                                .anyRequest().authenticated())
+                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList(
-            "Access-Control-Allow-Origin", 
-            "Access-Control-Allow-Credentials"
-        ));
-        configuration.setAllowCredentials(true);
-        
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+        @Bean
+        public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Add your frontend URL
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(Arrays.asList("*"));
+                configuration.setAllowCredentials(true);
+                configuration.setExposedHeaders(Arrays.asList(
+                                "Access-Control-Allow-Origin",
+                                "Access-Control-Allow-Credentials",
+                                "x-auth-token"));
+                configuration.setAllowCredentials(true);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 }

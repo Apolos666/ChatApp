@@ -27,7 +27,8 @@ import { Filters } from '../toolbar/filter-button'
 import {
   httpGet as adminHttpGet,
   httpPut as adminHttpPut,
-  httpDel as adminHttpDelete
+  httpDel as adminHttpDelete,
+  httpPost as adminHttpPost
 } from '@/services/user.service.api/_adminReq'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { PersistedStateKey } from '@/data/persisted-keys'
@@ -37,9 +38,9 @@ export function UsersTable() {
   const { toast } = useToast()
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
-  const [resetPassword, setResetPassword] = useState<UserType | null>(null)
+  const [isAddMode, setIsAddMode] = useState(false)
   const [pageSize, setPageSize] = useState(5)
-  const [filters, setFilters] = useState<Filters>({ role: [], status: [], startDate: null, endDate: null })
+  const [filters, setFilters] = useState<Filters>({ role_id: [], is_active: [], startDate: null, endDate: null })
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     name: true,
     email: true,
@@ -62,8 +63,7 @@ export function UsersTable() {
     try {
       setIsLoading(true)
       const response = await adminHttpGet('/admin/users')
-      console.log('response', response)
-      setUsers(response.data.users)
+      setUsers(response.data)
     } catch (error) {
       toast({
         title: 'Error fetching users',
@@ -78,35 +78,65 @@ export function UsersTable() {
 
   const handleSave = async (updatedUser: UserType) => {
     try {
-      const requestBody = {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        name: updatedUser.name,
-        role_id: updatedUser.role_id,
-        // is_active: Boolean(updatedUser.is_active),
-        dob: updatedUser.dob,
-        phone_number: updatedUser.phone_number,
-        address: updatedUser.address
+      // Check if updating the current admin's role
+      if (updatedUser.id) { // Only check for existing users
+        const currentAdminId = getLocalStorageItem(PersistedStateKey.MeId)
+        if (updatedUser.id === currentAdminId) {
+          if (updatedUser.role_id !== 1) {
+            toast({
+              title: 'Error updating user',
+              description: 'You cannot change your own role',
+              variant: 'destructive'
+            })
+            setIsEditMode(false)
+            setSelectedUser(null)
+            return
+          }
+        }
       }
 
-      await adminHttpPut('/admin/user', requestBody)
+      const requestBody = {
+        ...(updatedUser.id && { id: updatedUser.id }), // Only include id for updates
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role_id: Number(updatedUser.role_id),
+        is_active: updatedUser.is_active,
+        dob: updatedUser.dob,
+        phone_number: updatedUser.phone_number,
+        address: updatedUser.address,
+        ...(updatedUser.password && { password: updatedUser.password }) // Only include password for new users
+      }
 
-      setUsers(users.map((user) => (user.id === updatedUser.id ? updatedUser : user)))
+      let response;
+      if (updatedUser.id) {
+        // Update existing user
+        response = await adminHttpPut('/admin/user', requestBody)
+        setUsers(users.map((user) => (user.id === updatedUser.id ? { ...user, ...updatedUser } : user)))
+        toast({
+          title: 'User updated',
+          description: 'User has been updated successfully.'
+        })
+      } else {
+        // Add new user
+        response = await adminHttpPost('/admin/user', requestBody)
+        setUsers([...users, { ...response.data }])
+        toast({
+          title: 'User added',
+          description: 'New user has been added successfully.'
+        })
+      }
 
-      toast({
-        title: 'User updated',
-        description: 'User has been updated successfully.'
-      })
-
+      // Reset states
       setIsEditMode(false)
+      setIsAddMode(false)
       setSelectedUser(null)
     } catch (error) {
       toast({
-        title: 'Error updating user',
-        description: 'Failed to update user',
+        title: updatedUser.id ? 'Error updating user' : 'Error adding user',
+        description: updatedUser.id ? 'Failed to update user' : 'Failed to add user',
         variant: 'destructive'
       })
-      console.error('Error updating user:', error)
+      console.error(updatedUser.id ? 'Error updating user:' : 'Error adding user:', error)
     }
   }
 
@@ -157,8 +187,7 @@ export function UsersTable() {
     columns: getColumns({
       setSelectedUser,
       setIsEditMode,
-      handleDelete,
-      setResetPassword
+      handleDelete
     }),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -193,6 +222,7 @@ export function UsersTable() {
         setColumnVisibility={setColumnVisibility}
         filters={filters}
         setFilters={setFilters}
+        setIsAddMode={setIsAddMode}
       />
 
       {/* Row Actions */}
@@ -260,14 +290,16 @@ export function UsersTable() {
 
       {/* User Modal */}
       <UserModal
-        user={selectedUser}
-        open={!!selectedUser}
+        user={isAddMode ? null :selectedUser}
+        open={!!selectedUser || isAddMode}
         onClose={() => {
           setSelectedUser(null)
           setIsEditMode(false)
+          setIsAddMode(false)
         }}
         onSave={handleSave}
         initialEditMode={isEditMode}
+        initialAddMode={isAddMode}
       />
     </div>
   )

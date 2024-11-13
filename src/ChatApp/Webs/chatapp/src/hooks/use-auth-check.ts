@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getLocalStorageItem } from '@/utils/local-storage'
 import { PersistedStateKey } from '@/data/persisted-keys'
-import { httpGet } from '@/services/user.service.api/_req'
+import { httpGetPrivate } from '@/services/user.service.api/_req'
 
 export function useAuthCheck() {
   const router = useRouter()
@@ -21,7 +21,7 @@ export function useAuthCheck() {
         }
 
         // Check if user has admin role
-        const response = await httpGet('/user/profile')
+        const response = await httpGetPrivate('/user/profile')
         if (response.data.role.id !== 1) {
           router.push('/admin/signin?error=Invalid%20credentials')
           return

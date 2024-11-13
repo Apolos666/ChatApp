@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const setSenderIDNullInMess = `-- name: SetSenderIDNullInMess :exec
@@ -15,7 +17,7 @@ UPDATE messages SET
 WHERE sender_id = $1
 `
 
-func (q *Queries) SetSenderIDNullInMess(ctx context.Context, senderID int32) error {
+func (q *Queries) SetSenderIDNullInMess(ctx context.Context, senderID pgtype.Int4) error {
 	_, err := q.db.Exec(ctx, setSenderIDNullInMess, senderID)
 	return err
 }

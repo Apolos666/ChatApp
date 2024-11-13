@@ -16,12 +16,10 @@ export const getColumns = ({
     setSelectedUser,
     setIsEditMode,
     handleDelete,
-    setResetPassword,
 }: {
     setSelectedUser: (user: UserType) => void;
     setIsEditMode: (isEditMode: boolean) => void;
     handleDelete: (ids: string[]) => void;
-    setResetPassword: (user: UserType) => void;
 }): ColumnDef<UserType>[] => [
     {
         id: "select",
@@ -63,9 +61,7 @@ export const getColumns = ({
                         />
                         <AvatarFallback>
                             {user.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
+                                .split(" ")[0][0]
                                 .toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
@@ -96,20 +92,20 @@ export const getColumns = ({
             return <div className="text-center">{phoneNumber}</div>;
         },
     },
-    // {
-    //     accessorKey: "created_at",
-    //     header: ({ column }) => (
-    //         <SortableTableHeader
-    //             column={column}
-    //             title="Joined At"
-    //             align="center"
-    //         />
-    //     ),
-    //     cell: ({ row }) => {
-    //         const createdAt = row.getValue("created_at") as string;
-    //         return <div className="text-center">{formatDate(createdAt)}</div>;
-    //     },
-    // },
+    {
+        accessorKey: "created_at",
+        header: ({ column }) => (
+            <SortableTableHeader
+                column={column}
+                title="Joined At"
+                align="center"
+            />
+        ),
+        cell: ({ row }) => {
+            const createdAt = row.getValue("created_at") as string;
+            return <div className="text-center">{formatDate(createdAt)}</div>;
+        },
+    },
     {
         accessorKey: "role_id",
         header: ({ column }) => (
@@ -130,13 +126,13 @@ export const getColumns = ({
             />
         ),
         cell: ({ row }) => {
-            const status = row.getValue("is_active") as string;
+            const status = row.getValue("is_active") as boolean;
             return (
                 <div className="text-center">
                     <Badge
-                        variant={status === "true" ? "success" : "secondary"}
+                        variant={status ? "success" : "secondary"}
                     >
-                        {USER_STATUS[status as keyof typeof USER_STATUS]}
+                        {USER_STATUS[status ? "true" : "false"]}
                     </Badge>
                 </div>
             );
@@ -155,9 +151,6 @@ export const getColumns = ({
                 }}
                 onDelete={(user) => {
                     handleDelete([user.id]);
-                }}
-                onResetPassword={(user) => {
-                    setResetPassword(user);
                 }}
             />
         ),

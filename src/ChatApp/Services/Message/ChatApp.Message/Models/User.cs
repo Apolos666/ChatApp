@@ -1,4 +1,7 @@
-﻿namespace ChatApp.Message.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace ChatApp.Message.Models;
 
 public sealed partial class User
 {
@@ -7,6 +10,8 @@ public sealed partial class User
     public string? ActivationCode { get; set; }
 
     public string? Address { get; set; }
+
+    public string? Avatar { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

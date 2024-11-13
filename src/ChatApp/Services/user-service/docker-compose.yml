@@ -59,13 +59,11 @@ services:
       context: ../admin-crud-user
       dockerfile: admin.crud.user.Dockerfile
     environment:
-      - DATABASE_NAME=chat_app
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=phamtantudn3
-      - DATABASE_HOST=postgres
+      - DATABASE_NAME=Chatapp
+      - DATABASE_USER=Chatapp_owner
+      - DATABASE_PASSWORD=SCFaqTnx42Ul
+      - DATABASE_HOST=ep-steep-wave-a17qlj53.ap-southeast-1.aws.neon.tech
       - DATABASE_PORT=5432
-    depends_on:
-      - postgres
     ports:
       - "8085:8085"
     networks:
@@ -79,7 +77,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__DefaultConnection=Server=postgres;Port=5432;Database=chat_app;User Id=postgres;Password=phamtantudn3
       - Kafka__BootstrapServers=kafka:9092
     depends_on:
       kafka:

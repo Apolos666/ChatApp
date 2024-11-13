@@ -4,8 +4,8 @@ import { TypingIndicator } from "@/app/chat/(types)/typing";
 import { getLocalStorageItem } from "@/utils/local-storage";
 import { PersistedStateKey } from "@/data/persisted-keys";
 
-export class SignalRService {
-  private static instance: SignalRService;
+export class ChatSignalRService {
+  private static instance: ChatSignalRService;
   private connection: HubConnection;
   private messageHandlers: ((message: MessageDto) => void)[] = [];
   private statusUpdateHandlers: ((update: MessageStatusUpdate) => void)[] = [];
@@ -21,11 +21,11 @@ export class SignalRService {
       .build();
   }
 
-  public static getInstance(): SignalRService {
-    if (!SignalRService.instance) {
-      SignalRService.instance = new SignalRService();
+  public static getInstance(): ChatSignalRService {
+    if (!ChatSignalRService.instance) {
+      ChatSignalRService.instance = new ChatSignalRService();
     }
-    return SignalRService.instance;
+    return ChatSignalRService.instance;
   }
 
   public async startConnection(): Promise<void> {
@@ -121,6 +121,15 @@ export class SignalRService {
       console.error("Error sending typing indicator:", error);
     }
   }
+
+  
+
+
+
+
+
+
+
 
   public removeMessageHandler(handler: (message: MessageDto) => void): void {
     this.messageHandlers = this.messageHandlers.filter(h => h !== handler);

@@ -19,7 +19,7 @@ type createUserRequest struct {
 	Address     pgtype.Text `json:"address" binding:"required"`
 	Email       string      `json:"email" binding:"required"`
 	Password    string      `json:"password" binding:"required"`
-	RoleID      int32       `json:"role_id" binding:"required"`
+	RoleID      pgtype.Int4 `json:"role_id" binding:"required"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -70,8 +70,9 @@ type userResponse struct {
 	Dob         pgtype.Date      `json:"dob" `
 	Address     pgtype.Text      `json:"address" `
 	Email       string           `json:"email" `
+	Avatar      pgtype.Text      `json:"avatar"`
 	Is_active   pgtype.Bool      `json:"is_active" `
-	RoleID      int32            `json:"role_id" `
+	RoleID      pgtype.Int4      `json:"role_id" `
 	CreatedAt   pgtype.Timestamp `json:"created_at" `
 }
 
@@ -97,16 +98,12 @@ func (server *Server) getUser(ctx *gin.Context) {
 		Dob:         user.Dob,
 		Address:     user.Address,
 		Email:       user.Email,
+		Avatar:      user.Avatar,
 		Is_active:   user.IsActive,
 		RoleID:      user.RoleID,
 		CreatedAt:   user.CreatedAt,
 	}
 	ctx.JSON(http.StatusOK, resp)
-}
-
-type listUsersRequest struct {
-	PageID   int32 `form:"page_id" binding:"min=0"`          // default 1
-	PageSize int32 `form:"page_size" binding:"min=0,max=10"` // default 5
 }
 
 type listUsersRespone struct {
@@ -119,26 +116,8 @@ type listUsersRespone struct {
 }
 
 func (server *Server) getListUsers(ctx *gin.Context) {
-	var req listUsersRequest
-	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	if req.PageID == 0 {
-		req.PageID = 1
-	}
-	if req.PageSize == 0 {
-		req.PageSize = 5
-	}
-	listUser, err := server.r.ListAllUsers(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	users, err := server.r.ListUsers(ctx, db.ListUsersParams{
-		Limit:  req.PageSize,
-		Offset: (req.PageID - 1) * req.PageSize,
-	})
+
+	users, err := server.r.ListAllUsers(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -152,19 +131,13 @@ func (server *Server) getListUsers(ctx *gin.Context) {
 			Dob:         user.Dob,
 			Address:     user.Address,
 			Email:       user.Email,
+			Avatar:      user.Avatar,
 			Is_active:   user.IsActive,
 			RoleID:      user.RoleID,
 			CreatedAt:   user.CreatedAt,
 		})
 	}
-	ctx.JSON(http.StatusOK, listUsersRespone{
-		TotalElements: int32(len(listUser)),
-		TotalPages:    int32(len(listUser))/int32(req.PageSize) + 1,
-		PageID:        req.PageID,
-		PageSize:      req.PageSize,
-		PageSizeMax:   10,
-		Users:         userResponses,
-	})
+	ctx.JSON(http.StatusOK, userResponses)
 }
 
 type updateUserRequest struct {
@@ -173,8 +146,9 @@ type updateUserRequest struct {
 	PhoneNumber string      `json:"phone_number"`
 	Dob         pgtype.Date `json:"dob"` // "YYYY-MM-DD"
 	Address     pgtype.Text `json:"address"`
+	Avatar      pgtype.Text `json:"avatar"`
 	IsActive    pgtype.Bool `json:"is_active"`
-	RoleID      int32       `json:"role_id"`
+	RoleID      pgtype.Int4 `json:"role_id"`
 }
 type updateUserResponse struct {
 	ID          int32            `json:"id" `
@@ -183,10 +157,11 @@ type updateUserResponse struct {
 	Dob         pgtype.Date      `json:"dob" `
 	Address     pgtype.Text      `json:"address" `
 	Email       string           `json:"email" `
+	Avatar      pgtype.Text      `json:"avatar"`
 	IsActive    pgtype.Bool      `json:"is_active"`
 	CreatedAt   pgtype.Timestamp `json:"created_at" `
 	UpdateAt    pgtype.Timestamp `json:"update_at" `
-	RoleID      int32            `json:"role_id" `
+	RoleID      pgtype.Int4      `json:"role_id" `
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
@@ -227,10 +202,15 @@ func (server *Server) updateUser(ctx *gin.Context) {
 	} else {
 		updateUserParam.IsActive = userNeedUpdate.IsActive
 	}
-	if req.RoleID != 0 && req.RoleID != userNeedUpdate.RoleID {
+	if req.RoleID.Int32 != 0 && req.RoleID != userNeedUpdate.RoleID {
 		updateUserParam.RoleID = req.RoleID
 	} else {
 		updateUserParam.RoleID = userNeedUpdate.RoleID
+	}
+	if req.Avatar.Valid && !util.IsEqualPgText(req.Avatar, userNeedUpdate.Avatar) {
+		updateUserParam.Avatar = req.Avatar
+	} else {
+		updateUserParam.Avatar = userNeedUpdate.Avatar
 	}
 	user, err := server.r.UpdateUserTx(ctx, updateUserParam)
 	if err != nil {
@@ -244,6 +224,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		Dob:         user.Dob,
 		Address:     user.Address,
 		Email:       user.Email,
+		Avatar:      user.Avatar,
 		IsActive:    user.IsActive,
 		CreatedAt:   user.CreatedAt,
 		UpdateAt:    user.UpdatedAt,

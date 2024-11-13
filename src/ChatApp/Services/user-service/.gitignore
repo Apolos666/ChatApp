@@ -41,4 +41,4 @@ src/main/resources/cloudinary-credentials.yml
 
 
 # Docker
-.env
+#.env

@@ -1,4 +1,13 @@
 import { z } from 'zod'
-import { UserDtoSchema } from './user.contracts'
+import { 
+  UpdateUserAvatarSchema,
+  UpdateUserDtoSchema,
+  UserDtoSchema
+} from './user.contracts'
 
+// Request
+export type UpdateUserDto = z.infer<typeof UpdateUserDtoSchema>
+export type UpdateUserAvatarDto = z.infer<typeof UpdateUserAvatarSchema>
+
+// Response
 export type UserDto = z.infer<typeof UserDtoSchema>

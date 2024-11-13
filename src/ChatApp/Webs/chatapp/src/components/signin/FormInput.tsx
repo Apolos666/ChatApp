@@ -11,10 +11,12 @@ interface IProps {
   type?: string
   error?: string
   icon?: ReactNode
+  value?: string
+  disabled?: boolean
   onChange?: (ev: ChangeEvent<HTMLInputElement>) => void
 }
 
-function FormInput({ title, placeholder, type = 'text', error, icon, onChange }: IProps) {
+function FormInput({ title, placeholder, type = 'text', error, icon, onChange, value, disabled }: IProps) {
   const onInputChange = (ev: ChangeEvent<HTMLInputElement>) => {
     onChange && onChange(ev)
   }
@@ -29,10 +31,12 @@ function FormInput({ title, placeholder, type = 'text', error, icon, onChange }:
           </div>
         )}
         <Input
+          value={value}
           type={type}
           onChange={onInputChange}
           placeholder={placeholder}
-          className={cn('border-none text-sm focus:ring-0 focus-visible:ring-0', icon && 'pl-12')}
+          disabled={disabled}
+          className={cn('border-none text-sm focus:ring-0 focus-visible:ring-0 disabled:opacity-80', icon && 'pl-12')}
         />
       </div>
       {error && <span className='mt-1 text-sm text-red-500'>{error}</span>}

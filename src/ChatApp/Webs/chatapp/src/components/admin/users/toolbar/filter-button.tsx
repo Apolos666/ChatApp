@@ -3,14 +3,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuL
 import { Badge } from "@/components/ui/badge";
 import { Filter, RotateCcw } from "lucide-react";
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import { UserRole, UserStatus } from "@/types/user";
-
-type Role = UserRole;
-type Status = UserStatus;
+import { USER_ROLES, USER_STATUS } from "@/types/user";
 
 export interface Filters {
-    role: Role[];
-    status: Status[];
+    role_id: number[];
+    is_active: boolean[];
     startDate: Date | null;
     endDate: Date | null;
 }
@@ -25,34 +22,53 @@ interface FilterButtonProps {
 }
 
 const DEFAULT_FILTERS: Filters = {
-    role: [],
-    status: [],
+    role_id: [],
+    is_active: [],
     startDate: null,
     endDate: null,
 };
 
-const ROLES: Role[] = ['Admin', 'User', 'Moderator'];
-const STATUSES: Status[] = ['Activated', 'Not Activated'];
-
-const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, setFilters }, ref) => {
-    const [localFilters, setLocalFilters] = useState<Filters>(filters);
+const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters = DEFAULT_FILTERS, setFilters }, ref) => {
+    const [localFilters, setLocalFilters] = useState<Filters>({
+        role_id: filters.role_id || [],
+        is_active: filters.is_active || [],
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+    });
 
     useEffect(() => {
-        setLocalFilters(filters);
+        setLocalFilters({
+            role_id: filters.role_id || [],
+            is_active: filters.is_active || [],
+            startDate: filters.startDate || null,
+            endDate: filters.endDate || null,
+        });
     }, [filters]);
 
-    const toggleFilter = (type: keyof Pick<Filters, 'role' | 'status'>, value: Role | Status) => {
+    const toggleRoleFilter = (roleId: number) => {
         setLocalFilters((prev) => {
-            const currentValues = prev[type] as (Role | Status)[];
-            const isValueSelected = currentValues.includes(value);
-
-            const updatedValues = isValueSelected
-                ? currentValues.filter((v) => v !== value)
-                : [...currentValues, value];
+            const currentValues = prev.role_id;
+            const isValueSelected = currentValues.includes(roleId);
 
             return {
                 ...prev,
-                [type]: updatedValues,
+                role_id: isValueSelected
+                    ? currentValues.filter((v) => v !== roleId)
+                    : [...currentValues, roleId],
+            };
+        });
+    };
+
+    const toggleStatusFilter = (status: boolean) => {
+        setLocalFilters((prev) => {
+            const currentValues = prev.is_active;
+            const isValueSelected = currentValues.includes(status);
+
+            return {
+                ...prev,
+                is_active: isValueSelected
+                    ? currentValues.filter((v) => v !== status)
+                    : [...currentValues, status],
             };
         });
     };
@@ -68,13 +84,8 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
 
     const getFilterCount = () => {
         let count = 0;
-        for (const key in localFilters) {
-            if (key === 'role' || key === 'status') {
-                if (localFilters[key].length > 0) {
-                    count++;
-                }
-            }
-        }
+        if (localFilters.role_id.length > 0) count++;
+        if (localFilters.is_active.length > 0) count++;
         return count;
     };
 
@@ -92,7 +103,7 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
                 <Button variant="outline"> 
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
-                    {!hasChanges() && (localFilters.role.length > 0 || localFilters.status.length > 0) && (
+                    {!hasChanges() && (localFilters.role_id.length > 0 || localFilters.is_active.length > 0) && (
                         <Badge variant="secondary" className="ml-2">
                             {getFilterCount()}
                         </Badge>
@@ -117,12 +128,12 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
                     <div className="space-y-2">
                         <div className="font-light text-sm text-muted-foreground">Role</div>
                         <div className="flex flex-wrap gap-2">
-                            {ROLES.map((role) => (
+                            {Object.entries(USER_ROLES).map(([id, role]) => (
                                 <Badge
-                                    key={role}
-                                    variant={localFilters.role.includes(role) ? "default" : "outline"}
+                                    key={id}
+                                    variant={localFilters.role_id.includes(Number(id)) ? "default" : "outline"}
                                     className="cursor-pointer text-sm font-light"
-                                    onClick={() => toggleFilter('role', role)}
+                                    onClick={() => toggleRoleFilter(Number(id))}
                                 >
                                     {role}
                                 </Badge>
@@ -132,14 +143,14 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters, 
                     <div className="space-y-2">
                         <div className="font-light text-sm text-muted-foreground">Account Status</div>
                         <div className="flex flex-wrap gap-2">
-                            {STATUSES.map((status) => (
+                            {Object.entries(USER_STATUS).map(([value, label]) => (
                                 <Badge
-                                    key={status}
-                                    variant={localFilters.status.includes(status) ? "default" : "outline"}
+                                    key={value}
+                                    variant={localFilters.is_active.includes(value === 'true') ? "default" : "outline"}
                                     className="cursor-pointer text-sm font-light"
-                                    onClick={() => toggleFilter('status', status)}
+                                    onClick={() => toggleStatusFilter(value === 'true')}
                                 >
-                                    {status}
+                                    {label}
                                 </Badge>
                             ))}
                         </div>

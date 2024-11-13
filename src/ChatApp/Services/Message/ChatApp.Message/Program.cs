@@ -1,3 +1,5 @@
+using ChatApp.Message.Features.VideoCall.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -65,7 +67,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder =>
     {
         builder
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins("http://localhost:3000", "https://localhost:3000", "https://192.168.1.5:3000")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
@@ -90,5 +92,6 @@ app.UseAuthorization();
 app.MapCarter();
 
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<VideoCallHub>("/videoCallHub");
 
 app.Run();

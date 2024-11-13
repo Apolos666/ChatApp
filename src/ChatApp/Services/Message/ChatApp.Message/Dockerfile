@@ -7,7 +7,6 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Thêm lệnh tạo thư mục
 RUN mkdir -p /home/app/.aspnet/DataProtection-Keys && \
     chown -R app:app /home/app/.aspnet/DataProtection-Keys
 

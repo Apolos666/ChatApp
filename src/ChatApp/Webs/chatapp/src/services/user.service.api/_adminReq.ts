@@ -7,7 +7,7 @@ import { getLocalStorageItem } from '@/utils/local-storage'
 // })
 
 const adminInstance = axios.create({
-  baseURL: 'http://localhost:8080/api/',
+  baseURL: 'http://127.0.0.1:8085/api',
 })
 
 adminInstance.interceptors.request.use(
@@ -24,7 +24,7 @@ adminInstance.interceptors.request.use(
 )
 
 export const req = adminInstance
-export const httpGet = req.get
-export const httpPost = req.post
-export const httpPut = req.put
-export const httpDel = req.delete
+export const httpGet = (url: string) => req.get(url)
+export const httpPost = (url: string, data?: any) => req.post(url, data)
+export const httpPut = (url: string, data?: any) => req.put(url, data)
+export const httpDel = (url: string) => req.delete(url)

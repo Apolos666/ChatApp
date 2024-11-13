@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const deleteRefrTokenByUserId = `-- name: DeleteRefrTokenByUserId :exec
@@ -14,7 +16,7 @@ DELETE FROM refresh_tokens
 WHERE user_id = $1
 `
 
-func (q *Queries) DeleteRefrTokenByUserId(ctx context.Context, userID int32) error {
+func (q *Queries) DeleteRefrTokenByUserId(ctx context.Context, userID pgtype.Int4) error {
 	_, err := q.db.Exec(ctx, deleteRefrTokenByUserId, userID)
 	return err
 }

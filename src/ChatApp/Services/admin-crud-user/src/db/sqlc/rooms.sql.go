@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const setCreatorIDNullInRoom = `-- name: SetCreatorIDNullInRoom :exec
@@ -15,7 +17,7 @@ UPDATE rooms SET
 WHERE creator_id = $1
 `
 
-func (q *Queries) SetCreatorIDNullInRoom(ctx context.Context, creatorID int32) error {
+func (q *Queries) SetCreatorIDNullInRoom(ctx context.Context, creatorID pgtype.Int4) error {
 	_, err := q.db.Exec(ctx, setCreatorIDNullInRoom, creatorID)
 	return err
 }

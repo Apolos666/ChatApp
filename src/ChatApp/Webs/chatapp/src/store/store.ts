@@ -9,7 +9,7 @@ export const store = configureStore({
     messages: messageReducer,
     room: roomSlice,
     typing: typingSlice,
-    pinnedMessages: pinnedMessageSlice
+    pinnedMessages: pinnedMessageSlice,
   },
 });
 
