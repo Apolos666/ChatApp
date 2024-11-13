@@ -14,6 +14,7 @@ export interface User {
     email: string;
     role_id: number;
     is_active: boolean;
+    password: string;
 }
 
 export const USER_ROLES = {

@@ -6,14 +6,15 @@ import { FormFields } from './form-fields'
 import { z } from 'zod'
 import { useState } from 'react'
 
-const userFormSchema = z.object({
+export const userFormSchema = z.object({
   name: z.string().trim().min(1, { message: 'Name is required' }),
   email: z.string().trim().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' }),
-  role_id: z.union([z.string(), z.number()]).transform(val => Number(val)),
-  is_active: z.boolean(),
-  dob: z.string(),
+  role_id: z.coerce.number().min(1, { message: 'Role is required' }),
+  is_active: z.boolean().refine((v) => v === true || v === false, { message: 'Status is required' }),
+  dob: z.string().min(1, { message: 'Date of birth is required' }),
   phone_number: z.string().trim().min(1, { message: 'Phone number is required' }),
-  address: z.string().trim().min(1, { message: 'Address is required' })
+  address: z.string().trim().min(1, { message: 'Address is required' }),
+  password: z.string().trim().min(8, { message: 'Password must be at least 8 characters long' })
 })
 
 interface UserEditFormProps {
@@ -49,7 +50,7 @@ export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
 
   return (
     <form onSubmit={onSubmit} className='space-y-6'>
-      <FormFields formData={formData} onChange={handleChange} errors={errors?.flatten().fieldErrors as Record<string, string[]>} />
+      <FormFields formData={formData} onChange={handleChange} mode='edit' errors={errors?.flatten().fieldErrors as Record<string, string[]>} />
 
       <div className='flex justify-between'>
         <Button type='button' variant='outline' onClick={onCancel} disabled={isLoading}>
