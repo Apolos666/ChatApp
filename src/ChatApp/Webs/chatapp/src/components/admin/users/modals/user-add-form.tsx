@@ -8,13 +8,13 @@ import { useState } from 'react'
 import { userFormSchema } from './user-edit-form'
 
 interface UserAddFormProps {
-  user: User
+  user: User | null
   onSave?: (user: User) => void
   onCancel: () => void
 }
 
 export function UserAddForm({ user, onSave, onCancel }: UserAddFormProps) {
-  const { formData, handleChange, handleSubmit } = useUserForm(user, onSave)
+  const { formData, handleChange, handleSubmit } = useUserForm(user as User, onSave)
   const [errors, setErrors] = useState<z.ZodError | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 

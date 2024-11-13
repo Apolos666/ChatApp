@@ -41,8 +41,7 @@ export function UserModal({
     }
   }, [open, initialEditMode, initialAddMode]);
 
-  // Only render content if we're in add mode or if we have a user
-  const shouldRenderContent = isAddMode || (user !== null);
+  const shouldRenderContent = isAddMode || user;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -55,26 +54,28 @@ export function UserModal({
 
         {shouldRenderContent && (
           <>
-            {isEditMode ? (
+            {isEditMode && user && (
               <UserEditForm
-                user={user!}
+                user={user}
                 onSave={onSave}
                 onCancel={() => {
                   setIsEditMode(false);
                   onClose();
                 }}
               />
-            ) : isAddMode ? (
+            )}
+            {isAddMode && (
               <UserAddForm
-                user={user!}
+                user={null}
                 onSave={onSave}
                 onCancel={() => {
                   setIsAddMode(false);
                   onClose();
                 }}
               />
-            ) : (
-              <UserViewMode user={user!} onEdit={() => setIsEditMode(true)} />
+            )}
+            {!isEditMode && !isAddMode && user && (
+              <UserViewMode user={user} onEdit={() => setIsEditMode(true)} />
             )}
           </>
         )}
