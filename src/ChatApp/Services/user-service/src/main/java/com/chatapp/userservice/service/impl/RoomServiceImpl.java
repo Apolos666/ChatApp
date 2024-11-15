@@ -11,6 +11,7 @@ import com.chatapp.userservice.repository.UserRepository;
 import com.chatapp.userservice.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public List<RoomDto> getAllRooms() {
@@ -43,8 +45,8 @@ public class RoomServiceImpl implements RoomService {
         List<Room> rooms = roomRepository.findByCreatorId(userId);
 
         return rooms.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -96,6 +98,11 @@ public class RoomServiceImpl implements RoomService {
 
         room.getUsers().add(user);
         roomRepository.save(room);
+
+        // send message :
+        String destination = "/topic/user/" + userId; // Endpoint cho user
+        String message = "You have been added to the room " + room.getName();
+        messagingTemplate.convertAndSend(destination, message);
 
         return convertToDTO(room);
     }
