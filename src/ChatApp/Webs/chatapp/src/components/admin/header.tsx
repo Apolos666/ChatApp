@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ProfileMenu } from "./profile/profile-menu";
 
 export function Header() {
     const pathname = usePathname();
@@ -27,9 +28,7 @@ export function Header() {
                     <h1 className="text-2xl font-bold">{getPageTitle(pathname)}</h1>
                     <p className="text-sm text-muted-foreground">{currentDate}</p>
                 </div>
-                <Button variant="ghost" size="icon">
-                    <Bell className="h-5 w-5" />
-                </Button>
+                <ProfileMenu />
             </div>
         </div>
     );

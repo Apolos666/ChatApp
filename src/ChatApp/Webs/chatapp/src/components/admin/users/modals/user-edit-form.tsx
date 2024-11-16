@@ -33,9 +33,10 @@ interface UserEditFormProps {
   user: User
   onSave?: (updatedUser: User) => void
   onCancel: () => void
+  mode: 'add' | 'edit' | 'edit-profile'
 }
 
-export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
+export function UserEditForm({ user, onSave, onCancel, mode }: UserEditFormProps) {
   const { formData, handleChange, handleSubmit, isFormChanged } = useUserForm(user, onSave)
   const [errors, setErrors] = useState<z.ZodError | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -67,7 +68,7 @@ export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
       <FormFields 
         formData={formData} 
         onChange={handleChange} 
-        mode='edit' 
+        mode={mode} 
         errors={errors?.flatten().fieldErrors as Record<string, string[]>} 
       />
 

@@ -14,3 +14,7 @@ export function getLocalStorageItem(key: string) {
     console.log(error)
   }
 }
+
+export function removeLocalStorageItem(key: string) {
+  window.localStorage.removeItem(key)
+}

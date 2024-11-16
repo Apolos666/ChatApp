@@ -11,29 +11,33 @@ import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Eye } from 'lucide-react'
 import { EyeOff } from 'lucide-react'
-import { Camera } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Upload, Trash2 } from 'lucide-react'
 
 interface FormFieldsProps {
   formData: Partial<User>
   onChange?: (field: keyof User, value: string | boolean) => void
   errors?: Record<string, string[]>
-  mode: 'add' | 'edit'
+  mode: 'add' | 'edit' | 'edit-profile'
 }
 
 export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps) {
   const [showPassword, setShowPassword] = useState(false)
+  const isEditProfile = mode === 'edit-profile'
   return (
     <>
       <div className='mb-6 flex items-center gap-4'>
         <Avatar className='h-16 w-16 border border-gray-400'>
           <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
           <AvatarFallback>{formData.name ? formData.name.split(' ')[0][0].toUpperCase() : ''}</AvatarFallback>
-          </Avatar>
+        </Avatar>
         <div className='flex-1'>
           <Label htmlFor='name'>Name</Label>
-          <Input id='name' placeholder='Enter name' value={formData.name || ''} onChange={(e) => onChange?.('name', e.target.value)} className={cn(errors?.name && 'border-red-500')} />
+          <Input
+            id='name'
+            placeholder='Enter name'
+            value={formData.name || ''}
+            onChange={(e) => onChange?.('name', e.target.value)}
+            className={cn(errors?.name && 'border-red-500')}
+          />
           {errors?.name && <p className='text-sm text-red-500'>{errors.name[0]}</p>}
         </div>
       </div>
@@ -46,7 +50,7 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
             id='email'
             type='email'
             placeholder='Enter email'
-            disabled={mode === 'edit'}
+            disabled={mode === 'edit' || isEditProfile}
             value={formData.email}
             onChange={(e) => onChange?.('email', e.target.value)}
             className={cn(errors?.email && 'border-red-500')}
@@ -60,9 +64,13 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
           <Label htmlFor='role' className='text-muted-foreground'>
             Role
           </Label>
-          <Select value={formData.role_id?.toString()} onValueChange={(value) => onChange?.('role_id', value)} >
+          <Select
+            value={formData.role_id?.toString()}
+            onValueChange={(value) => onChange?.('role_id', value)}
+            disabled={isEditProfile}
+          >
             <SelectTrigger>
-              <SelectValue placeholder='Select role' className={cn(errors?.role_id && 'border-red-500')}/>
+              <SelectValue placeholder='Select role' className={cn(errors?.role_id && 'border-red-500')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='1'>{USER_ROLES[1]}</SelectItem>
@@ -80,13 +88,14 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
           <Select
             value={mode === 'add' ? 'false' : String(Boolean(formData.is_active))}
             onValueChange={(value) => onChange?.('is_active', value === 'true')}
+            disabled={isEditProfile}
           >
             <SelectTrigger>
-              <SelectValue placeholder='Select status' className={cn(errors?.is_active && 'border-red-500')}/>
+              <SelectValue placeholder='Select status' className={cn(errors?.is_active && 'border-red-500')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="true">Activated</SelectItem>
-              <SelectItem value="false">Not Activated</SelectItem>
+              <SelectItem value='true'>Activated</SelectItem>
+              <SelectItem value='false'>Not Activated</SelectItem>
             </SelectContent>
           </Select>
           {errors?.is_active && <p className='text-sm text-red-500'>{errors.is_active[0]}</p>}
@@ -96,7 +105,13 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
           <Label htmlFor='dob' className='text-muted-foreground'>
             Date of Birth
           </Label>
-          <Input id='dob' type='date' value={formData.dob} onChange={(e) => onChange?.('dob', e.target.value)} className={cn(errors?.dob && 'border-red-500')}/>
+          <Input
+            id='dob'
+            type='date'
+            value={formData.dob}
+            onChange={(e) => onChange?.('dob', e.target.value)}
+            className={cn(errors?.dob && 'border-red-500')}
+          />
           {errors?.dob && <p className='text-sm text-red-500'>{errors.dob[0]}</p>}
         </div>
 
@@ -133,32 +148,32 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
 
       {mode === 'add' && (
         <div className='grid gap-4'>
-        <div className='space-y-2'>
-          <Label htmlFor='password' className='text-muted-foreground'>
-            Password
-          </Label>
-          <div className="relative">
-            <Input
-              id='password'
-              type={showPassword ? 'text' : 'password'}
-              placeholder='Enter password'
-              value={formData.password}
-              onChange={(e) => onChange?.('password', e.target.value)}
-              className={cn(errors?.password && 'border-red-500')}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-500" />
-              ) : (
-                <Eye className="h-4 w-4 text-gray-500" />
-              )}
-            </button>
-          </div>
-          {errors?.password && <p className='text-sm text-red-500'>{errors.password[0]}</p>}
+          <div className='space-y-2'>
+            <Label htmlFor='password' className='text-muted-foreground'>
+              Password
+            </Label>
+            <div className='relative'>
+              <Input
+                id='password'
+                type={showPassword ? 'text' : 'password'}
+                placeholder='Enter password'
+                value={formData.password}
+                onChange={(e) => onChange?.('password', e.target.value)}
+                className={cn(errors?.password && 'border-red-500')}
+              />
+              <button
+                type='button'
+                onClick={() => setShowPassword(!showPassword)}
+                className='absolute right-3 top-1/2 -translate-y-1/2'
+              >
+                {showPassword ? (
+                  <EyeOff className='h-4 w-4 text-gray-500' />
+                ) : (
+                  <Eye className='h-4 w-4 text-gray-500' />
+                )}
+              </button>
+            </div>
+            {errors?.password && <p className='text-sm text-red-500'>{errors.password[0]}</p>}
           </div>
         </div>
       )}
