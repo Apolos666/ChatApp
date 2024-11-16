@@ -12,10 +12,11 @@ interface IProps {
   type?: string
   error?: string
   icon?: ReactNode
+  value?: string
   onChange?: (ev: ChangeEvent<HTMLInputElement>) => void
 }
 
-function FormPasswordInput({ title, placeholder, type = 'text', error, icon, onChange }: IProps) {
+function FormPasswordInput({ title, placeholder, type = 'text', value, error, icon, onChange }: IProps) {
   const [showPassword, setShowPassword] = useState(false)
 
   const onInputChange = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -27,28 +28,29 @@ function FormPasswordInput({ title, placeholder, type = 'text', error, icon, onC
   }
 
   return (
-    <div className='w-full flex flex-col'>
+    <div className='flex w-full flex-col'>
       <Label className='mb-1 text-sm'>{title}</Label>
       <div className={cn('relative rounded-md border border-stone-300', error && 'border-red-500')}>
         {icon && (
-          <div className='pointer-events-none absolute rounded-l-md inset-y-0 left-0 w-10 flex items-center justify-center bg-gray-100'>
+          <div className='pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center rounded-l-md bg-gray-100'>
             {icon}
           </div>
         )}
         <Input
+          value={value}
           type={showPassword ? 'text' : 'password'}
           onChange={onInputChange}
           placeholder={placeholder}
-          className={cn('text-sm border-none focus:ring-0 focus-visible:ring-0', icon && 'pl-12')}
+          className={cn('border-none text-sm focus:ring-0 focus-visible:ring-0', icon && 'pl-12')}
         />
         <div
           onClick={handleToggleShowPassword}
-          className='absolute hover:bg-gray-200 inset-y-1 right-2 flex items-center justify-center w-8 cursor-pointer rounded-md'
+          className='absolute inset-y-1 right-2 flex w-8 cursor-pointer items-center justify-center rounded-md hover:bg-gray-200'
         >
           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
         </div>
       </div>
-      {error && <span className='text-red-500 mt-1 text-sm'>{error}</span>}
+      {error && <span className='mt-1 text-sm text-red-500'>{error}</span>}
     </div>
   )
 }

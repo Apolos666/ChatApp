@@ -25,6 +25,15 @@ export const ActivateAccountDtoSchema = z.object({
   activationCode: z.string()
 })
 
+export const ChangePasswordDtoSchema = z.object({
+  oldPassword: z.string().min(1),
+  newPassword: z.string().min(1)
+})
+
+export const ResetPasswordDtoSchema = z.object({
+  email: z.string().email().min(1)
+})
+
 // Response
 export const LoginResponseDtoSchema = z.object({
   id: z.number(),
