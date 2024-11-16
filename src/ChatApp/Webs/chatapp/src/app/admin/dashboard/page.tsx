@@ -1,6 +1,6 @@
 'use client'
 
-import Loading from "@/app/(auth)/loading";
+import { Spinner } from "@/components/admin/shared/spinner";
 import { StatCard } from "@/components/admin/dashboard/stat-card";
 import { useAuthCheck } from "@/hooks/use-auth-check";
 import { Users, Shield, MessageSquare } from "lucide-react";
@@ -8,7 +8,7 @@ import { Users, Shield, MessageSquare } from "lucide-react";
 export default function DashboardPage() {
   const { isChecking } = useAuthCheck()
 
-  if (isChecking) return <Loading />
+  if (isChecking) return <Spinner size="lg" text="Loading..." className="justify-center mt-10"/>
 
   return (
     <div className='space-y-6'>
