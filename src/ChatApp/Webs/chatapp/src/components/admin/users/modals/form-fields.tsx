@@ -5,7 +5,7 @@ import { SelectContent, Select, SelectTrigger, SelectValue } from '@/components/
 import { SelectItem } from '@/components/ui/select'
 
 import { Label } from '@/components/ui/label'
-import { User, USER_ROLES } from '@/types/user'
+import { User, USER_ROLES, USER_STATUS } from '@/types/user'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
@@ -75,15 +75,15 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
             Account Status
           </Label>
           <Select
-            value={formData.is_active ? 'active' : 'inactive'}
-            onValueChange={(value) => onChange?.('is_active', value === 'active')}
+            value={mode === 'add' ? 'false' : String(Boolean(formData.is_active))}
+            onValueChange={(value) => onChange?.('is_active', value === 'true')}
           >
             <SelectTrigger>
               <SelectValue placeholder='Select status' className={cn(errors?.is_active && 'border-red-500')}/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='active'>Activated</SelectItem>
-              <SelectItem value='inactive'>Not Activated</SelectItem>
+              <SelectItem value="true">Activated</SelectItem>
+              <SelectItem value="false">Not Activated</SelectItem>
             </SelectContent>
           </Select>
           {errors?.is_active && <p className='text-sm text-red-500'>{errors.is_active[0]}</p>}

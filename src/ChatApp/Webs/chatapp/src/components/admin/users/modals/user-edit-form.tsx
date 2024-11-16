@@ -6,14 +6,27 @@ import { z } from 'zod'
 import { useState } from 'react'
 import { useUserForm } from '@/hooks/use-user-form'
 
-export const userFormSchema = z.object({
+// Base schema without password
+const baseSchema = {
   name: z.string().trim().min(1, { message: 'Name is required' }),
   email: z.string().trim().min(1, { message: 'Email is required' }).email({ message: 'Invalid email address' }),
   role_id: z.coerce.number().min(1, { message: 'Role is required' }),
-  is_active: z.boolean().refine((v) => v === true || v === false, { message: 'Status is required' }),
+  is_active: z.coerce.boolean(),
   dob: z.string().min(1, { message: 'Date of birth is required' }),
   phone_number: z.string().trim().min(1, { message: 'Phone number is required' }),
-  address: z.string().trim().min(1, { message: 'Address is required' })
+  address: z.string().trim().min(1, { message: 'Address is required' }),
+}
+
+// Schema for add mode (requires password)
+export const addUserFormSchema = z.object({
+  ...baseSchema,
+  password: z.string().trim().min(8, { message: 'Password must be at least 8 characters long' })
+})
+
+// Schema for edit mode (password is optional)
+export const editUserFormSchema = z.object({
+  ...baseSchema,
+  password: z.string().trim().min(8, { message: 'Password must be at least 8 characters long' }).optional()
 })
 
 interface UserEditFormProps {
@@ -27,9 +40,11 @@ export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
   const [errors, setErrors] = useState<z.ZodError | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const result = userFormSchema.safeParse(formData)
+    // Use different schema based on whether we're editing or adding
+    const schema = user ? editUserFormSchema : addUserFormSchema
+    const result = schema.safeParse(formData)
     if (!result.success) {
       setErrors(result.error)
       return
@@ -39,7 +54,7 @@ export function UserEditForm({ user, onSave, onCancel }: UserEditFormProps) {
     setIsLoading(true)
 
     try {
-      handleSubmit(e, { ...result.data, id: user.id } as User)
+      await handleSubmit(e, { ...result.data, id: user.id } as User)
     } catch (error) {
       console.error('Error submitting form:', error)
     } finally {
