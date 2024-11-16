@@ -77,6 +77,10 @@ export function UsersTable() {
   }
 
   const handleSave = async (updatedUser: UserType) => {
+    console.log(updatedUser)
+    console.log(updatedUser.is_active)
+    console.log(Boolean(updatedUser.is_active))
+    console.log(typeof updatedUser.is_active)
     try {
       // Check if updating the current admin's role
       if (updatedUser.id) { // Only check for existing users
@@ -100,7 +104,7 @@ export function UsersTable() {
         email: updatedUser.email,
         name: updatedUser.name,
         role_id: Number(updatedUser.role_id),
-        is_active: updatedUser.is_active,
+        is_active: Boolean(updatedUser.is_active),
         dob: updatedUser.dob,
         phone_number: updatedUser.phone_number,
         address: updatedUser.address,

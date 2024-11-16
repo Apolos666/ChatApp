@@ -5,7 +5,7 @@ import { User } from '@/types/user'
 import { FormFields } from './form-fields'
 import { z } from 'zod'
 import { useState } from 'react'
-import { userFormSchema } from './user-edit-form'
+import { addUserFormSchema } from './user-edit-form'
 
 interface UserAddFormProps {
   user: User | null
@@ -18,9 +18,9 @@ export function UserAddForm({ user, onSave, onCancel }: UserAddFormProps) {
   const [errors, setErrors] = useState<z.ZodError | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const result = userFormSchema.safeParse(formData)
+    const result = addUserFormSchema.safeParse(formData)
     if (!result.success) {
         setErrors(result.error)
         return
@@ -30,7 +30,7 @@ export function UserAddForm({ user, onSave, onCancel }: UserAddFormProps) {
     setIsLoading(true)
 
     try {
-        handleSubmit(e, result.data as User)
+        await handleSubmit(e, result.data as User)
     } catch (error) {
         console.error('Error submitting form:', error)
     } finally {

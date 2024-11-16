@@ -11,6 +11,9 @@ import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Eye } from 'lucide-react'
 import { EyeOff } from 'lucide-react'
+import { Camera } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Upload, Trash2 } from 'lucide-react'
 
 interface FormFieldsProps {
   formData: Partial<User>
@@ -27,7 +30,7 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
         <Avatar className='h-16 w-16 border border-gray-400'>
           <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
           <AvatarFallback>{formData.name ? formData.name.split(' ')[0][0].toUpperCase() : ''}</AvatarFallback>
-        </Avatar>
+          </Avatar>
         <div className='flex-1'>
           <Label htmlFor='name'>Name</Label>
           <Input id='name' placeholder='Enter name' value={formData.name || ''} onChange={(e) => onChange?.('name', e.target.value)} className={cn(errors?.name && 'border-red-500')} />
@@ -75,15 +78,15 @@ export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps
             Account Status
           </Label>
           <Select
-            value={formData.is_active ? 'active' : 'inactive'}
-            onValueChange={(value) => onChange?.('is_active', value === 'active')}
+            value={mode === 'add' ? 'false' : String(Boolean(formData.is_active))}
+            onValueChange={(value) => onChange?.('is_active', value === 'true')}
           >
             <SelectTrigger>
               <SelectValue placeholder='Select status' className={cn(errors?.is_active && 'border-red-500')}/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='active'>Activated</SelectItem>
-              <SelectItem value='inactive'>Not Activated</SelectItem>
+              <SelectItem value="true">Activated</SelectItem>
+              <SelectItem value="false">Not Activated</SelectItem>
             </SelectContent>
           </Select>
           {errors?.is_active && <p className='text-sm text-red-500'>{errors.is_active[0]}</p>}

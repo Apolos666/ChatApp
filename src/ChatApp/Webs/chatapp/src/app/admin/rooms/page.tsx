@@ -1,11 +1,11 @@
 'use client'
 
-import Loading from '@/app/(auth)/loading'
+import { Spinner } from '@/components/admin/shared/spinner'
 import { useAuthCheck } from '@/hooks/use-auth-check'
 
 export default function RoomsPage() {
   const { isChecking } = useAuthCheck()
 
-  if (isChecking) return <Loading />
+  if (isChecking) return <Spinner size="lg" text="Loading..." className="justify-center mt-10"/>
   return <div>RoomsPage</div>
 }
