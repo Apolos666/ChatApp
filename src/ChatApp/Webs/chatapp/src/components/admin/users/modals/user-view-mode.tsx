@@ -7,13 +7,13 @@ import { User } from "@/types/user";
 interface UserViewModeProps {
     user: User;
     onEdit: () => void;
-    onClose: () => void;
+    onSave?: () => void;
 }
 
-export function UserViewMode({ user, onEdit }: Omit<UserViewModeProps, 'onClose'>) {
+export function UserViewMode({ user, onEdit, onSave }: UserViewModeProps) {
     return (
         <div className="grid gap-6">
-            <ViewFields user={user} />
+            <ViewFields user={user} onSave={onSave} />
             <div className="flex justify-between">
                 <DialogClose asChild>
                     <Button type="button" variant="outline">

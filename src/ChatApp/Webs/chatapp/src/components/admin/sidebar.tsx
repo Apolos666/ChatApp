@@ -5,7 +5,6 @@ import {
     LayoutDashboard,
     Users,
     MessageSquare,
-    Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -25,11 +24,6 @@ const sidebarLinks = [
         title: "Rooms",
         href: "/admin/rooms",
         icon: MessageSquare,
-    },
-    {
-        title: "Settings",
-        href: "/admin/settings",
-        icon: Settings,
     },
 ];
 

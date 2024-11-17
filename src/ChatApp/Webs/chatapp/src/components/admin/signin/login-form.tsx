@@ -27,6 +27,12 @@ interface LoginFormProps {
   initialError?: string
 }
 
+interface ErrorResponse {
+  time: string;
+  message: string;
+  details: string;
+}
+
 export function LoginForm({ error, setError, onSuccess, initialError }: LoginFormProps) {
   useEffect(() => {
     if (initialError) {
@@ -52,9 +58,6 @@ export function LoginForm({ error, setError, onSuccess, initialError }: LoginFor
     try {
       // Attempt to login with provided credentials
       const response = await httpPostPrivate('/auth/login', data)
-      if (response.status !== 200) {
-        throw new Error('Invalid credentials')
-      }
       
       // Store authentication tokens and user ID in local storage
       const { accessToken, refreshToken, id } = response.data
@@ -62,8 +65,11 @@ export function LoginForm({ error, setError, onSuccess, initialError }: LoginFor
       setLocalStorageItem(PersistedStateKey.Token, accessToken) 
       setLocalStorageItem(PersistedStateKey.RefreshToken, refreshToken)
       onSuccess()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login')
+    } catch (error: any) {
+      // Handle API error response
+      const errorResponse = error.response?.data as ErrorResponse;
+      setError(errorResponse?.message || 'An error occurred during login. Please try again.')
+      console.error('Login error:', error)
     }
   }
 
