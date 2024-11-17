@@ -30,7 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ReduxProvider>{children}</ReduxProvider>
         </QueryProvider>
         <Toaster />
-        <SonnerToaster />
+        <SonnerToaster 
+          richColors
+        />
       </body>
     </html>
   )

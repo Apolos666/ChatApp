@@ -1,13 +1,12 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table } from "@tanstack/react-table";
-import { User as UserType } from "@/types";
 
-interface PageSizeSelectorProps {
-    table: Table<UserType>;
+interface PageSizeSelectorProps<T> {
+    table: Table<T>;
     onPageSizeChange: (size: number) => void;
 }
 
-export function PageSizeSelector({ table, onPageSizeChange }: PageSizeSelectorProps) {
+export function PageSizeSelector<T>({ table, onPageSizeChange }: PageSizeSelectorProps<T>) {
     return (
         <span className="flex items-center gap-1 px-4 text-sm text-muted-foreground">
             Show

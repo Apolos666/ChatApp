@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Table } from "@tanstack/react-table";
-import { User } from "@/types/user";
 import { Trash2 } from "lucide-react";
 import { DeleteConfirmationDialog } from "@/components/admin/users/modals/delete-confirmation-dialog";
 
-interface RowActionsProps {
-    table: Table<User>;
+interface RowActionsProps<T extends { id: string }> {
+    table: Table<T>;
     onDelete: (ids: string[]) => void;
 }
 
-export default function RowActions({ table, onDelete }: RowActionsProps) {
+export default function RowActions<T>({ table, onDelete }: RowActionsProps<T>) {
     const [open, setOpen] = useState(false);
     const selectedCount = table.getSelectedRowModel().rows.length;
 
