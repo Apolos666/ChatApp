@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ChevronDown, LogOut, User, MessageSquareReply } from 'lucide-react'
+import { ChevronDown, LogOut, User, MessageSquareReply, Lock } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/admin/shared/spinner'
@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast'
 import { httpPut as httpPutAdmin } from '@/services/user.service.api/_adminReq'
 import { UserEditForm } from '../users/modals/user-edit-form'
 import { User as UserType } from '@/types'
+import { ChangePasswordDialog } from './change-password-dialog'
 
 export function ProfileMenu() {
   const { user, logout } = useAuth()
@@ -26,6 +27,7 @@ export function ProfileMenu() {
   const { toast } = useToast()
   const [isNavigating, setIsNavigating] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [profileData, setProfileData] = useState(null)
@@ -127,6 +129,10 @@ export function ProfileMenu() {
               <User className='mr-2 h-4 w-4' />
               <span>Profile</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsChangePasswordOpen(true)}>
+              <Lock className='mr-2 h-4 w-4' />
+              <span>Change Password</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleNavigateToChat} disabled={isNavigating}>
               {isNavigating ? (
                 <Spinner size='sm' text='Navigating...' className='text-muted-foreground' />
@@ -148,6 +154,9 @@ export function ProfileMenu() {
 
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className='sm:max-w-[600px]'>
+          <DialogHeader>
+            <DialogTitle>{isEditMode ? 'Edit Profile' : 'Profile'}</DialogTitle>
+          </DialogHeader>
           {isLoading ? (
             <div className='flex h-40 items-center justify-center'>
               <Spinner text='Loading profile...' />
@@ -172,6 +181,8 @@ export function ProfileMenu() {
           )}
         </DialogContent>
       </Dialog>
+
+      <ChangePasswordDialog open={isChangePasswordOpen} onClose={() => setIsChangePasswordOpen(false)} />
     </>
   )
 }

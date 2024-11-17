@@ -69,6 +69,7 @@ export function UserEditForm({ user, onSave, onCancel, mode }: UserEditFormProps
         formData={formData} 
         onChange={handleChange} 
         mode={mode} 
+        onSave={onSave}
         errors={errors?.flatten().fieldErrors as Record<string, string[]>} 
       />
 

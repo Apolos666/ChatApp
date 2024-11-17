@@ -8,27 +8,81 @@ import { Label } from '@/components/ui/label'
 import { User, USER_ROLES } from '@/types/user'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useRef, ChangeEvent } from 'react'
 import { Eye } from 'lucide-react'
 import { EyeOff } from 'lucide-react'
+import { Camera } from 'lucide-react'
+import { useUserForm } from '@/hooks/use-user-form'
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu'
+import { getLocalStorageItem } from '@/utils/local-storage'
 
 interface FormFieldsProps {
   formData: Partial<User>
   onChange?: (field: keyof User, value: string | boolean) => void
   errors?: Record<string, string[]>
   mode: 'add' | 'edit' | 'edit-profile'
+  onSave?: (user: User) => void
 }
 
-export function FormFields({ formData, onChange, errors, mode }: FormFieldsProps) {
+export function FormFields({ formData, onChange, errors, mode, onSave }: FormFieldsProps) {
   const [showPassword, setShowPassword] = useState(false)
   const isEditProfile = mode === 'edit-profile'
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { handleAvatarRemove, handleAvatarUpload } = useUserForm(formData as User, onSave)
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      handleAvatarUpload(file)
+    }
+    event.target.value = ''
+  }
+
   return (
     <>
+      <input 
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
       <div className='mb-6 flex items-center gap-4'>
-        <Avatar className='h-16 w-16 border border-gray-400'>
-          <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
-          <AvatarFallback>{formData.name ? formData.name.split(' ')[0][0].toUpperCase() : ''}</AvatarFallback>
-        </Avatar>
+        <div className='relative'>
+          <Avatar className='h-16 w-16 border border-gray-400'>
+            <AvatarImage src={formData.avatar || ''} alt={formData.name || ''} className='object-cover' />
+            <AvatarFallback>{formData.name ? formData.name.split(' ')[0][0].toUpperCase() : ''}</AvatarFallback>
+          </Avatar>
+          
+          {(isEditProfile && formData.id === getLocalStorageItem('meId')) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className='absolute bottom-0 right-0 rounded-full bg-white p-1.5 shadow-md hover:bg-gray-100'>
+                  <Camera className='h-3 w-3' />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleFileSelect}>
+                  {formData.avatar ? 'Change Avatar' : 'Upload Avatar'}
+                </DropdownMenuItem>
+                {formData.avatar && (
+                  <DropdownMenuItem className='text-red-600' onClick={handleAvatarRemove}>
+                    Remove Avatar
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
         <div className='flex-1'>
           <Label htmlFor='name'>Name</Label>
           <Input
