@@ -20,7 +20,7 @@ import { AddRoomModal } from '@/components/admin/rooms/modals/add-room-modal'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import { PageSizeSelector } from '@/components/admin/users/table/page-size-selector'
 import RowActions from '@/components/admin/users/table/row-actions'
-import { Filters } from '@/components/admin/rooms/toolbar/rooms-toolbar'
+import { RoomFilters, DEFAULT_FILTERS } from '@/components/admin/rooms/toolbar/filter-button'
 
 interface ModalState {
   mode: 'add' | 'edit' | 'view' | null;
@@ -32,9 +32,7 @@ export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFilterLoading, setIsFilterLoading] = useState(false)
-  const [filters, setFilters] = useState<Filters>({
-    name: ""
-  })
+  const [filters, setFilters] = useState<RoomFilters>(DEFAULT_FILTERS)
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10

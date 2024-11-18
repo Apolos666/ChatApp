@@ -6,15 +6,14 @@ import { Table } from "@tanstack/react-table";
 import { Room } from "@/types";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
+import FilterButton, { DEFAULT_FILTERS, RoomFilters } from "./filter-button";
+import { format } from "date-fns";
 
-export interface Filters {
-    name: string
-}
 
 interface RoomsToolbarProps {
     table: Table<Room>,
-    filters: Filters,
-    setFilters: (filters: Filters) => void,
+    filters: RoomFilters,
+    setFilters: (filters: RoomFilters) => void,
     onAdd: () => void;
     isLoading: boolean;
     setIsFilterLoading: (value: boolean) => void;
@@ -22,7 +21,7 @@ interface RoomsToolbarProps {
 
 export const RoomsToolbar = ({ 
     table, 
-    filters, 
+    filters = DEFAULT_FILTERS,
     setFilters, 
     onAdd, 
     isLoading,
@@ -37,8 +36,28 @@ export const RoomsToolbar = ({
             {
                 id: "name",
                 value: debouncedSearchValue,
-            }
+            },
         ]
+
+        if (filters.memberCount?.min !== null || filters.memberCount?.max !== null) {
+            columnFilters.push({
+                id: "members",
+                value: {
+                    min: filters.memberCount?.min ?? 0,
+                    max: filters.memberCount?.max ?? 50,
+                },
+            })
+        }
+
+        if (filters.dateRange?.from || filters.dateRange?.to) {
+            columnFilters.push({
+                id: 'createdAt',
+                value: {
+                    from: filters.dateRange?.from ? format(filters.dateRange.from, 'yyyy-MM-dd') : undefined,
+                    to: filters.dateRange?.to ? format(filters.dateRange.to, 'yyyy-MM-dd') : undefined,
+                }
+            })
+        }
 
         table.setColumnFilters(columnFilters);
         
@@ -47,7 +66,7 @@ export const RoomsToolbar = ({
         }, 400);
 
         return () => clearTimeout(timer);
-    }, [debouncedSearchValue, table, setIsFilterLoading])
+    }, [debouncedSearchValue, filters, table, setIsFilterLoading])
 
     return (
         <div className="flex items-center justify-between px-4">
@@ -65,6 +84,7 @@ export const RoomsToolbar = ({
                         className="h-8 px-2 text-muted-foreground"
                         onClick={() => {
                             setSearchValue("");
+                            setFilters(DEFAULT_FILTERS);
                             table.resetRowSelection();
                         }}
                     >
@@ -75,11 +95,12 @@ export const RoomsToolbar = ({
             </div>
             <div className="flex gap-3">
                 <Input
-                    placeholder="Search name..."
+                    placeholder="Search room name..."
                     className="max-w-md"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
+                <FilterButton filters={filters} setFilters={setFilters} />
                 <Button 
                     variant="default" 
                     onClick={onAdd} 

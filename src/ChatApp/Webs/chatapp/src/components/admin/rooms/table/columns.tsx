@@ -57,6 +57,32 @@ export const getColumns = ({ onEdit, onView, handleDelete }: GetColumnsProps): C
     cell: ({ row }) => {
       const createdAt = row.getValue('createdAt') as string
       return <div className='text-center'>{formatDate(createdAt)}</div>
+    },
+    filterFn: (row, id, value: { from: string; to: string }) => {
+      const date = new Date(row.original.createdAt)
+      // Check if both from and to dates are provided
+      if (value.from && value.to) {
+        return date >= new Date(value.from) && date <= new Date(value.to)
+      }
+      // Check if only from date is provided
+      if (value.from) {
+        const fromDate = new Date(value.from)
+        return (
+          date.getFullYear() === fromDate.getFullYear() &&
+          date.getMonth() === fromDate.getMonth() &&
+          date.getDate() === fromDate.getDate()
+        )
+      }
+      // Check if only to date is provided
+      if (value.to) {
+        const toDate = new Date(value.to)
+        return (
+          date.getFullYear() === toDate.getFullYear() &&
+          date.getMonth() === toDate.getMonth() &&
+          date.getDate() === toDate.getDate()
+        )
+      }
+      return true
     }
   },
   {
@@ -65,13 +91,14 @@ export const getColumns = ({ onEdit, onView, handleDelete }: GetColumnsProps): C
     cell: ({ row }) => {
       const room = row.original
       return <div className='text-center'>{room.members.length}</div>
+    },
+    filterFn: (row, id, value: { min: number | null; max: number | null }) => {
+      return row.original.members.length >= (value.min ?? 0) && row.original.members.length <= (value.max ?? 50)
     }
   },
   {
     id: 'actions',
-    header: ({ column }) => (
-      <SortableTableHeader column={column} title="Actions" align="center" isEnabled={false} />
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} title='Actions' align='center' isEnabled={false} />,
     cell: ({ row }) => (
       <div className='flex justify-center'>
         <RoomActionsCell
