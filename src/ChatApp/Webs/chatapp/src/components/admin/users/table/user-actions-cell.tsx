@@ -4,8 +4,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Copy, Edit, Eye, Lock, MoreHorizontal, Trash } from "lucide-react";
@@ -41,9 +39,7 @@ export function UserActionsCell({
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                <DropdownMenuContent align="center">
                     <DropdownMenuItem
                         onClick={() => {
                             navigator.clipboard.writeText(user.id);

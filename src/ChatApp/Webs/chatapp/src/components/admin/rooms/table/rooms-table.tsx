@@ -3,13 +3,15 @@ import { Room } from '@/types/room'
 import { Table as UITable, TableHeader, TableBody, TableRow, TableCell, TableHead } from '@/components/ui/table'
 import { flexRender } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { RoomsTableSkeleton } from './table-skeleton'
 
 interface RoomsTableProps {
   table: Table<Room>
+  pageSize?: number
   isLoading: boolean
 }
 
-export function RoomsTable({ table, isLoading }: RoomsTableProps) {
+export function RoomsTable({ table, pageSize = 10, isLoading }: RoomsTableProps) {
   return (
     <div className='rounded-md border'>
       <UITable>
@@ -34,11 +36,7 @@ export function RoomsTable({ table, isLoading }: RoomsTableProps) {
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={table.getHeaderGroups()?.[0]?.headers?.length || 1} className='h-24 text-center'>
-                Loading...
-              </TableCell>
-            </TableRow>
+            <RoomsTableSkeleton columnsCount={table.getHeaderGroups()?.[0]?.headers?.length || 1} rowsCount={pageSize} />
           ) : table.getRowModel()?.rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>

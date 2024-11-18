@@ -8,7 +8,7 @@ interface RowActionsProps<T extends { id: string }> {
     onDelete: (ids: string[]) => void;
 }
 
-export default function RowActions<T>({ table, onDelete }: RowActionsProps<T>) {
+export default function RowActions<T extends { id: string }>({ table, onDelete }: RowActionsProps<T>) {
     const [open, setOpen] = useState(false);
     const selectedCount = table.getSelectedRowModel().rows.length;
 

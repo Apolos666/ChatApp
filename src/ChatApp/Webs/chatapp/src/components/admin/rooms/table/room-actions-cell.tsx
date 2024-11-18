@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Room } from "@/types";
 import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "../../users/modals/delete-confirmation-dialog";
@@ -23,9 +23,7 @@ export function RoomActionsCell({ room, onView, onEdit, onDelete }: RoomActionsC
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                <DropdownMenuContent align="center">
                     <DropdownMenuItem
                         onClick={() => {
                             navigator.clipboard.writeText(room.id);

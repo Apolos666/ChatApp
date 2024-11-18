@@ -20,6 +20,7 @@ import { AddRoomModal } from '@/components/admin/rooms/modals/add-room-modal'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import { PageSizeSelector } from '@/components/admin/users/table/page-size-selector'
 import RowActions from '@/components/admin/users/table/row-actions'
+import { Filters } from '@/components/admin/rooms/toolbar/rooms-toolbar'
 
 interface ModalState {
   mode: 'add' | 'edit' | 'view' | null;
@@ -30,9 +31,13 @@ export default function RoomsPage() {
   // States for data and loading
   const [rooms, setRooms] = useState<Room[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isFilterLoading, setIsFilterLoading] = useState(false)
+  const [filters, setFilters] = useState<Filters>({
+    name: ""
+  })
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 5
+    pageSize: 10
   });
   const [modal, setModal] = useState<ModalState>({ mode: null, room: null });
 
@@ -84,13 +89,27 @@ export default function RoomsPage() {
   return (
     <div className='space-y-4'>
       {/* Toolbar */}
-      <RoomsToolbar table={table} onAdd={() => setModal({ mode: 'add', room: null })} />
+      <RoomsToolbar 
+        table={table} 
+        filters={filters} 
+        setFilters={setFilters} 
+        onAdd={() => setModal({ mode: 'add', room: null })} 
+        isLoading={isLoading}
+        setIsFilterLoading={setIsFilterLoading}
+      />
 
       {/* Row Actions */}
-      <RowActions table={table} onDelete={handleDelete} />
+      <RowActions 
+        table={table} 
+        onDelete={handleDelete} // Bulk delete
+      />
 
       {/* Rooms Table */}
-      <RoomsTable table={table} isLoading={isLoading} />
+      <RoomsTable 
+        table={table} 
+        pageSize={pagination.pageSize}            // For skeleton
+        isLoading={isLoading || isFilterLoading}  // For skeleton
+      />
 
       {/* Pagination */}
       <div className='flex items-center'>

@@ -39,7 +39,7 @@ export function UsersTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isAddMode, setIsAddMode] = useState(false)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(10)
   const [filters, setFilters] = useState<Filters>({ role_id: [], is_active: [], startDate: null, endDate: null })
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     name: true,

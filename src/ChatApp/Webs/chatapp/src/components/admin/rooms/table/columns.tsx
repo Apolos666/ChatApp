@@ -69,13 +69,19 @@ export const getColumns = ({ onEdit, onView, handleDelete }: GetColumnsProps): C
   },
   {
     id: 'actions',
+    header: ({ column }) => (
+      <SortableTableHeader column={column} title="Actions" align="center" isEnabled={false} />
+    ),
     cell: ({ row }) => (
-      <RoomActionsCell
-        room={row.original}
-        onView={(room) => onView(room)}
-        onEdit={(room) => onEdit(room)}
-        onDelete={(room) => handleDelete([room.id])}
-      />
-    )
+      <div className='flex justify-center'>
+        <RoomActionsCell
+          room={row.original}
+          onView={(room) => onView(room)}
+          onEdit={(room) => onEdit(room)}
+          onDelete={(room) => handleDelete([room.id])}
+        />
+      </div>
+    ),
+    enableSorting: false
   }
 ]
