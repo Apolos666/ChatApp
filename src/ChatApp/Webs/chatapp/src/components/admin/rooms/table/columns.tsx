@@ -6,13 +6,11 @@ import { formatDate } from '@/lib/utils'
 import { RoomActionsCell } from './room-actions-cell'
 
 interface GetColumnsProps {
-  onEdit: (room: Room) => void
-  onView: (room: Room) => void
-  onManageUsers: (room: Room) => void
+  onManage: (room: Room) => void
   handleDelete: (ids: string[]) => void
 }
 
-export const getColumns = ({ onEdit, onView, onManageUsers, handleDelete }: GetColumnsProps): ColumnDef<Room>[] => [
+export const getColumns = ({ onManage, handleDelete }: GetColumnsProps): ColumnDef<Room>[] => [
   {
     accessorKey: 'select',
     header: ({ table }) => (
@@ -104,9 +102,7 @@ export const getColumns = ({ onEdit, onView, onManageUsers, handleDelete }: GetC
       <div className='flex justify-center'>
         <RoomActionsCell
           room={row.original}
-          onView={(room) => onView(room)}
-          onEdit={(room) => onEdit(room)}
-          onManageUsers={(room) => onManageUsers(room)}
+          onManage={(room) => onManage(room)}
           onDelete={(room) => handleDelete([room.id])}
         />
       </div>

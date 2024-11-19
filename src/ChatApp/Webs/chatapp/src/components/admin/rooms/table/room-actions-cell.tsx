@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, Eye, MoreHorizontal, Trash, Users } from "lucide-react";
+import { Copy, MoreHorizontal, Trash, Users } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Room } from "@/types";
 import { toast } from "sonner";
@@ -8,13 +8,11 @@ import { useState } from "react";
 
 interface RoomActionsCellProps {
     room: Room;
-    onView?: (room: Room) => void;
-    onEdit?: (room: Room) => void;
-    onManageUsers?: (room: Room) => void;
+    onManage?: (room: Room) => void;
     onDelete?: (room: Room) => void;
 }
 
-export function RoomActionsCell({ room, onView, onEdit, onManageUsers, onDelete }: RoomActionsCellProps) {
+export function RoomActionsCell({ room, onManage, onDelete }: RoomActionsCellProps) {
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false)
     return (
         <>
@@ -34,13 +32,9 @@ export function RoomActionsCell({ room, onView, onEdit, onManageUsers, onDelete 
                         <Copy className="mr-2 h-4 w-4" />
                         Copy ID
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onView?.(room)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onEdit?.(room)}>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit Room
+                    <DropdownMenuItem onClick={() => onManage?.(room)}>
+                        <Users className="h-4 w-4 mr-2" />
+                        Manage Room
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setOpenConfirmationModal(true)}>
