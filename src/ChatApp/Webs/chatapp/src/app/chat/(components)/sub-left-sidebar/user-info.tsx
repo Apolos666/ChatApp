@@ -1,12 +1,13 @@
 import React from 'react'
 import { useLoggedInUserProfile } from '@/entities/user/hooks/userLoggedInUserProfile'
 import UserAvatar from './user-avatar'
+import UserProfileModal from './user-profile-modal'
+import UserAccountModal from './user-account-modal'
 import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { PopoverContent } from '@radix-ui/react-popover'
-import UserProfileModal from './user-profile-modal'
 
 function UserInfoPopoverContent({ userName }: { userName: string }) {
-  const modals = [<UserProfileModal />]
+  const modals = [<UserProfileModal />, <UserAccountModal />]
 
   return (
     <div className='min-h-[100px] w-[240px] rounded-md border bg-white py-2 shadow-md'>

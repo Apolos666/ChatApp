@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DialogTrigger } from '@radix-ui/react-dialog'
 import UserProfilePanel from './user-profile-panel'
 
@@ -7,7 +7,7 @@ function UserProfileModal() {
   return (
     <Dialog>
       <DialogTrigger className='w-full'>
-        <div className='text-left text-lg'>Hồ sơ của bạn</div>
+        <div className='text-left text-lg'>Your profile</div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

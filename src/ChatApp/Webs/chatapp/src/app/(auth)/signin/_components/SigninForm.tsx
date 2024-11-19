@@ -1,69 +1,63 @@
-"use client";
+'use client'
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import FormInput from "@/components/signin/FormInput";
-import FormPasswordInput from "@/components/signin/FormPasswordInput";
-import { KeyRound, Mail } from "lucide-react";
-import ButtonLoading from "@/components/signin/ButtonLoading";
-import {
-  authContractsDto,
-  authTypesDto,
-} from "@/services/user.service.api/auth";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLoginMutation } from "../_mutations/signin.mutation";
+import React from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import FormInput from '@/components/signin/FormInput'
+import FormPasswordInput from '@/components/signin/FormPasswordInput'
+import { KeyRound, Mail } from 'lucide-react'
+import ButtonLoading from '@/components/signin/ButtonLoading'
+import { authContractsDto, authTypesDto } from '@/services/user.service.api/auth'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useLoginMutation } from '../_mutations/signin.mutation'
 
-type LoginFormValues = authTypesDto.LoginDto;
+type LoginFormValues = authTypesDto.LoginDto
 
 function SigninForm() {
-  const router = useRouter();
+  const router = useRouter()
 
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors }
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(authContractsDto.LoginDtoSchema),
-  });
+    resolver: zodResolver(authContractsDto.LoginDtoSchema)
+  })
 
   const { mutate: login, isPending } = useLoginMutation({
     onSuccess: (response) => {
-      router.push("/chat");
+      router.push('/chat')
     },
     onError: (error) => {
-      console.log(error);
-    },
-  });
+      console.log(error)
+    }
+  })
 
   const onSubmit = (data: LoginFormValues) => {
-    login(data);
-  };
+    login(data)
+  }
 
   return (
-    <div className="relative w-96 border rounded-2xl shadow-md flex flex-col items-center px-6 py-10 bg-white">
-      <div className="flex items-center justify-center gap-4">
-        <h3 className="text-2xl font-semibold">User</h3>
-        <h3 className="relative z-[100] text-2xl text-white font-semibold after:bg-black after:z-[-1] after:block after:w-[120%] after:-translate-x-[10%] after:h-full after:absolute after:top-0 after:-skew-x-12">
+    <div className='relative flex w-96 flex-col items-center rounded-2xl border bg-white px-6 py-10 shadow-md'>
+      <div className='flex items-center justify-center gap-4'>
+        <h3 className='text-2xl font-semibold'>User</h3>
+        <h3 className='relative z-[100] text-2xl font-semibold text-white after:absolute after:top-0 after:z-[-1] after:block after:h-full after:w-[120%] after:-translate-x-[10%] after:-skew-x-12 after:bg-black'>
           Login
         </h3>
       </div>
-      <p className="text-center text-base mt-3 mb-4">
+      <p className='mb-4 mt-3 text-center text-base'>
         Hey, Enter your details to get sign in <br /> to your account
       </p>
-      <form
-        className="w-full flex flex-col items-center gap-4"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className='flex w-full flex-col items-center gap-4' onSubmit={handleSubmit(onSubmit)}>
         <Controller
-          name="email"
+          name='email'
           control={control}
           render={({ field }) => (
             <FormInput
-              title="Email"
-              icon={<Mail className="size-5" />}
-              placeholder="abc@email.com"
+              title='Email'
+              icon={<Mail className='size-5' />}
+              placeholder='abc@email.com'
               onChange={field.onChange}
               error={errors.email?.message}
             />
@@ -71,39 +65,37 @@ function SigninForm() {
         />
 
         <Controller
-          name="password"
+          name='password'
           control={control}
           render={({ field }) => (
             <FormPasswordInput
-              type="password"
-              placeholder="Your password"
-              title="Password"
-              icon={<KeyRound className="size-4" />}
+              type='password'
+              placeholder='Your password'
+              title='Password'
+              icon={<KeyRound className='size-4' />}
               onChange={field.onChange}
               error={errors.password?.message}
             />
           )}
         />
 
-        <ButtonLoading
-          loading={isPending}
-          disabled={isPending}
-          type="submit"
-          className="text-sm w-full mt-1"
-        >
+        <ButtonLoading loading={isPending} disabled={isPending} type='submit' className='mt-1 w-full text-sm'>
           Sign in
         </ButtonLoading>
       </form>
-      <div className="mt-4 w-full flex items-center justify-center">
-        <span className="text-sm mr-2">Don't have an account?</span>
-        <Link className="text-sm font-semibold hover:underline" href="/signup">
+      <div className='mt-4 flex w-full items-center justify-center'>
+        <span className='mr-2 text-sm'>Don't have an account?</span>
+        <Link className='text-sm font-semibold hover:underline' href='/signup'>
           Request Now
         </Link>
       </div>
+      <Link href='/reset' className='mt-4 text-sm font-semibold hover:underline'>
+        Forgot your password
+      </Link>
 
-      <div className="absolute size-full bg-white border shadow-md rounded-2xl z-[-1] top-0 -translate-y-2 translate-x-2"></div>
+      <div className='absolute top-0 z-[-1] size-full -translate-y-2 translate-x-2 rounded-2xl border bg-white shadow-md'></div>
     </div>
-  );
+  )
 }
 
-export default SigninForm;
+export default SigninForm

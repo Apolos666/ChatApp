@@ -1,6 +1,8 @@
-import React, { ReactNode } from 'react'
 import Link from 'next/link'
-import { MessageSquare, User } from 'lucide-react'
+import React, { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
+import { MessageSquare } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 interface INavItem {
   title: string
@@ -10,11 +12,17 @@ interface INavItem {
 
 function NavItem({ item }: { item: INavItem }) {
   const { title, href, icon } = item
+  const path = usePathname()
+
+  const isActive = path.includes(href)
 
   return (
     <Link
       href={href}
-      className='block flex size-full flex-col items-center justify-center gap-2 rounded-lg py-4 hover:bg-white/20'
+      className={cn(
+        'block flex size-full flex-col items-center justify-center gap-2 rounded-lg py-4 hover:bg-white/20',
+        isActive && 'bg-white/10'
+      )}
     >
       {icon}
       <span className='text-xs text-white'>{title}</span>
@@ -27,7 +35,7 @@ function WorkNavList() {
     {
       title: 'Chats',
       icon: <MessageSquare className='text-white' />,
-      href: ''
+      href: '/chat'
     }
   ]
 
