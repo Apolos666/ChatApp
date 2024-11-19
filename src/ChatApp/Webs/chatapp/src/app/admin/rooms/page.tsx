@@ -14,13 +14,11 @@ import {
 import { getColumns } from '@/components/admin/rooms/table/columns'
 import { httpGetPrivate } from '@/services/user.service.api/_req'
 import { toast } from 'sonner'
-import { ViewRoomModal } from '@/components/admin/rooms/modals/view-room-modal'
-import { EditRoomModal } from '@/components/admin/rooms/modals/edit-room-modal'
-import { AddRoomModal } from '@/components/admin/rooms/modals/add-room-modal'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import { PageSizeSelector } from '@/components/admin/users/table/page-size-selector'
 import RowActions from '@/components/admin/users/table/row-actions'
 import { RoomFilters, DEFAULT_FILTERS } from '@/components/admin/rooms/toolbar/filter-button'
+import { RoomModal } from '@/components/admin/rooms/modals/room-modal'
 
 interface ModalState {
   mode: 'add' | 'edit' | 'view' | null;
@@ -46,11 +44,13 @@ export default function RoomsPage() {
 
   const handleEdit = (room: Room) => setModal({ mode: 'edit', room });
   const handleView = (room: Room) => setModal({ mode: 'view', room });
+  const handleManageUsers = (room: Room) => setModal({ mode: 'manage-users', room });
   const handleClose = () => setModal({ mode: null, room: null });
 
   const columns = useMemo(() => getColumns({
     onEdit: handleEdit,
     onView: handleView,
+    onManageUsers: handleManageUsers,
     handleDelete
   }), [])
 
@@ -120,28 +120,12 @@ export default function RoomsPage() {
         <div className='flex-1' />
       </div>
 
-      {/* Modal for viewing room details */}
-      {modal.mode === 'view' && modal.room && (
-        <ViewRoomModal
-          room={modal.room}
-          onClose={handleClose}
-        />
-      )}
-
-      {/* Modal for editing room details */}
-      {modal.mode === 'edit' && modal.room && (
-        <EditRoomModal
-          room={modal.room}
-          onClose={handleClose}
-        />
-      )}
-
-      {/* Modal for adding a new room */}
-      {modal.mode === 'add' && (
-        <AddRoomModal
-          onClose={handleClose}
-        />
-      )}
+      <RoomModal
+        room={modal.room}
+        mode={modal.mode}
+        onClose={handleClose}
+        onSuccess={fetchRooms}
+      />
     </div>
   )
 }

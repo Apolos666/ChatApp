@@ -4,6 +4,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Copy, Edit, Eye, Lock, MoreHorizontal, Trash } from "lucide-react";
@@ -39,7 +40,7 @@ export function UserActionsCell({
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center">
+                <DropdownMenuContent align="end">
                     <DropdownMenuItem
                         onClick={() => {
                             navigator.clipboard.writeText(user.id);
@@ -73,6 +74,7 @@ export function UserActionsCell({
                         <Lock className="mr-2 h-4 w-4" />
                         Reset Password
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => setOpenConfirmationModal(true)}
                         className="text-destructive"

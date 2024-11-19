@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import { Table } from "@tanstack/react-table";
+import { ColumnFilter, Table } from "@tanstack/react-table";
 import { Room } from "@/types";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -32,7 +32,7 @@ export const RoomsToolbar = ({
 
     useEffect(() => {
         setIsFilterLoading(true);
-        const columnFilters = [
+        const columnFilters: ColumnFilter[] = [
             {
                 id: "name",
                 value: debouncedSearchValue,

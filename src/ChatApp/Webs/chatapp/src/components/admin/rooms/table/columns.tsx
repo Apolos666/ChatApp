@@ -8,10 +8,11 @@ import { RoomActionsCell } from './room-actions-cell'
 interface GetColumnsProps {
   onEdit: (room: Room) => void
   onView: (room: Room) => void
+  onManageUsers: (room: Room) => void
   handleDelete: (ids: string[]) => void
 }
 
-export const getColumns = ({ onEdit, onView, handleDelete }: GetColumnsProps): ColumnDef<Room>[] => [
+export const getColumns = ({ onEdit, onView, onManageUsers, handleDelete }: GetColumnsProps): ColumnDef<Room>[] => [
   {
     accessorKey: 'select',
     header: ({ table }) => (
@@ -105,6 +106,7 @@ export const getColumns = ({ onEdit, onView, handleDelete }: GetColumnsProps): C
           room={row.original}
           onView={(room) => onView(room)}
           onEdit={(room) => onEdit(room)}
+          onManageUsers={(room) => onManageUsers(room)}
           onDelete={(room) => handleDelete([room.id])}
         />
       </div>

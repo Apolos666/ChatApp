@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Copy, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Copy, Edit, Eye, MoreHorizontal, Trash, Users } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Room } from "@/types";
 import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "../../users/modals/delete-confirmation-dialog";
@@ -10,10 +10,11 @@ interface RoomActionsCellProps {
     room: Room;
     onView?: (room: Room) => void;
     onEdit?: (room: Room) => void;
+    onManageUsers?: (room: Room) => void;
     onDelete?: (room: Room) => void;
 }
 
-export function RoomActionsCell({ room, onView, onEdit, onDelete }: RoomActionsCellProps) {
+export function RoomActionsCell({ room, onView, onEdit, onManageUsers, onDelete }: RoomActionsCellProps) {
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false)
     return (
         <>
@@ -23,7 +24,7 @@ export function RoomActionsCell({ room, onView, onEdit, onDelete }: RoomActionsC
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="center">
+                <DropdownMenuContent align="end">
                     <DropdownMenuItem
                         onClick={() => {
                             navigator.clipboard.writeText(room.id);
@@ -35,15 +36,16 @@ export function RoomActionsCell({ room, onView, onEdit, onDelete }: RoomActionsC
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onView?.(room)}>
                         <Eye className="h-4 w-4 mr-2" />
-                        View
+                        View Details
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onEdit?.(room)}>
                         <Edit className="h-4 w-4 mr-2" />
-                        Edit
+                        Edit Room
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setOpenConfirmationModal(true)}>
                         <Trash className="h-4 w-4 mr-2 text-destructive" />
-                        <span className="text-destructive">Delete</span>
+                        <span className="text-destructive">Delete Room</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
