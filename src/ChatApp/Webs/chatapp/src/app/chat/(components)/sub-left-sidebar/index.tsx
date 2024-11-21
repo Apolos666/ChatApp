@@ -5,6 +5,7 @@ import { LogOut } from 'lucide-react'
 import SidebarNavList from './sidebar-nav-list'
 import { setLocalStorageItem } from '@/utils/local-storage'
 import { PersistedStateKey } from '@/data/persisted-keys'
+import { queryClient } from '@/providers/query-provider'
 
 function LogoutButton() {
   const router = useRouter()
@@ -15,6 +16,7 @@ function LogoutButton() {
     setLocalStorageItem(PersistedStateKey.MeId, '')
     setLocalStorageItem(PersistedStateKey.Token, '')
     setLocalStorageItem(PersistedStateKey.RefreshToken, '')
+    queryClient.clear()
   }
 
   return (

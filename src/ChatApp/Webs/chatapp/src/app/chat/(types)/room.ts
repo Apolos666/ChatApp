@@ -12,4 +12,4 @@ export interface Room {
     selected?: boolean;
     unreadCount: number;
     memberCount: number;
-  }
+}

@@ -4,6 +4,8 @@ import { SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/componen
 import { AddMemberDialog } from '../utils/add-member-dialog'
 import { PinnedMessagesDialog } from '../utils/pinned-messages-dialog'
 import { useAppSelector } from '@/store/hooks'
+import { MemberRoomDialog } from '../utils/members-room-dialog'
+import ModeratorAuthorizeComp from '../utils/moderator-authorize'
 
 export const GroupInfo = () => {
   const selectedRoomId = useAppSelector((state) => state.room.selectedRoomId)
@@ -22,16 +24,23 @@ export const GroupInfo = () => {
       </SidebarGroupLabel>
       <div className='space-y-4'>
         <SidebarGroupContent className='space-y-2'>
-          <AddMemberDialog
+          <ModeratorAuthorizeComp>
+            <AddMemberDialog
+              trigger={
+                <Button variant='outline' className='h-12 w-full justify-start'>
+                  <Users size={24} className='mr-2' />
+                  <span>Thêm thành viên</span>
+                </Button>
+              }
+            />
+          </ModeratorAuthorizeComp>
+          <MemberRoomDialog
             trigger={
               <Button variant='outline' className='h-12 w-full justify-start'>
                 <Users size={24} className='mr-2' />
-                <span>Thêm thành viên</span>
+                <span>Thành viên nhóm</span>
               </Button>
             }
-            onAddMember={(userId) => {
-              console.log('Thêm thành viên mới vào nhóm:', userId)
-            }}
           />
           <PinnedMessagesDialog
             messages={pinnedMessages.map((pm) => ({

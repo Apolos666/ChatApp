@@ -1,22 +1,25 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Search, X } from 'lucide-react'
-import { ReactNode, useState, useMemo } from 'react'
+import { ReactNode, useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { useCreateRoomMutation } from './_mutations/createRoom.mutation'
+import { queryClient } from '@/providers/query-provider'
+import ButtonLoading from '@/components/signin/ButtonLoading'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { UserQueries } from '@/entities/user'
+import { useDebounce } from '@/hooks/use-debounce'
+import UserAvatar from '../sub-left-sidebar/user-avatar'
+import { useAddUserToRoom } from './_mutations/addUserToRoom.mutation'
+import { cn } from '@/lib/utils'
+import { useLoggedInUserProfile } from '@/entities/user/hooks/userLoggedInUserProfile'
 
 interface User {
-  id: string
+  id: number
   name: string
   email: string
+  avatar?: string | null
 }
-
-const MOCK_USERS: User[] = [
-  { id: '1', name: 'Nguyễn Văn A', email: 'nguyenvana@gmail.com' },
-  { id: '2', name: 'Trần Thị B', email: 'tranthib@gmail.com' },
-  { id: '3', name: 'Lê Văn C', email: 'levanc@gmail.com' },
-  { id: '4', name: 'Phạm Thị D', email: 'phamthid@gmail.com' },
-  { id: '5', name: 'Hoàng Văn E', email: 'hoangvane@gmail.com' }
-]
 
 interface CreateRoomDialogProps {
   trigger: ReactNode
@@ -24,46 +27,74 @@ interface CreateRoomDialogProps {
 }
 
 export const CreateRoomDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProps) => {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [open, setOpen] = useState(false)
   const [roomName, setRoomName] = useState('')
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
-  const [open, setOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchName = useDebounce(searchQuery, 800)
+  const { data: currentUser } = useLoggedInUserProfile()
+
+  const { fetchNextPage, data, isError, error } = useInfiniteQuery(
+    UserQueries.usersByNameInfiniteQuery({
+      name: searchName,
+      pageSize: 10,
+      pageNumber: 1,
+      sortBy: 'id',
+      sortDir: 'ASC'
+    })
+  )
 
   const filteredUsers = useMemo(() => {
-    const query = searchQuery.toLowerCase()
-    return MOCK_USERS.filter(
-      (user) =>
-        !selectedUsers.find((selected) => selected.id === user.id) &&
-        (user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query))
-    )
-  }, [searchQuery, selectedUsers])
+    console.log(data)
+    return data?.pages.flatMap((page) => page.content).filter((user) => currentUser && user.id !== currentUser.id)
+  }, [data, currentUser])
 
-  const handleSelectUser = (user: User) => {
-    setSelectedUsers([...selectedUsers, user])
-  }
+  const { mutateAsync: addUserToRoomAsync } = useAddUserToRoom({})
 
-  const handleRemoveUser = (userId: string) => {
-    setSelectedUsers(selectedUsers.filter((user) => user.id !== userId))
-  }
+  const { mutateAsync: createRoomAsync, isPending } = useCreateRoomMutation({
+    onSuccess: async (response, variables) => {
+      const { id: roomId } = response.data
+      queryClient.invalidateQueries({
+        queryKey: ['rooms']
+      })
 
-  const handleCreateRoom = () => {
-    if (roomName.trim() && selectedUsers.length > 0) {
-      onCreateRoom?.(
-        roomName,
-        selectedUsers.map((user) => user.id)
-      )
-      setOpen(false)
+      await addUserToRoomAsync({
+        roomId,
+        userIdList: selectedUsers.map((user) => user.id)
+      })
+    },
+    onSettled: () => {
+      // setOpen(false)
       // Reset form
       setRoomName('')
       setSelectedUsers([])
       setSearchQuery('')
+    }
+  })
+
+  const handleSelectUser = (user: User) => {
+    const isExist = selectedUsers.find((selectedUser) => user.id === selectedUser.id)
+    if (!isExist) {
+      setSelectedUsers([...selectedUsers, user])
+    }
+  }
+
+  const handleRemoveUser = (userId: number) => {
+    setSelectedUsers(selectedUsers.filter((user) => user.id !== userId))
+  }
+
+  const handleCreateRoom = async () => {
+    if (roomName.trim()) {
+      await createRoomAsync({
+        name: roomName
+      })
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[500px]'>
         <DialogHeader>
           <DialogTitle className='text-xl font-semibold'>Tạo nhóm chat mới</DialogTitle>
         </DialogHeader>
@@ -101,45 +132,45 @@ export const CreateRoomDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProp
             />
           </div>
 
-          <div className='custom-scrollbar mt-2 max-h-[200px] overflow-y-auto pr-2'>
-            {filteredUsers.map((user) => (
-              <div
-                key={user.id}
-                className='group mb-2 cursor-pointer rounded-lg p-3 transition-all duration-200 hover:bg-accent hover:shadow-sm active:scale-[0.98]'
-                onClick={() => handleSelectUser(user)}
-              >
-                <div className='flex items-center space-x-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary/10'>
-                    <span className='text-sm font-medium'>
-                      {user.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()}
-                    </span>
-                  </div>
-                  <div className='flex flex-1 flex-col'>
-                    <span className='font-medium transition-colors group-hover:text-primary'>{user.name}</span>
-                    <span className='text-sm text-muted-foreground'>{user.email}</span>
+          {filteredUsers && (
+            <div className='custom-scrollbar mt-2 max-h-[300px] overflow-y-auto pr-2'>
+              {filteredUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className={cn(
+                    'group mb-2 cursor-pointer rounded-lg p-3 transition-all duration-200 hover:bg-accent hover:shadow-sm active:scale-[0.98]',
+                    selectedUsers.find((selectedUser) => selectedUser.id === user.id) && 'bg-blue-200 hover:bg-blue-300'
+                  )}
+                  onClick={() => handleSelectUser(user)}
+                >
+                  <div className='flex items-center space-x-3'>
+                    <UserAvatar size='sm' name={user?.name} avatarUrl={user?.avatar} />
+                    <div className='flex flex-1 flex-col'>
+                      <span className='font-medium transition-colors group-hover:text-primary'>{user.name}</span>
+                      <span className='text-sm text-muted-foreground'>{user.email}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            {filteredUsers.length === 0 && (
-              <div className='py-8 text-center text-muted-foreground'>
-                <div className='mb-2 text-3xl'>🔍</div>
-                <p>Không tìm thấy người dùng</p>
-              </div>
-            )}
-          </div>
+              ))}
+              {filteredUsers.length === 0 && (
+                <div className='py-8 text-center text-muted-foreground'>
+                  <div className='mb-2 text-3xl'>🔍</div>
+                  <p>Không tìm thấy người dùng</p>
+                </div>
+              )}
+            </div>
+          )}
 
-          <Button
+          <ButtonLoading
+            type='button'
+            loading={isPending}
             className='w-full'
-            disabled={!roomName.trim() || selectedUsers.length === 0}
+            // disabled={!roomName.trim() || selectedUsers.length === 0 || isPending}
+            disabled={isPending}
             onClick={handleCreateRoom}
           >
             Tạo nhóm chat
-          </Button>
+          </ButtonLoading>
         </div>
       </DialogContent>
     </Dialog>
