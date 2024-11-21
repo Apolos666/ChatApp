@@ -1,7 +1,8 @@
 import { httpGetPrivate, httpPostPrivate } from "../_req"
 import { AxiosContracts } from "@/lib/axios/AxiosContracts"
-import { UserDtoSchema } from "./user.contracts"
+import { UserDtoSchema, UsersByNameDtoSchema } from "./user.contracts"
 import { userContractsDto, userTypesDto } from "."
+import { UsersParamsQueryDto } from "./user.types"
 
 export class UserService {
   static loggedUserProfileQuery() {
@@ -9,6 +10,13 @@ export class UserService {
             .then(AxiosContracts.responseContract(UserDtoSchema))
   }
 
+  static usersByNameQuery(config: {
+    params: UsersParamsQueryDto
+  }) {
+    return httpGetPrivate('/user/search', config)
+            // .then(AxiosContracts.responseContract(UsersByNameDtoSchema))
+  }
+  
   static updateLoggedUserProfileMutation(data: { updateLoggedUserProfileDto: userTypesDto.UpdateUserDto }) {
     const updateLoggedUserProfileDto = AxiosContracts.requestContract(
       userContractsDto.UpdateUserDtoSchema,

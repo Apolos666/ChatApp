@@ -7,6 +7,7 @@ import { useAppSelector } from '@/store/hooks'
 import { AddMemberDialog } from '../utils/add-member-dialog'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import ModeratorAuthorizeComp from '../utils/moderator-authorize'
 
 export const ChatHeader = () => {
   const router = useRouter()
@@ -39,16 +40,15 @@ export const ChatHeader = () => {
         </span>
       </div>
       <div className='flex items-center space-x-5'>
-        <AddMemberDialog
-          trigger={
-            <Button variant='ghost'>
-              <UserRoundPlus className='!h-7 !w-7' size={28} />
-            </Button>
-          }
-          onAddMember={(userId) => {
-            console.log('Thêm user:', userId)
-          }}
-        />
+        <ModeratorAuthorizeComp>
+          <AddMemberDialog
+            trigger={
+              <Button variant='ghost'>
+                <UserRoundPlus className='!h-7 !w-7' size={28} />
+              </Button>
+            }
+          />
+        </ModeratorAuthorizeComp>
         <Button variant='ghost'>
           <Search className='!h-7 !w-7' size={28} />
         </Button>
