@@ -1,4 +1,7 @@
 using ChatApp.Message.Features.Messages.Queries.GetPinnedMessages;
+using ChatApp.Message.Features.Common.Authorization;
+using ChatApp.Message.Features.Common.Enums;
+using ChatApp.Message.Features.Messages.Commands.DeleteMessage;
 
 namespace ChatApp.Message.Features.Messages;
 
@@ -35,6 +38,12 @@ public class MessageEndpoints : ICarterModule
             .WithName("GetPinnedMessages")
             .WithDescription("Get all pinned messages in a room")
             .WithSummary("Get Pinned Messages");
+
+        messageGroup.MapDelete("/{id:int}", DeleteMessage)
+            .WithName("DeleteMessage")
+            .WithDescription("Delete a message")
+            .WithSummary("Delete Message")
+            .RequireAuthorization(new RequireRolesAttribute(Roles.Admin, Roles.ModerateUser));
     }
 
     private static async Task<IResult> SendMessage(
@@ -101,5 +110,19 @@ public class MessageEndpoints : ICarterModule
         var query = GetPinnedMessagesQuery.FromRequest(request);
         var result = await sender.Send(query, cancellationToken);
         return Results.Ok(result);
+    }
+
+    private static async Task<IResult> DeleteMessage(
+        int id,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        var command = DeleteMessageCommand.FromRequest(new DeleteMessageRequest { MessageId = id });
+        var result = await sender.Send(command, cancellationToken);
+        var response = new DeleteMessageResponse
+        {
+            MessageId = result.MessageId
+        };
+        return Results.Ok(response);
     }
 }

@@ -46,7 +46,7 @@ public class GetMessagesQueryHandler(
             .Select(m => new MessageDto
             {
                 Id = m.Id,
-                Content = m.Content,
+                Content = m.IsDeleted ? null : m.Content,
                 RoomId = m.RoomId!.Value,
                 SenderId = m.SenderId!.Value,
                 SenderName = m.Sender!.Name,
@@ -60,7 +60,8 @@ public class GetMessagesQueryHandler(
                     Url = f.Url,
                     CreatedAt = f.CreatedAt,
                     Type = f.Name.GetMimeType()
-                }).ToList()
+                }).ToList(),
+                IsDeleted = m.IsDeleted,
             })
             .ToListAsync(cancellationToken);
 

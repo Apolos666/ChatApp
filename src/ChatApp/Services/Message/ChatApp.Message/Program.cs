@@ -1,4 +1,4 @@
-using ChatApp.Message.Features.VideoCall.Hubs;
+using ChatApp.Message.Features.Common.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +78,12 @@ builder.Services.AddCors(options =>
 builder.Services.Configure<CloudinaryOptions>(
     builder.Configuration.GetSection(CloudinaryOptions.SectionName));
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+builder.Services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RequireRoles_Admin_ModerateUser", policy =>
+        policy.AddRequirements(new RoleRequirement([Roles.Admin, Roles.ModerateUser])));
 
 var app = builder.Build();
 

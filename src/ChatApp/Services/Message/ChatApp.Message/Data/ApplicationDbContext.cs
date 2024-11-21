@@ -1,4 +1,8 @@
-﻿using File = ChatApp.Message.Models.File;
+﻿using System;
+using System.Collections.Generic;
+using ChatApp.Message.Models;
+using Microsoft.EntityFrameworkCore;
+using File = ChatApp.Message.Models.File;
 using Role = ChatApp.Message.Models.Role;
 
 namespace ChatApp.Message.Data;
@@ -29,7 +33,7 @@ public partial class ApplicationDbContext : DbContext
     public virtual DbSet<RoomUser> RoomUsers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<File>(entity =>
@@ -78,17 +82,26 @@ public partial class ApplicationDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
+            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+            entity.Property(e => e.DeletedBy).HasColumnName("deleted_by");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_deleted");
             entity.Property(e => e.PinnedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("pinned_at");
             entity.Property(e => e.RoomId).HasColumnName("room_id");
             entity.Property(e => e.SenderId).HasColumnName("sender_id");
 
+            entity.HasOne(d => d.DeletedByNavigation).WithMany(p => p.MessageDeletedByNavigations)
+                .HasForeignKey(d => d.DeletedBy)
+                .HasConstraintName("messages_deleted_by_fkey");
+
             entity.HasOne(d => d.Room).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.RoomId)
                 .HasConstraintName("fk92hs6y8g4al98ihp4ms6nbxeq");
 
-            entity.HasOne(d => d.Sender).WithMany(p => p.Messages)
+            entity.HasOne(d => d.Sender).WithMany(p => p.MessageSenders)
                 .HasForeignKey(d => d.SenderId)
                 .HasConstraintName("fk4ui4nnwntodh6wjvck53dbk9m");
         });

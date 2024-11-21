@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ChatApp.Message.Models;
 
-public sealed partial class Room
+public partial class Room
 {
     public int Id { get; set; }
 
@@ -15,9 +15,9 @@ public sealed partial class Room
 
     public int? CreatorId { get; set; }
 
-    public User? Creator { get; set; }
+    public virtual User? Creator { get; set; }
 
-    public ICollection<File> Files { get; set; } = new List<File>();
+    public virtual ICollection<File> Files { get; set; } = new List<File>();
 
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 }

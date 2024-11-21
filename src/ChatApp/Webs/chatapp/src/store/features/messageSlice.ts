@@ -77,6 +77,18 @@ const messageSlice = createSlice({
           : msg
       );
     },
+    deleteMessage: (state, action: PayloadAction<{
+      messageId: number;
+    }>) => {
+      state.messages = state.messages.map(msg =>
+        msg.id === action.payload.messageId
+          ? {
+              ...msg,
+              isDeleted: true,
+            }
+          : msg
+      );
+    },
   },
 });
 
@@ -85,6 +97,7 @@ export const {
   updateMessageStatus,
   updateTempMessage,
   setMessageFailed,
+  deleteMessage,
 } = messageSlice.actions;
 
 export default messageSlice.reducer; 

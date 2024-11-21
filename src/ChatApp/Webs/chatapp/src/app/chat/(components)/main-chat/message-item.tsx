@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import Image from 'next/image'
 import { Loader2, MoreVertical, Copy, Pin, Trash } from 'lucide-react'
@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { usePinnedMessages } from '../../(hooks)/usePinnedMessage'
 import { useAppSelector } from '@/store/hooks'
+import ModeratorAuthorizeComp from '../utils/moderator-authorize'
+import { useDeleteMessage } from '../../(hooks)/useDeleteMessage'
 
 interface MessageItemProps {
   message: MessageDto
@@ -32,9 +34,34 @@ const getStatusIcon = (status: MessageStatus) => {
 
 export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) => {
   const { pinMessage, unpinMessage } = usePinnedMessages()
+  const { mutate: deleteMessage } = useDeleteMessage()
   const pinnedMessages = useAppSelector((state) => state.pinnedMessages.pinnedMessages[message.roomId] || [])
 
   const isPinned = pinnedMessages.some((pm) => pm.id === message.id)
+
+  const handleDeleteMessage = useCallback(
+    async (event: React.MouseEvent) => {
+      try {
+        await deleteMessage(message.id)
+        document.body.click()
+      } catch (error) {
+        console.error('Error deleting message:', error)
+      }
+    },
+    [deleteMessage, message.id]
+  )
+
+  if (message.isDeleted) {
+    return (
+      <div className='flex justify-center'>
+        <Card className='max-w-xs bg-muted/50'>
+          <CardContent className='px-3 py-2'>
+            <p className='text-sm italic text-muted-foreground'>Tin nhắn này đã bị xóa</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const handlePinMessage = async () => {
     try {
@@ -68,8 +95,10 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
                 <span>{isPinned ? 'Bỏ ghim tin nhắn' : 'Ghim tin nhắn'}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className='text-destructive focus:text-destructive'>
-                <Trash className='mr-2 h-4 w-4' />
-                <span>Xóa tin nhắn</span>
+                <ModeratorAuthorizeComp>
+                  <Trash className='mr-2 h-4 w-4' />
+                  <span onClick={handleDeleteMessage}>Xóa tin nhắn</span>
+                </ModeratorAuthorizeComp>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -142,6 +171,12 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
               <DropdownMenuItem onClick={handlePinMessage}>
                 <Pin className='mr-2 h-4 w-4' />
                 <span>{isPinned ? 'Bỏ ghim tin nhắn' : 'Ghim tin nhắn'}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className='text-destructive focus:text-destructive'>
+                <ModeratorAuthorizeComp>
+                  <Trash className='mr-2 h-4 w-4' />
+                  <span onClick={handleDeleteMessage}>Xóa tin nhắn</span>
+                </ModeratorAuthorizeComp>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

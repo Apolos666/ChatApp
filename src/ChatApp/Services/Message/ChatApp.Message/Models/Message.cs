@@ -17,6 +17,14 @@ public sealed partial class Message
 
     public int? SenderId { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+
+    public int? DeletedBy { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    public User? DeletedByNavigation { get; set; }
+
     public ICollection<File> Files { get; set; } = new List<File>();
 
     public ICollection<MessageStatus> MessageStatuses { get; set; } = new List<MessageStatus>();

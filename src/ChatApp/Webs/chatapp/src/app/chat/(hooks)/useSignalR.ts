@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { addMessage, updateMessageStatus } from '@/store/features/messageSlice';
+import { addMessage, updateMessageStatus, deleteMessage } from '@/store/features/messageSlice';
 import type { MessageDto, MessageStatusUpdate, PinnedMessage } from '../(types)/message';
 import { updateLastMessage } from '@/store/features/roomSlice';
 import { TypingIndicator } from '../(types)/typing';
@@ -52,6 +52,17 @@ export function useSignalR(rooms: number[]) {
       }
     };
 
+    const messageDeletedHandler = (update: {
+      messageId: number;
+      roomId: number;
+      deletedBy: number;
+      deletedAt: string;
+    }) => {
+      dispatch(deleteMessage({
+        messageId: update.messageId,
+      }));
+    };
+
     const initConnection = async () => {
       if (isInitializing.current) return;
       
@@ -66,6 +77,7 @@ export function useSignalR(rooms: number[]) {
         signalR.current.onMessageStatusUpdated(statusUpdateHandler);
         signalR.current.onTypingIndicatorReceived(typingHandler);
         signalR.current.onMessagePinStatusChanged(pinStatusHandler);
+        signalR.current.onMessageDeleted(messageDeletedHandler);
         
         setIsConnected(true);
       } catch (error) {
@@ -102,6 +114,7 @@ export function useSignalR(rooms: number[]) {
       signalR.current.removeStatusUpdateHandler(statusUpdateHandler);
       signalR.current.removeTypingIndicatorHandler(typingHandler);
       signalR.current.removeMessagePinStatusHandler(pinStatusHandler);
+      signalR.current.removeMessageDeletedHandler(messageDeletedHandler);
     };
   }, [dispatch, rooms, isConnected]);
 

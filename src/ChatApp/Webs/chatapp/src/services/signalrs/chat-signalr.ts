@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from "@microsoft/signalr"
-import type { MessageDto, MessageStatusUpdate, PinnedMessage } from "@/app/chat/(types)/message";
+import type { MessageDeletedDto, MessageDto, MessageStatusUpdate, PinnedMessage } from "@/app/chat/(types)/message";
 import { TypingIndicator } from "@/app/chat/(types)/typing";
 import { getLocalStorageItem } from "@/utils/local-storage";
 import { PersistedStateKey } from "@/data/persisted-keys";
@@ -122,7 +122,12 @@ export class ChatSignalRService {
     }
   }
 
-  
+  public onMessageDeleted(handler: (update: MessageDeletedDto) => void): void {
+    this.connection.on("MessageDeleted", (update) => {
+      console.log("Message deleted:", update);
+      handler(update);
+    });
+  }
 
 
 
@@ -147,5 +152,9 @@ export class ChatSignalRService {
 
   public removeMessagePinStatusHandler(handler: (pinStatus: PinnedMessage) => void): void {
     this.connection.off("MessagePinStatusChanged", handler);
+  }
+
+  public removeMessageDeletedHandler(handler: (update: MessageDeletedDto) => void): void {
+    this.connection.off("MessageDeleted", handler);
   }
 } 
