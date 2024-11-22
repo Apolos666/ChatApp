@@ -80,14 +80,19 @@ const messageSlice = createSlice({
     deleteMessage: (state, action: PayloadAction<{
       messageId: number;
     }>) => {
-      state.messages = state.messages.map(msg =>
-        msg.id === action.payload.messageId
-          ? {
-              ...msg,
-              isDeleted: true,
-            }
-          : msg
+      // Tìm message trong state
+      const messageIndex = state.messages.findIndex(
+        msg => msg.id === action.payload.messageId
       );
+      
+      if (messageIndex !== -1) {
+        // Cập nhật trạng thái đã xóa
+        state.messages[messageIndex] = {
+          ...state.messages[messageIndex],
+          isDeleted: true,
+          content: null // Xóa nội dung tin nhắn
+        };
+      }
     },
   },
 });

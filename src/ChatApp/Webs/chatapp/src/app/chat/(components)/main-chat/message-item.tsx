@@ -34,7 +34,7 @@ const getStatusIcon = (status: MessageStatus) => {
 
 export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) => {
   const { pinMessage, unpinMessage } = usePinnedMessages()
-  const { mutate: deleteMessage } = useDeleteMessage()
+  const { mutateAsync: deleteMessage } = useDeleteMessage()
   const pinnedMessages = useAppSelector((state) => state.pinnedMessages.pinnedMessages[message.roomId] || [])
 
   const isPinned = pinnedMessages.some((pm) => pm.id === message.id)
@@ -43,7 +43,6 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
     async (event: React.MouseEvent) => {
       try {
         await deleteMessage(message.id)
-        document.body.click()
       } catch (error) {
         console.error('Error deleting message:', error)
       }
@@ -53,8 +52,11 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
 
   if (message.isDeleted) {
     return (
-      <div className='flex justify-center'>
+      <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
         <Card className='max-w-xs bg-muted/50'>
+          <CardHeader className='px-3 py-1'>
+            <p className='font-semibold text-muted-foreground'>{message.senderName}</p>
+          </CardHeader>
           <CardContent className='px-3 py-2'>
             <p className='text-sm italic text-muted-foreground'>Tin nhắn này đã bị xóa</p>
           </CardContent>
@@ -96,8 +98,10 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
               </DropdownMenuItem>
               <DropdownMenuItem className='text-destructive focus:text-destructive'>
                 <ModeratorAuthorizeComp>
-                  <Trash className='mr-2 h-4 w-4' />
-                  <span onClick={handleDeleteMessage}>Xóa tin nhắn</span>
+                  <div onClick={handleDeleteMessage} className='flex cursor-pointer flex-row gap-4'>
+                    <Trash className='h-4 w-4' />
+                    <span>Xóa tin nhắn</span>
+                  </div>
                 </ModeratorAuthorizeComp>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -174,8 +178,10 @@ export const MessageItem = memo(({ message, isOwnMessage }: MessageItemProps) =>
               </DropdownMenuItem>
               <DropdownMenuItem className='text-destructive focus:text-destructive'>
                 <ModeratorAuthorizeComp>
-                  <Trash className='mr-2 h-4 w-4' />
-                  <span onClick={handleDeleteMessage}>Xóa tin nhắn</span>
+                  <div onClick={handleDeleteMessage} className='flex cursor-pointer flex-row gap-4'>
+                    <Trash className='h-4 w-4' />
+                    <span>Xóa tin nhắn</span>
+                  </div>
                 </ModeratorAuthorizeComp>
               </DropdownMenuItem>
             </DropdownMenuContent>
