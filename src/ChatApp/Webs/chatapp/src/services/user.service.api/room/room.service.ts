@@ -1,7 +1,7 @@
 import { AxiosContracts } from "@/lib/axios/AxiosContracts";
 import { httpDelPrivate, httpGetPrivate, httpPostPrivate } from "../_req";
 import { CreateRoomDto } from "./room.types";
-import { CreateRoomDtoSchema, CreateRoomResponseDtoSchema } from "./room.contracts";
+import { CreateRoomDtoSchema } from "./room.contracts";
 
 export class RoomService {
   static createRoomMutation(data: {createRoomDto: CreateRoomDto}) {

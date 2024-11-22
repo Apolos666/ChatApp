@@ -36,7 +36,6 @@ export const AddMemberDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProps
 
   const { data: currentUser } = useLoggedInUserProfile()
 
-  const [roomName, setRoomName] = useState('')
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
   const [open, setOpen] = useState(false)
 
@@ -84,6 +83,7 @@ export const AddMemberDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProps
 
   const handleAddMember = async () => {
     if (roomId && selectedUsers.length > 0) {
+      console.log(selectedUsers.map((user) => user.id))
       await addUserToRoomAsync({
         roomId,
         userIdList: selectedUsers.map((user) => user.id)
