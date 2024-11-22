@@ -4,9 +4,9 @@ import { DefaultError, useMutation, UseMutationOptions } from '@tanstack/react-q
 export function useCreateRoomMutation(
   options?: Pick<
     UseMutationOptions<
-      Awaited<ReturnType<typeof RoomService.createRoomMutation>>,
+      any,
       DefaultError,
-      roomTypesDto.CreateRoomDto,
+      {createRoomDto: roomTypesDto.CreateRoomDto, userIdList?: number[]},
       unknown
     >,
     'mutationKey' | 'onMutate' | 'onSuccess' | 'onError' | 'onSettled'
@@ -25,8 +25,15 @@ export function useCreateRoomMutation(
     onMutate: async (variables) => {
       await onMutate?.(variables)
     },
-    mutationFn: async (createRoomDto: roomTypesDto.CreateRoomDto)  => {
-      return RoomService.createRoomMutation({ createRoomDto })
+    mutationFn: async ({createRoomDto, userIdList}:{createRoomDto: roomTypesDto.CreateRoomDto, userIdList?: number[]})  => {
+      const response = await RoomService.createRoomMutation({ createRoomDto })
+
+      if (response.status === 201 && userIdList) {
+        const {id: roomId} = response.data
+        for (const userId of userIdList) {
+          await RoomService.addUserToRoom({roomId, userId})
+        }
+      }
     },
     onSuccess: async (response, variables, context) => {
       await onSuccess?.(response, variables, context)

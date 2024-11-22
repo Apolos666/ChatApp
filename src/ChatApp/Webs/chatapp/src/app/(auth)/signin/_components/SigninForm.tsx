@@ -11,6 +11,8 @@ import { authContractsDto, authTypesDto } from '@/services/user.service.api/auth
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLoginMutation } from '../_mutations/signin.mutation'
+import { getErrorResponse } from '@/services/user.service.api/_getErrorResponse'
+import { toastError } from '@/components/shared/Toast'
 
 type LoginFormValues = authTypesDto.LoginDto
 
@@ -30,6 +32,9 @@ function SigninForm() {
       router.push('/chat')
     },
     onError: (error) => {
+      const { message } = getErrorResponse(error)
+      toastError(message)
+
       console.log(error)
     }
   })

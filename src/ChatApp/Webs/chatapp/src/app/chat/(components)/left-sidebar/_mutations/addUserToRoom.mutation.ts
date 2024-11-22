@@ -5,7 +5,7 @@ import { AxiosResponse } from 'axios'
 export function useAddUserToRoom(
   options?: Pick<
     UseMutationOptions<
-      AxiosResponse<any,any>[],
+      number[],
       DefaultError,
       { roomId: number, userIdList: number[] },
       unknown
@@ -27,9 +27,10 @@ export function useAddUserToRoom(
       await onMutate?.(variables)
     },
     mutationFn: async ({roomId, userIdList}: { roomId: number, userIdList: number[] })  => {
-      return Promise.all(userIdList.map((userId) => {
-        return RoomService.addUserToRoom({roomId, userId})
-      }))
+      for (const userId of userIdList) {
+        await RoomService.addUserToRoom({roomId, userId})
+      }
+      return userIdList
     },
     onSuccess: async (response, variables, context) => {
       await onSuccess?.(response, variables, context)

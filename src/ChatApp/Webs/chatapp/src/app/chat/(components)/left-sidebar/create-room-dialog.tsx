@@ -13,6 +13,7 @@ import UserAvatar from '../sub-left-sidebar/user-avatar'
 import { useAddUserToRoom } from './_mutations/addUserToRoom.mutation'
 import { cn } from '@/lib/utils'
 import { useLoggedInUserProfile } from '@/entities/user/hooks/userLoggedInUserProfile'
+import { toastSuccess } from '@/components/shared/Toast'
 
 interface User {
   id: number
@@ -49,19 +50,16 @@ export const CreateRoomDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProp
     return data?.pages.flatMap((page) => page.content).filter((user) => currentUser && user.id !== currentUser.id)
   }, [data, currentUser])
 
-  const { mutateAsync: addUserToRoomAsync } = useAddUserToRoom({})
-
   const { mutateAsync: createRoomAsync, isPending } = useCreateRoomMutation({
     onSuccess: async (response, variables) => {
-      const { id: roomId } = response.data
       queryClient.invalidateQueries({
         queryKey: ['rooms']
       })
 
-      await addUserToRoomAsync({
-        roomId,
-        userIdList: selectedUsers.map((user) => user.id)
-      })
+      toastSuccess('Tạo phòng thành công')
+    },
+    onError: (error) => {
+      console.log(error)
     },
     onSettled: () => {
       // setOpen(false)
@@ -86,7 +84,10 @@ export const CreateRoomDialog = ({ trigger, onCreateRoom }: CreateRoomDialogProp
   const handleCreateRoom = async () => {
     if (roomName.trim()) {
       await createRoomAsync({
-        name: roomName
+        createRoomDto: {
+          name: roomName
+        },
+        userIdList: selectedUsers.map((user) => user.id)
       })
     }
   }
