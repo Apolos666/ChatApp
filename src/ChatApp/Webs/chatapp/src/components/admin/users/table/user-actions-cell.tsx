@@ -4,11 +4,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, Lock, MoreHorizontal, Pencil, Trash2, User } from "lucide-react";
+import { Copy, Edit, Eye, Lock, MoreHorizontal, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { DeleteConfirmationDialog } from "../modals/delete-confirmation-dialog";
@@ -42,8 +41,6 @@ export function UserActionsCell({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => {
                             navigator.clipboard.writeText(user.id);
@@ -58,7 +55,7 @@ export function UserActionsCell({
                         Copy ID
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onView?.(user)}>
-                        <User className="mr-2 h-4 w-4" />
+                        <Eye className="mr-2 h-4 w-4" />
                         View Details
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -66,7 +63,7 @@ export function UserActionsCell({
                             onEdit?.(user);
                         }}
                     >
-                        <Pencil className="mr-2 h-4 w-4" />
+                        <Edit className="mr-2 h-4 w-4" />
                         Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -77,11 +74,12 @@ export function UserActionsCell({
                         <Lock className="mr-2 h-4 w-4" />
                         Reset Password
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => setOpenConfirmationModal(true)}
                         className="text-destructive"
                     >
-                        <Trash2 className="mr-2 h-4 w-4" />
+                        <Trash className="mr-2 h-4 w-4" />
                         Delete
                     </DropdownMenuItem>
                 </DropdownMenuContent>

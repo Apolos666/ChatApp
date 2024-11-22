@@ -77,6 +77,23 @@ const messageSlice = createSlice({
           : msg
       );
     },
+    deleteMessage: (state, action: PayloadAction<{
+      messageId: number;
+    }>) => {
+      // Tìm message trong state
+      const messageIndex = state.messages.findIndex(
+        msg => msg.id === action.payload.messageId
+      );
+      
+      if (messageIndex !== -1) {
+        // Cập nhật trạng thái đã xóa
+        state.messages[messageIndex] = {
+          ...state.messages[messageIndex],
+          isDeleted: true,
+          content: null // Xóa nội dung tin nhắn
+        };
+      }
+    },
   },
 });
 
@@ -85,6 +102,7 @@ export const {
   updateMessageStatus,
   updateTempMessage,
   setMessageFailed,
+  deleteMessage,
 } = messageSlice.actions;
 
 export default messageSlice.reducer; 

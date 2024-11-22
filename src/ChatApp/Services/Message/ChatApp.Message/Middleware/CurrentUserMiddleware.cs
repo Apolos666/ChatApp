@@ -17,6 +17,7 @@ public class CurrentUserMiddleware
             if (!string.IsNullOrEmpty(email))
             {
                 var user = await dbContext.Users
+                    .Include(u => u.Role)
                     .Select(u => new CurrentUser
                     {
                         Id = u.Id,
@@ -25,7 +26,8 @@ public class CurrentUserMiddleware
                         IsActive = u.IsActive,
                         RoleId = u.RoleId,
                         PhoneNumber = u.PhoneNumber,
-                        Address = u.Address
+                        Address = u.Address,
+                        RoleName = u.Role!.Name
                     })
                     .FirstOrDefaultAsync(u => u.Email == email);
 

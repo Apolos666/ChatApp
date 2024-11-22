@@ -141,18 +141,24 @@ export const getColumns = ({
     },
     {
         id: "actions",
+        header: ({ column }) => (
+            <SortableTableHeader column={column} title="Actions" align="center" isEnabled={false} />
+        ),
         cell: ({ row }) => (
-            <UserActionsCell
-                user={row.original}
-                onView={(user) => setSelectedUser(user)}
-                onEdit={(user) => {
-                    setSelectedUser(user);
-                    setIsEditMode(true);
+            <div className='flex justify-center'>
+                <UserActionsCell
+                    user={row.original}
+                    onView={(user) => setSelectedUser(user)}
+                    onEdit={(user) => {
+                        setSelectedUser(user);
+                        setIsEditMode(true);
                 }}
                 onDelete={(user) => {
                     handleDelete([user.id]);
-                }}
-            />
+                    }}
+                />
+            </div>
         ),
+        enableSorting: false,
     },
 ];

@@ -1,8 +1,9 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import type { QueryFunction } from "@tanstack/react-query";
 import { MessageDto } from "@/app/chat/(types)/message";
 import { getLocalStorageItem } from "@/utils/local-storage";
 import { PersistedStateKey } from "@/data/persisted-keys";
+import { useEffect } from "react";
 
 interface GetMessagesResponse {
   messages: MessageDto[];
@@ -34,6 +35,19 @@ const fetchMessages: QueryFunction<GetMessagesResponse, MessagesQueryKey, number
   };
 
 export function useMessages(roomId: number) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const handleMessageDeleted = () => {
+      queryClient.invalidateQueries({ queryKey: ["messages", "room", roomId] });
+    };
+
+    return () => {
+      // Cleanup listener
+      handleMessageDeleted();
+    };
+  }, [queryClient, roomId]);
+
   return useInfiniteQuery({
     queryKey: ["messages", "room", roomId] as MessagesQueryKey,
     queryFn: fetchMessages,

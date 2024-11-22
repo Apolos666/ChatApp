@@ -7,6 +7,7 @@ export interface MessageDto {
   createdAt: string;
   status: MessageStatus;
   files?: FileDto[];
+  isDeleted: boolean;
 }
 
 export interface FileDto {
@@ -34,4 +35,11 @@ export interface PinnedMessage {
   files: FileDto[];
   pinnedAt: string;
   isPinned: boolean;
+}
+
+export interface MessageDeletedDto {
+  messageId: number;
+  roomId: number;
+  deletedBy: number;
+  deletedAt: string;
 }

@@ -104,7 +104,7 @@ const FilterButton = forwardRef<FilterButtonRef, FilterButtonProps>(({ filters =
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
                     {!hasChanges() && (localFilters.role_id.length > 0 || localFilters.is_active.length > 0) && (
-                        <Badge variant="secondary" className="ml-2">
+                        <Badge variant="outline" className="ml-2 rounded-full">
                             {getFilterCount()}
                         </Badge>
                     )}

@@ -10,4 +10,5 @@ public record MessageDto
     public DateTime CreatedAt { get; init; }
     public string Status { get; init; } = null!;
     public List<FileDto> Files { get; init; } = [];
+    public bool IsDeleted { get; init; }
 }

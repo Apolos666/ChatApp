@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ChatApp.Message.Models;
 
-public sealed partial class User
+public partial class User
 {
     public int Id { get; set; }
 
@@ -31,15 +31,17 @@ public sealed partial class User
 
     public int? RoleId { get; set; }
 
-    public ICollection<File> Files { get; set; } = new List<File>();
+    public virtual ICollection<File> Files { get; set; } = new List<File>();
 
-    public ICollection<MessageStatus> MessageStatuses { get; set; } = new List<MessageStatus>();
+    public virtual ICollection<Message> MessageDeletedByNavigations { get; set; } = new List<Message>();
 
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
+    public virtual ICollection<Message> MessageSenders { get; set; } = new List<Message>();
 
-    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public virtual ICollection<MessageStatus> MessageStatuses { get; set; } = new List<MessageStatus>();
 
-    public Role? Role { get; set; }
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-    public ICollection<Room> Rooms { get; set; } = new List<Room>();
+    public virtual Role? Role { get; set; }
+
+    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

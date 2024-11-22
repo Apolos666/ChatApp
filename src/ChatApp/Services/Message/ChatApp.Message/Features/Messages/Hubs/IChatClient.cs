@@ -8,6 +8,7 @@ public interface IChatClient
     Task MessageStatusUpdated(MessageStatusUpdateDto statusUpdate);
     Task TypingIndicatorReceived(TypingIndicatorDto typing);
     Task MessagePinStatusChanged(MessagePinnedDto pinStatus);
+    Task MessageDeleted(MessageDeletedDto deletedMessage);
 }
 
 public record UserConnectionDto(

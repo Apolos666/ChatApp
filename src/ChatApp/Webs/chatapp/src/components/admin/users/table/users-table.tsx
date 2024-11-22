@@ -39,14 +39,14 @@ export function UsersTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isAddMode, setIsAddMode] = useState(false)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(10)
   const [filters, setFilters] = useState<Filters>({ role_id: [], is_active: [], startDate: null, endDate: null })
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     name: true,
     email: true,
     phone_number: false,
-    role: true,
-    status: true,
+    role_id: true,
+    is_active: true,
     created_at: false
   })
   const [sorting, setSorting] = useState<SortingState>([])
@@ -66,7 +66,7 @@ export function UsersTable() {
       setUsers(response.data)
     } catch (error) {
       toast({
-        title: 'Error fetching users',
+        title: 'Error',
         description: 'Failed to fetch users',
         variant: 'destructive'
       })
@@ -88,7 +88,7 @@ export function UsersTable() {
         if (updatedUser.id === currentAdminId) {
           if (updatedUser.role_id !== 1) {
             toast({
-              title: 'Error updating user',
+              title: 'Error',
               description: 'You cannot change your own role',
               variant: 'destructive'
             })
@@ -153,7 +153,7 @@ export function UsersTable() {
 
       if (idsToDelete.length === 0) {
         toast({
-          title: 'Error deleting users',
+          title: 'Error',
           description: 'You cannot delete yourself',
           variant: 'destructive'
         })
@@ -176,7 +176,7 @@ export function UsersTable() {
       })
     } catch (error) {
       toast({
-        title: 'Error deleting users',
+        title: 'Error',
         description: 'Failed to complete all deletions',
         variant: 'destructive'
       })
