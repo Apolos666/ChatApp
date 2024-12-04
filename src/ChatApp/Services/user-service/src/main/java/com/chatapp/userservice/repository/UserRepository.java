@@ -1,6 +1,8 @@
 package com.chatapp.userservice.repository;
 
 import com.chatapp.userservice.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM users u WHERE u.email = :email AND u.is_active = true", nativeQuery = true)
     boolean existsByEmail(String email);
 
+    @Query(value = "SELECT * FROM users WHERE name ILIKE CONCAT('%',:name,'%')",nativeQuery = true)
+    Page<User> searchUser(Pageable pageable, String name);
 }

@@ -41,7 +41,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/api/management/messages/{messageId}",
-                                        "/api/management/rooms/**"
+                                        "/api/management/rooms/**",
+                                        "/api/user/search"
                                 ).hasAnyAuthority("ADMIN", "MODERATE USER")
                                 .anyRequest().authenticated()
                 )

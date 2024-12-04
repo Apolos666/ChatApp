@@ -29,17 +29,14 @@ public class AppUtil {
     }
 
     public static <P, C> ObjectResponse createObjectResponse(Page<P> pageContent, List<C> dtoContent){
-        ObjectResponse<C> response = new ObjectResponse();
-
-        response.builder()
+        ObjectResponse<C> response = ObjectResponse.<C>builder()
                 .totalElements(pageContent.getTotalElements())
                 .totalPages(pageContent.getTotalPages())
                 .pageSize(pageContent.getSize())
                 .pageNumber(pageContent.getNumber()+1)
                 .isLast(pageContent.isLast())
+                .content(dtoContent)
                 .build();
-
-        response.setContent(dtoContent);
 
         return response;
     }

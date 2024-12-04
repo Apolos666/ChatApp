@@ -1,5 +1,6 @@
 package com.chatapp.userservice.service;
 
+import com.chatapp.userservice.dto.ObjectResponse;
 import com.chatapp.userservice.dto.user.request.UserProfileRequest;
 import com.chatapp.userservice.dto.user.response.UserProfileResponse;
 import com.chatapp.userservice.entity.User;
@@ -13,4 +14,6 @@ public interface UserService {
     String updateUserAvatar(int id, MultipartFile file);
 
     String deleteUserAvatar(int id);
+
+    ObjectResponse searchUser(int pageSize, int pageNumber, String sortBy, String sortDir, String name);
 }

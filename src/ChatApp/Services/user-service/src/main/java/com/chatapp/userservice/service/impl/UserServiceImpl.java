@@ -1,6 +1,7 @@
 package com.chatapp.userservice.service.impl;
 
-import com.chatapp.userservice.constant.AppConstant;
+import com.chatapp.userservice.dto.ObjectResponse;
+import com.chatapp.userservice.dto.user.UserDto;
 import com.chatapp.userservice.dto.user.request.UserProfileRequest;
 import com.chatapp.userservice.dto.user.response.UserProfileResponse;
 import com.chatapp.userservice.entity.User;
@@ -8,14 +9,20 @@ import com.chatapp.userservice.exception.ApiException;
 import com.chatapp.userservice.repository.UserRepository;
 import com.chatapp.userservice.service.UserService;
 import com.chatapp.userservice.service.storage.CloudinaryService;
+import com.chatapp.userservice.utils.AppUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -98,6 +105,21 @@ public class UserServiceImpl implements UserService {
         }
         return "Deleted avatar failed!";
 
+    }
+
+    @Override
+    public ObjectResponse searchUser(int pageSize, int pageNumber, String sortBy, String sortDir, String name) {
+        Pageable pageable = AppUtil.createPageable(pageSize, pageNumber, sortDir, sortBy);
+        Page<User> page = userRepository.searchUser(pageable, name);
+        List<UserDto> userDtos = new ArrayList<>();
+
+        for (User user : page.getContent()) {
+            UserDto userDto = mapper.map(user, UserDto.class);
+            userDtos.add(userDto);
+        }
+
+        ObjectResponse response = AppUtil.createObjectResponse(page, userDtos);
+        return response;
     }
 
 }
